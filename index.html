@@ -6,194 +6,238 @@
     <title>Bilingual: Chinese-English Audio Vocabulary
     中英声音词典：双语发音词汇</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js script is no longer needed as the dashboard is removed -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
     <!-- Chosen Palette: Warm Neutrals -->
     <!-- Application Structure Plan: 本应用采用仪表盘和标签页相结合的结构。顶部是一个固定的导航栏，用于在“数据概览”、“气调与感叹词”、“拟声词”、“万物之声”和“昆虫拟声词”五大核心类别之间切换。主内容区域首先展示一个数据概览图表，直观显示各词汇子类的数量分布。下方是具体的词汇内容区，根据导航选择显示相应的表格。每个表格都配有实时搜索功能。拟声词部分进一步细分为子标签页，以更好地组织内容。这种结构旨在将静态的报告数据转化为一个动态的、便于探索和查询的工具，用户既可以宏观地了解数据概况，也可以快速深入到具体类别进行学习和查找，极大地提升了报告内容的可用性和用户体验。 -->
-    <!-- Visualization & Content Choices: 1. 概览图表 (目标: 比较): 使用Chart.js创建一个条形图，展示不同声音子类（如气调与感叹词、拟声词-自然、拟声词-人体、拟声词-人群、万物之声、昆虫拟声词）的词汇数量。这为用户提供了报告内容的宏观定量概览，有助于理解各类词汇的丰富程度。选择条形图是因为它能清晰地比较不同类别间的数量差异。交互：图表是动态生成的，但交互性保持在工具提示上，以保持简洁。 2. 交互式词汇表 (目标: 组织/查询): 报告中的所有词汇表都将转化为可通过JavaScript实时过滤的HTML表格。用户可以通过搜索框输入中文或英文关键词来快速查找词汇。这种方式取代了静态表格，使用户能高效地从大量数据中定位信息。 3. 标签式导航 (目标: 组织): 使用HTML/CSS和JavaScript实现标签页导航，将不同大类的词汇清晰地分离开，用户只需单击即可切换视图，这是一种经典的、符合直觉的SPA导航模式。拟声词部分内部也使用了子标签页来进一步细分内容。新增的昆虫拟声词也作为独立的标签页展示。 -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <style>
-        body {
-            font-family: 'Inter', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
-            background-color: #fdfaf6;
-            color: #4a4a4a;
-        }
-        .nav-active {
-            border-bottom-color: #e58765;
-            color: #d97706;
-            font-weight: 600;
-        }
-        .nav-item {
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-        .sub-nav-item.active {
-            background-color: #e58765;
-            color: #fff;
-        }
-        .table-container {
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 350px;
-            max-height: 50vh;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 400px;
-            }
-        }
-    </style>
+    <!-- Visualization & Content Choices: 1. 概览图表 (目标: 比较): 使用Chart.js创建一个条形图，展示不同声音子类（如气调与感叹词、拟声词-自然、拟声词-人体、拟声词-人群、万物之声、昆虫拟声词、人声音的形容词汇）的词汇数量分布。2. 详细列表 (目标: 查找): 每个标签页都包含一个可搜索的表格，表格列包括中文、拼音、英文和中文描述（如适用）。3. 子标签页 (目标: 组织): 拟声词和人声音的形容词汇内部使用子标签页进一步细分，如拟声词分为“自然”、“人体”、“人群”，人声音的形容词汇分为“音色”、“音量”、“音调”、“声音特点”。-->
 </head>
-<body class="antialiased">
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
-    <div class="container mx-auto p-4 md:p-8">
-        
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-blue-800 mb-2">Chinese-English Audio Vocabulary</h1>
-            <p class="text-4xl font-bold text-red-800 mb-2">中英声音词典：双语发音词汇</p>
+    <div class="min-h-screen flex flex-col">
+        <!-- Header & Navigation -->
+        <header class="bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-lg p-4 sticky top-0 z-50">
+            <h1 class="text-3xl font-extrabold text-center mb-2">中英声音词典：双语发音词汇</h1>
+            <p class="text-center text-lg opacity-90">Bilingual: Chinese-English Audio Vocabulary</p>
+
+            <nav class="flex flex-wrap justify-center gap-3 mt-4">
+                <!-- 📚 应用概览 (Application Overview) - Re-added as Introduction -->
+                <button class="nav-item nav-active text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-blue-500 text-white shadow-md hover:bg-blue-600 transition-colors duration-200" data-tab="introduction">
+                    <span class="mb-1">📚 应用概览</span>
+                    <span class="text-xs opacity-90">Application Overview</span>
+                </button>
+
+                <!-- 🗣️ 气调与感叹词 (Interjections & Exclamations) -->
+                <button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-green-500 text-white shadow-md hover:bg-green-600 transition-colors duration-200" data-tab="interjections">
+                    <span class="mb-1">🗣️ 气调与感叹词</span>
+                    <span class="text-xs opacity-90">Interjections & Exclamations</span>
+                </button>
+
+                <!-- 🔊 拟声词 (Onomatopoeia) -->
+                <button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-purple-500 text-white shadow-md hover:bg-purple-600 transition-colors duration-200" data-tab="onomatopoeia">
+                    <span class="mb-1">🔊 拟声词</span>
+                    <span class="text-xs opacity-90">Onomatopoeia</span>
+                </button>
+
+                <!-- 🌍 万物之声 (Sounds of All Things) -->
+                <button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-yellow-500 text-white shadow-md hover:bg-yellow-600 transition-colors duration-200" data-tab="otherSounds">
+                    <span class="mb-1">🌍 万物之声</span>
+                    <span class="text-xs opacity-90">Sounds of All Things</span>
+                </button>
+
+                <!-- 🐞 昆虫拟声词 (Insect Onomatopoeia) -->
+                <button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-red-500 text-white shadow-md hover:bg-red-600 transition-colors duration-200" data-tab="insectOnomatopoeia">
+                    <span class="mb-1">🐞 昆虫拟声词</span>
+                    <span class="text-xs opacity-90">Insect Onomatopoeia</span>
+                </button>
+                
+                <!-- 🗣️ 人声音的形容词汇 (Adjectives Describing Human Voices) -->
+                <button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-teal-500 text-white shadow-md hover:bg-teal-600 transition-colors duration-200" data-tab="voiceAdjectives">
+                    <span class="mb-1">🗣️ 人声音的形容词汇</span>
+                    <span class="text-xs opacity-90">Adjectives Describing Human Voices</span>
+                </button>
+            </nav>
         </header>
 
-<!-- 📊 数据概览 (Data Overview) -->
-<button class="nav-item nav-active text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-blue-500 text-white shadow-md hover:bg-blue-600 transition-colors duration-200" data-tab="dashboard">
-    <span class="mb-1">📊 数据概览</span>
-    <span class="text-xs opacity-90">Data Overview</span>
-</button>
-
-<!-- 🗣️ 气调与感叹词 (Interjections & Exclamations) -->
-<button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-green-500 text-white shadow-md hover:bg-green-600 transition-colors duration-200" data-tab="interjections">
-    <span class="mb-1">🗣️ 气调与感叹词</span>
-    <span class="text-xs opacity-90">Interjections & Exclamations</span>
-</button>
-
-<!-- 🔊 拟声词 (Onomatopoeia) -->
-<button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-purple-500 text-white shadow-md hover:bg-purple-600 transition-colors duration-200" data-tab="onomatopoeia">
-    <span class="mb-1">🔊 拟声词</span>
-    <span class="text-xs opacity-90">Onomatopoeia</span>
-</button>
-
-<!-- 🌍 万物之声 (Sounds of All Things) -->
-<button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-yellow-500 text-white shadow-md hover:bg-yellow-600 transition-colors duration-200" data-tab="otherSounds">
-    <span class="mb-1">🌍 万物之声</span>
-    <span class="text-xs opacity-90">Sounds of All Things</span>
-</button>
-
-<!-- 🐞 昆虫拟声词 (Insect Onomatopoeia) -->
-<button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-red-500 text-white shadow-md hover:bg-red-600 transition-colors duration-200" data-tab="insectOnomatopoeia">
-    <span class="mb-1">🐞 昆虫拟声词</span>
-    <span class="text-xs opacity-90">Insect Onomatopoeia</span>
-</button>
-
-
-        </nav>
-
-        <main>
-            <section id="dashboard" class="content-section">
-                <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-                    <h2 class="text-2xl font-bold text-center text-amber-700 mb-4">词汇分类数量概览</h2>
-                    <p class="text-center text-gray-600 mb-6">
-                        本图表展示了报告中不同声音类别的词汇数量分布。您可以从中直观地看到各类词汇的丰富程度，例如“气调与感叹词”是数量最多的类别。这有助于您了解本词汇库的整体构成。
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto p-4 md:p-6 lg:p-8">
+            <!-- 📚 应用概览 (Application Overview) - Re-added as Introduction -->
+            <section id="introduction" class="content-section">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">📚 欢迎来到中英声音词典！</h2>
+                    <p class="text-gray-700 mb-2 leading-relaxed">
+                        本应用旨在为您提供一个便捷的中文与英文声音词汇学习和查询工具。我们整理了多种类别与特点的声音词汇，帮助您更好地理解和使用它们。
                     </p>
-                    <div class="chart-container">
-                        <canvas id="categoryChart"></canvas>
-                    </div>
+                    <p class="text-gray-600 text-sm mb-6 leading-relaxed">
+                        This application aims to provide you with a convenient tool for learning and looking up Chinese and English sound vocabulary. We have organized sound vocabulary by various categories and characteristics to help you better understand and use them.
+                    </p>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-3">主要功能与内容概览：</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2">
+                        <li>
+                            <span class="font-medium text-green-600">🗣️ 气调与感叹词 (Interjections & Exclamations):</span>
+                            这类词汇主要用于表达情感、引起注意或模拟特定情景下的语气。
+                            <p class="text-gray-600 text-sm mt-1">These words are mainly used to express emotions, attract attention, or simulate tones in specific situations.</p>
+                        </li>
+                        <li>
+                            <span class="font-medium text-purple-600">🔊 拟声词 (Onomatopoeia):</span>
+                            这类词汇通过模仿自然界、人与行为、人群与环境的声音来描述事物。
+                            <p class="text-gray-600 text-sm mt-1">These words describe things by imitating sounds from nature, human actions, and crowds/environments.</p>
+                        </li>
+                        <li>
+                            <span class="font-medium text-yellow-600">🌍 万物之声 (Sounds of All Things):</span>
+                            本节收录了自然界、动物、物体等各种声音的描述。
+                            <p class="text-gray-600 text-sm mt-1">This section includes descriptions of various sounds from nature, animals, objects, and more.</p>
+                        </li>
+                        <li>
+                            <span class="font-medium text-red-600">🐞 昆虫拟声词 (Insect Onomatopoeia):</span>
+                            本节收录了不同昆虫发出的声音。
+                            <p class="text-gray-600 text-sm mt-1">This section collects sounds made by different insects.</p>
+                        </li>
+                        <li>
+                            <span class="font-medium text-teal-600">🗣️ 人声音的形容词汇 (Adjectives Describing Human Voices):</span>
+                            这里整理了描述人声音特点的形容词，按音色、音量、音调和声音特点进行分类。
+                            <p class="text-gray-600 text-sm mt-1">This section compiles adjectives describing human voice characteristics, categorized by timbre, volume, pitch, and other features.</p>
+                        </li>
+                    </ul>
+                    <p class="text-gray-700 mt-6 leading-relaxed">
+                        每个类别都配有实时搜索功能，方便您快速查找所需词汇。希望本词典能成为您学习和探索声音词汇的得力助手！
+                    </p>
+                    <p class="text-gray-600 text-sm mt-2 leading-relaxed">
+                        Each category is equipped with a real-time search function, making it convenient for you to quickly find the vocabulary you need. We hope this dictionary becomes a powerful assistant in your learning and exploration of sound vocabulary!
+                    </p>
                 </div>
             </section>
 
+            <!-- 🗣️ 气调与感叹词 (Interjections & Exclamations) -->
             <section id="interjections" class="content-section hidden">
                 <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-amber-700 mb-2">气调与感叹词 (Modals + Interjections)</h2>
-                    <p class="text-gray-600 mb-4">这类词汇主要用于表达情感、回应或引起注意。请在下方的搜索框中输入中文、拼音或英文关键词以快速筛选。</p>
-                    <input type="text" id="searchInterjections" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="🔍 搜索中文/拼音或英文...">
-                    <div class="table-container">
-                        <table class="w-full text-left border-collapse">
+                    <h2 class="text-2xl font-bold text-green-700 mb-2">🗣️ 气调与感叹词</h2>
+                    <p class="text-gray-600 mb-2">这类词汇主要用于表达情感、引起注意或模拟特定情景下的语气。</p>
+                    <p class="text-gray-600 text-sm mb-4">These words are mainly used to express emotions, attract attention, or simulate tones in specific situations.</p>
+                    <input type="text" id="searchInterjections" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="🔍 搜索中文/拼音或英文...">
+                    <div class="table-container overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
                             <thead class="sticky top-0 bg-gray-100">
                                 <tr>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">中文 (拼音)</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">英文</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">说明</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">中文造句</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">英文造句</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音)</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">英文释义</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">中英说明（Chinese and English Description）</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">中文例句</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">英文例句</th>
                                 </tr>
                             </thead>
                             <tbody id="tableInterjections">
+                                <!-- Data will be populated here by JavaScript -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
+            <!-- 🔊 拟声词 (Onomatopoeia) -->
             <section id="onomatopoeia" class="content-section hidden">
-                 <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-amber-700 mb-2">拟声词 (Onomatopoeia)</h2>
-                    <p class="text-gray-600 mb-4">拟声词是模仿自然界声音的词汇。请选择一个子类别，并在下方的搜索框中输入关键词以筛选结果。</p>
-                     <div class="flex flex-wrap justify-center gap-2 mb-6">
-                        <button class="sub-nav-item bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold active" data-sub-tab="nature">🏞️ 自然与环境</button>
-                        <button class="sub-nav-item bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="human">🏃 人体动作</button>
-                        <button class="sub-nav-item bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="crowd">👨‍👩‍👧‍👦 人群声音</button>
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-purple-700 mb-2">🔊 拟声词</h2>
+                    <p class="text-gray-600 mb-2">这类词汇通过模仿声音来描述事物。请选择一个子类别进行查看。</p>
+                    <p class="text-600 text-sm mb-4">These words describe things by imitating sounds. Please select a sub-category to view.</p>
+                    <div class="flex flex-wrap justify-center gap-2 mb-6">
+                        <button class="sub-nav-item bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold active" data-sub-tab="nature">一、自然界</button>
+                        <button class="sub-nav-item bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="human">二、人与行为</button>
+                        <button class="sub-nav-item bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="crowd">三、人群与环境</button>
                     </div>
-                    <input type="text" id="searchOnomatopoeia" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="🔍 搜索中文/拼音或英文...">
-                    <div class="table-container">
-                        <table class="w-full text-left border-collapse">
+                    <input type="text" id="searchOnomatopoeia" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="🔍 搜索中文/拼音或英文...">
+                    <div class="table-container overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
                             <thead class="sticky top-0 bg-gray-100">
                                 <tr>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">中文 (拼音)</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">英文</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">说明</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">中文造句</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">英文造句</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音)</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">英文释义</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">中英说明（Chinese and English Description）</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">中文例句</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">英文例句</th>
                                 </tr>
                             </thead>
                             <tbody id="tableOnomatopoeia">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="otherSounds" class="content-section hidden">
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-amber-700 mb-2">万物之声 (Sounds of Everything)</h2>
-                    <p class="text-gray-600 mb-4">这里涵盖了动物、天气和机械等各种事物的声音。请在下方的搜索框中输入关键词进行筛选。</p>
-                    <input type="text" id="searchOther" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="🔍 搜索中文/拼音或英文...">
-                    <div class="table-container">
-                        <table class="w-full text-left border-collapse">
-                             <thead class="sticky top-0 bg-gray-100">
-                                <tr>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">类别</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">细分类</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">中文 (拼音)</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">英文</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">说明</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableOther">
+                                <!-- Data will be populated here by JavaScript -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
+            <!-- 🌍 万物之声 (Sounds of All Things) -->
+            <section id="otherSounds" class="content-section hidden">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-yellow-700 mb-2">🌍 万物之声</h2>
+                    <p class="text-gray-600 mb-2">本节收录了自然界、动物、物体等各种声音的描述。</p>
+                    <p class="text-gray-600 text-sm mb-4">This section includes descriptions of various sounds from nature, animals, objects, and more.</p>
+                    <input type="text" id="searchOtherSounds" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" placeholder="🔍 搜索中文/拼音或英文...">
+                    <div class="table-container overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
+                            <thead class="sticky top-0 bg-gray-100">
+                                <tr>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">类别</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">子类别</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音)</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">英文释义</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableOther">
+                                <!-- Data will be populated here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 🐞 昆虫拟声词 (Insect Onomatopoeia) -->
             <section id="insectOnomatopoeia" class="content-section hidden">
                 <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-amber-700 mb-2">昆虫拟声词 (Onomatopoeia of Insects)</h2>
-                    <p class="text-gray-600 mb-4">这份列表包含了不同昆虫摩擦翅膀发出的拟声词。请在下方的搜索框中输入昆虫名称或拟声词进行筛选。</p>
-                    <input type="text" id="searchInsect" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="🔍 搜索昆虫名称或拟声词...">
-                    <div class="table-container">
-                        <table class="w-full text-left border-collapse">
-                             <thead class="sticky top-0 bg-gray-100">
+                    <h2 class="text-2xl font-bold text-red-700 mb-2">🐞 昆虫拟声词</h2>
+                    <p class="text-gray-600 mb-2">本节收录了不同昆虫发出的声音。</p>
+                    <p class="text-gray-600 text-sm mb-4">This section collects sounds made by different insects.</p>
+                    <input type="text" id="searchInsect" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-red-500 focus:border-red-500" placeholder="🔍 搜索中文/拼音或英文...">
+                    <div class="table-container overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
+                            <thead class="sticky top-0 bg-gray-100">
                                 <tr>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">昆虫名称 (拼音)</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">昆虫 (拼音)</th>
                                     <th class="p-3 font-semibold text-sm text-gray-600">拟声词 (拼音)</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">说明</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
                                 </tr>
                             </thead>
                             <tbody id="tableInsect">
+                                <!-- Data will be populated here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+
+            <!-- 🗣️ 人声音的形容词汇 (Adjectives Describing Human Voices) -->
+            <section id="voiceAdjectives" class="content-section hidden">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-2xl font-bold text-teal-700 mb-2">人声音的形容词汇 (Adjectives Describing Human Voices)</h2>
+                    <p class="text-gray-600 mb-2">这里整理了描述人声音特点的形容词，按音色、音量、音调和声音特点进行分类。请选择一个子类别进行查看。</p>
+                    <p class="text-gray-600 text-sm mb-4">This section compiles adjectives describing human voice characteristics, categorized by timbre, volume, pitch, and other features. Please select a sub-category to view.</p>
+                    <div class="flex flex-wrap justify-center gap-2 mb-6">
+                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold active" data-sub-tab="timbre">一、按音色分类</button>
+                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="volume">二、按音量分类</button>
+                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="pitch">三、按音调分类</button>
+                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="features">四、按声音特点分类</button>
+                    </div>
+                    <input type="text" id="searchVoiceAdjectives" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="🔍 搜索中文/拼音或英文...">
+                    <div class="table-container overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[700px]">
+                             <thead class="sticky top-0 bg-gray-100">
+                                <tr>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音)</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600">英文释义</th>
+                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">中英说明（Chinese and English Description）</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableVoiceAdjectives">
                             </tbody>
                         </table>
                     </div>
@@ -203,182 +247,231 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
+        document.addEventListener('DOMContentLoaded', () => {
+            const navItems = document.querySelectorAll('.nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+
             const data = {
                 interjections: [
-                    { ch_pinyin: '哦 ò', en: 'Oh', desc: '表示惊讶或确认', ch_ex: '哦，你说得对！', en_ex: 'Oh, you are right!' },
-                    { ch_pinyin: '嗯 ng', en: 'Uh', desc: '表示思考或同意', ch_ex: '嗯，我同意你的看法。', en_ex: 'Uh, I agree with your view.' },
-                    { ch_pinyin: '呃 è', en: 'Um', desc: '表示犹豫或不确定', ch_ex: '呃，我不太确定。', en_ex: 'Um, I am not quite sure.' },
-                    { ch_pinyin: '哇 wa', en: 'Wow', desc: '表示惊讶或兴奋', ch_ex: '哇，这真是太美了！', en_ex: 'Wow, this is so beautiful!' },
-                    { ch_pinyin: '呀 ya', en: 'Ah', desc: '表示惊讶或叫唤', ch_ex: '呀，你来了！', en_ex: 'Ah, you are here!' },
-                    { ch_pinyin: '嘿 hei', en: 'Hey', desc: '用于打招呼', ch_ex: '嘿，你好久不见！', en_ex: 'Hey, long time no see!' },
-                    { ch_pinyin: '唉 / 噫 āi / yī', en: 'Sigh', desc: '表达失望或疲惫', ch_ex: '唉，我今天很累。', en_ex: 'Sigh, I am so tired today.' },
-                    { ch_pinyin: '嗨 hāi', en: 'Hi', desc: '打招呼用', ch_ex: '嗨，最近怎么样？', en_ex: 'Hi, how have you been recently?' },
-                    { ch_pinyin: '啊 a', en: 'Ah', desc: '表示突然的理解', ch_ex: '啊，我终于明白了！', en_ex: 'Ah, I finally understand!' },
-                    { ch_pinyin: '哎呀 āi yā', en: 'Oops / Oh dear', desc: '表达惊讶或遗憾', ch_ex: '哎呀，我忘带钥匙了！', en_ex: 'Oops, I forgot the keys!' },
-                    { ch_pinyin: '哎呀呀 āi yā yā', en: 'Oh my', desc: '表达惊讶或无奈', ch_ex: '哎呀呀，这可怎么办？', en_ex: 'Oh my, what should I do?' },
-                    { ch_pinyin: '啧啧 zé zé', en: 'Tsk tsk', desc: '表达不满或失望', ch_ex: '啧啧，这个问题真难。', en_ex: 'Tsk tsk, this problem is really difficult.' },
-                    { ch_pinyin: '哟 yo', en: 'Yo', desc: '用于打招呼或引起注意', ch_ex: '哟！你看谁来了！', en_ex: 'Yo! Look who’s here!' },
-                    { ch_pinyin: '哎哟 āi yo', en: 'Ouch', desc: '表达疼痛或惊讶', ch_ex: '哎哟，我的脚好疼！', en_ex: 'Ouch, my foot hurts so much!' },
-                    { ch_pinyin: '哎呦 āi yōu', en: 'Ouch', desc: '表达疼痛或惊讶', ch_ex: '哎呦，这个消息真意外。', en_ex: 'Ouch, this news is really unexpected.' },
-                    { ch_pinyin: '呦 yōu', en: 'Yo', desc: '用于打招呼或引起注意', ch_ex: '呦，你怎么在这儿？', en_ex: 'Yo, what are you doing here?' },
-                    { ch_pinyin: '哎唷 āi yō', en: 'Ouch', desc: '表达疼痛或惊讶', ch_ex: '哎唷，天气真热。', en_ex: 'Ouch, the weather is so hot.' },
-                    { ch_pinyin: '喔 wō', en: 'Oh', desc: '表达理解或惊讶', ch_ex: '喔，我明白了。', en_ex: 'Oh, I understand.' },
-                    { ch_pinyin: '哦哟 ò yo', en: 'Oh dear', desc: '表达惊讶或担忧', ch_ex: '哦哟，这么便宜！', en_ex: 'Oh dear, it\'s so cheap!' },
-                    { ch_pinyin: '嗯哼 n hmm', en: 'Uh-huh', desc: '表示同意或确认', ch_ex: '嗯哼，我知道你在想什么。', en_ex: 'Uh-huh, I know what you’re thinking.' },
-                    { ch_pinyin: '啊哈 a hā', en: 'Ah-ha', desc: '表达突然的领悟', ch_ex: '啊哈，我猜对了吧？', en_ex: 'Ah-ha, did I guess correctly?' },
-                    { ch_pinyin: '哟呼 yo hū', en: 'Yo-ho', desc: '表达兴奋或庆祝', ch_ex: '哟呼，终于放假了！', en_ex: 'Yo-ho, finally a holiday!' },
-                    { ch_pinyin: '哦噢 ò ō', en: 'Oh oops', desc: '表达轻微的意外', ch_ex: '哦噢，这可不好。', en_ex: 'Oh oops, this is not good.' },
-                    { ch_pinyin: '哦嚯 ò huò', en: 'Oh ho', desc: '表达惊讶或意外', ch_ex: '哦嚯，这下麻烦了。', en_ex: 'Oh ho, now we’re in trouble.' },
-                    { ch_pinyin: '哦吼 ò hǒu', en: 'Oh whoa', desc: '表达惊讶或惊奇', ch_ex: '哦吼，你也来了？', en_ex: 'Oh whoa, you’re here too?' },
-                    { ch_pinyin: '呦呵 yōu hē', en: 'Yo-ho', desc: '表达欢快或庆祝', ch_ex: '呦呵，这不是老朋友吗？', en_ex: 'Yo-ho, isn\'t this an old friend?' },
-                    { ch_pinyin: '啊哟 a yo', en: 'Ah yo', desc: '表达惊讶或赞赏', ch_ex: '啊哟，你真厉害！', en_ex: 'Ah yo, you’re really impressive!' },
-                    { ch_pinyin: '唔 m', en: 'Uh', desc: '表示思考或犹豫', ch_ex: '唔，我得考虑一下。', en_ex: 'Uh, I need to think about it.' },
-                    { ch_pinyin: '啦 la', en: 'La', desc: '表达完成或确认', ch_ex: '我准备好啦啦！', en_ex: 'I’m ready to go!' },
-                    { ch_pinyin: '啰 luō', en: 'Lo', desc: '用于确认或强调', ch_ex: '啰，我说的没错吧？', en_ex: 'Lo, wasn’t I right?' },
-                    { ch_pinyin: '喔唷 wō yō', en: 'Wo yo', desc: '表达惊讶或开心', ch_ex: '喔唷，这么大的惊喜！', en_ex: 'Wo yo, what a big surprise!' },
-                    { ch_pinyin: '嘻嘻 xī xī', en: 'He he', desc: '表达快乐或调皮', ch_ex: '嘻嘻，我赢了。', en_ex: 'He he, I won.' },
-                    { ch_pinyin: '嘿嘿 hēi hēi', en: 'He he', desc: '表达轻松或开心', ch_ex: '嘿嘿，这个秘密只有我知道。', en_ex: 'He he, this secret is known only to me.' },
-                    { ch_pinyin: '哇哦 wa ō', en: 'Wa oh', desc: '表达惊讶或兴奋', ch_ex: '哇哦，这真是个好消息！', en_ex: 'Wa oh, this is really good news!' },
-                    { ch_pinyin: '哇呀 wa yā', en: 'Wow', desc: '表达惊叹或惊讶', ch_ex: '哇呀，这可真棒！', en_ex: 'Wow, this is really great!' },
-                    { ch_pinyin: '哈哟 hā yō', en: 'Ha yo', desc: '表达兴奋或庆祝', ch_ex: '哈哟，太棒了！', en_ex: 'Ha yo, that’s great!' },
-                    { ch_pinyin: '嗷嗷 ào ào', en: 'Howl', desc: '表达求助或惊慌', ch_ex: '嗷嗷，救命啊！', en_ex: 'Howl, help!' },
-                    { ch_pinyin: '啦哩啦啦 lā lǐ lā lā', en: 'La li la la', desc: '表达开心或兴奋', ch_ex: '啦哩啦啦，开心地跳舞吧！', en_ex: 'La li la la, let’s dance happily!' },
-                    { ch_pinyin: '啦啦嘿 lā lā hēi', en: 'La la hei', desc: '表达欢快或邀请', ch_ex: '啦啦嘿，我们一起走！', en_ex: 'La la hei, let’s go together!' },
-                    { ch_pinyin: '哟哟 yo yo', en: 'Yo yo', desc: '表达惊讶或兴奋', ch_ex: '哟哟，真是难以置信！', en_ex: 'Yo yo, it’s unbelievable!' },
-                    { ch_pinyin: '咦 yí', en: 'Huh / Eh', desc: '表达疑惑或惊讶', ch_ex: '咦，这是什么？', en_ex: 'Huh, what is this?' },
-                    { ch_pinyin: '喂 wèi', en: 'Hey', desc: '用于引起注意', ch_ex: '喂，你在听吗？', en_ex: 'Hey, are you listening?' },
-                    { ch_pinyin: '啊嘞 a lei', en: 'Ah', desc: '来自日语的叹词，表达惊讶', ch_ex: '啊嘞，你说什么？', en_ex: 'Ah, what did you say?' },
-                    { ch_pinyin: '啊呀 ā yā', en: 'Ah / Oh', desc: '表达惊讶或赞赏', ch_ex: '啊呀，这真是个好主意！', en_ex: 'Ah, this is really a good idea!' },
-                    { ch_pinyin: '嗳 āi', en: 'Eh / Ah', desc: '表达不满或感叹', ch_ex: '嗳，别这样。', en_ex: 'Eh, don’t do that.' },
-                    { ch_pinyin: '嘘 xū', en: 'Shh', desc: '表达安静的要求', ch_ex: '嘘，安静点。', en_ex: 'Shh, be quiet.' },
-                    { ch_pinyin: '哇塞 wasāi', en: 'Wow', desc: '表达惊叹', ch_ex: '哇塞，这也太酷了吧！', en_ex: 'Wow, this is so cool!' },
-                    { ch_pinyin: '噢 ō', en: 'Oh', desc: '表达理解或惊讶', ch_ex: '噢，我知道了。', en_ex: 'Oh, I got it.' },
-                    { ch_pinyin: '啧 zé', en: 'Tsk', desc: '表达不满或轻蔑', ch_ex: '啧，真是的。', en_ex: 'Tsk, how could that be?' },
-                    { ch_pinyin: '咳 hāi', en: 'Ahem', desc: '吸引注意或清嗓', ch_ex: '咳，打扰一下。', en_ex: 'Ahem, excuse me.' },
-                    { ch_pinyin: '哼 hēng', en: 'Hmph', desc: '表达不满或不信', ch_ex: '哼，我才不信。', en_ex: 'Hmph, I don\'t believe it.' },
-                    { ch_pinyin: '嘬嘬嘬 zuō zuō zuō', en: 'Slurping', desc: '表达啜吸的声音', ch_ex: '嘬嘬嘬，太香了！', en_ex: 'Slurp slurp slurp, it’s so tasty!' }
+                    { ch_pinyin: '哎 (āi)', en: 'Hey; Alas', desc: '表示惊讶、提醒、应答或叹息。Expressing surprise, reminder, response or sigh.', ch_ex: '哎，你去哪儿？', en_ex: 'Hey, where are you going?' },
+                    { ch_pinyin: '嗯 (ēn/èn/ňg)', en: 'Hmm; Mmm-hmm', desc: '表示疑问、肯定、否定或沉思。Expressing doubt, affirmation, negation or contemplation.', ch_ex: '嗯，知道了。', en_ex: 'Mmm-hmm, got it.' },
+                    { ch_pinyin: '哦 (ò)', en: 'Oh; I see', desc: '表示明白、领会或疑问。Expressing understanding, comprehension or doubt.', ch_ex: '哦，原来是这样。', en_ex: 'Oh, so that\'s how it is.' },
+                    { ch_pinyin: '哇 (wā)', en: 'Wow', desc: '表示惊讶、赞叹。Expressing surprise, admiration.', ch_ex: '哇，好漂亮！', en_ex: 'Wow, so beautiful!' },
+                    { ch_pinyin: '哈 (hā)', en: 'Ha', desc: '表示笑声、得意。Expressing laughter, smugness.', ch_ex: '哈哈哈，真好笑。', en_ex: 'Hahaha, so funny.' },
+                    { ch_pinyin: '呀 (ya)', en: 'Ah; Oh', desc: '表示惊讶、感叹、疑问。Expressing surprise, exclamation, or doubt.', ch_ex: '呀，你来了！', en_ex: 'Ah, you\'re here!' },
+                    { ch_pinyin: '喂 (wèi)', en: 'Hello; Hey', desc: '表示呼唤、打招呼。Used to call out or greet someone.', ch_ex: '喂，请问是李明吗？', en_ex: 'Hello, is this Li Ming?' },
+                    { ch_pinyin: '呸 (pēi)', en: 'Pooh; Bah', desc: '表示鄙视、不屑或唾弃。Expressing contempt, disdain or spitting.', ch_ex: '呸，真恶心！', en_ex: 'Pooh, how disgusting.' },
+                    { ch_pinyin: '唉 (ài)', en: 'Alas; Oh dear', desc: '表示叹息、无奈。Expressing sigh, helplessness.', ch_ex: '唉，又失败了。', en_ex: 'Alas, failed again.' },
+                    { ch_pinyin: '哟 (yō)', en: 'Yo; Oh', desc: '表示惊讶、提醒、疑问。Expressing surprise, reminder, or doubt.', ch_ex: '哟，这么巧！', en_ex: 'Yo, what a coincidence!' },
+                    { ch_pinyin: '哼 (hēng)', en: 'Humph; Hmph', desc: '表示不满、不屑或威胁。Expressing dissatisfaction, disdain or threat.', ch_ex: '哼，我才不怕你。', en_ex: 'Humph, I\'m not afraid of you.' },
+                    { ch_pinyin: '嘿 (hēi)', en: 'Hey', desc: '表示引起注意或招呼。Used to attract attention or greet.', ch_ex: '嘿，看这边！', en_ex: 'Hey, look over here!' },
+                    { ch_pinyin: '嘻 (xī)', en: 'Hehe', desc: '表示窃笑、高兴。Expressing snickering, happiness.', ch_ex: '嘻嘻，被我发现了。', en_ex: 'Hehe, I found it.' },
+                    { ch_pinyin: '嘘 (xū)', en: 'Shh', desc: '表示让别人安静。Used to tell others to be quiet.', ch_ex: '嘘，别吵。', en_ex: 'Shh, don\'t make noise.' },
+                    { ch_pinyin: '呕 (ǒu)', en: 'Ugh', desc: '表示厌恶、恶心。Expressing disgust, nausea.', ch_ex: '呕，这味道真难闻。', en_ex: 'Ugh, this smell is awful.' },
+                    { ch_pinyin: '嗤 (chī)', en: 'Hmph', desc: '表示嗤笑、不以为然。Expressing sneer, disapproval.', ch_ex: '嗤，这算什么？', en_ex: 'Hmph, what is this.' },
+                    { ch_pinyin: '呸 (pēi)', en: 'Ptooey', desc: '表示厌恶、唾弃。Expressing disgust, rejection.', ch_ex: '呸，我才不信。', en_ex: 'Ptooey, I don\'t believe it.' },
+                    { ch_pinyin: '咳 (hāi/ké)', en: 'Ahem; Cough', desc: '表示提醒、清嗓子或叹息。Expressing reminder, clearing throat, or sighing.', ch_ex: '咳，该走了。', en_ex: 'Ahem, it\'s time to go.' },
+                    { ch_pinyin: '得 (dé)', en: 'Got it; Fine', desc: '表示同意、完成或得意。Expressing agreement, completion, or smugness.', ch_ex: '得，这事就这么定了。', en_ex: 'Fine, it\'s settled.' },
+                    { ch_pinyin: '嘶 (sī)', en: 'Hiss; Sigh', desc: '表示吸气声、痛苦或寒冷。Expressing inhaling sound, pain, or cold.', ch_ex: '嘶，好冷！', en_ex: 'Hiss, so cold.' }
                 ],
                 onomatopoeia: {
                     nature: [
-                        { ch_pinyin: '嚼 jiáo', en: 'chewing', desc: '模拟咀嚼声音，也作“咀嚼”', ch_ex: '他大声地嚼着口香糖。', en_ex: 'He was chewing gum loudly.' },
-                        { ch_pinyin: '砰 pēng', en: 'Bang', desc: '撞击声', ch_ex: '门突然被砰地一声关上了。', en_ex: 'The door slammed shut with a bang.' },
-                        { ch_pinyin: '咚 dōng', en: 'Thud', desc: '重物落地声', ch_ex: '他跌倒在地，发出咚的一声。', en_ex: 'He fell to the ground with a thud.' },
-                        { ch_pinyin: '嘶嘶 sī sī', en: 'Hiss', desc: '蛇或气体泄漏声', ch_ex: '这条蛇发出嘶嘶声。', en_ex: 'The snake made a hissing sound.' },
-                        { ch_pinyin: '噗 pū', en: 'Pfft', desc: '轻微喷出声', ch_ex: '她一口水噗地喷了出来。', en_ex: 'She sprayed water out with a pfft.' },
-                        { ch_pinyin: '吕 lǔ', en: 'Grumble', desc: '模拟低沉声音，如唱歌', ch_ex: '吕～啦啦～我最喜欢唱歌。', en_ex: 'Grumble~lalala, I love singing.' },
-                        { ch_pinyin: '啷当 lāng dāng', en: 'Clang', desc: '金属撞击声', ch_ex: '铁链子啷当一声掉在地上。', en_ex: 'The chains fell with a clang.' },
-                        { ch_pinyin: '啪啪 pā pā', en: 'Clap-clap', desc: '拍打声，拍手声', ch_ex: '大家啪啪啪地鼓起掌来。', en_ex: 'Everyone started clapping loudly.' },
-                        { ch_pinyin: '啪嗒 pā dā', en: 'Plop', desc: '掉落声', ch_ex: '叶子啪嗒落在地上。', en_ex: 'The leaf plopped onto the ground.' },
-                        { ch_pinyin: '啪嗒啪嗒 pā dā pā dā', en: 'Pitter-patter', desc: '连续轻响', ch_ex: '小狗啪嗒啪嗒地跑过来。', en_ex: 'The puppy pitter-pattered toward us.' },
-                        { ch_pinyin: '砰砰 pēng pēng', en: 'Bang bang', desc: '连续重击声', ch_ex: '心脏在胸口砰砰直跳。', en_ex: 'The heart pounded in the chest with a bang bang.' },
-                        { ch_pinyin: '嗞 zī', en: 'Sizzle', desc: '烤肉声', ch_ex: '烤肉在烤架上嗞嗞作响。', en_ex: 'The meat sizzled on the grill.' },
-                        { ch_pinyin: '嗞啦 zī lā', en: 'Sizzling', desc: '电线短路声', ch_ex: '电线短路时发出嗞啦一声。', en_ex: 'The wire made a sizzling sound during the short circuit.' },
-                        { ch_pinyin: '咔嚓 kā chā', en: 'Snap or Crack', desc: '断裂声', ch_ex: '树枝被踩断发出咔嚓一声。', en_ex: 'The branch snapped with a crack.' },
-                        { ch_pinyin: '嗖 xiū', en: 'Swish', desc: '迅速穿梭声', ch_ex: '箭嗖的一声飞了出去。', en_ex: 'The arrow shot out with a swish.' },
-                        { ch_pinyin: '噗噜 pū lū', en: 'Pfft or Bubble sound', desc: '模拟喷气或起泡声', ch_ex: '小孩玩水时噗噜噗噜吹泡泡。', en_ex: 'The child made pfft sounds blowing bubbles in water.' },
-                        { ch_pinyin: '咻 xiū', en: 'Whoosh', desc: '飞驰声', ch_ex: '他咻地一下跑了过去。', en_ex: 'He dashed past with a whoosh.' },
-                        { ch_pinyin: '嘣 bēng', en: 'Boom or Bounce', desc: '爆裂或跳动声', ch_ex: '我的心嘣嘣直跳。', en_ex: 'My heart was thumping rapidly.' },
-                        { ch_pinyin: '啪答 pā dá', en: 'Thud or Drop', desc: '物体撞击或滴落声', ch_ex: '雨滴啪答啪答地落在屋顶。', en_ex: 'Raindrops fell on the roof with a plop-plop sound.' },
-                        { ch_pinyin: '当啷 dāng lāng', en: 'Clang', desc: '金属碰撞声', ch_ex: '铁门被风吹得当啷作响。', en_ex: 'The metal door clanged in the wind.' },
-                        { ch_pinyin: '哗啦 huā lā', en: 'Splash', desc: '水流声', ch_ex: '水哗啦啦地流进了池塘。', en_ex: 'The water splashed into the pond.' },
-                        { ch_pinyin: '哗啦啦 huā lā lā', en: 'Sound of rain', desc: '雨水声', ch_ex: '雨声哗啦啦地下个不停。', en_ex: 'The rain kept falling with a splish-splash sound.' },
-                        { ch_pinyin: '滴答 dī dā', en: 'Tick-tock / Drip drop', desc: '滴水或钟表声', ch_ex: '时钟滴答滴答地响着。', en_ex: 'The clock was ticking away.' },
-                        { ch_pinyin: '轰隆隆 hōng lōng lōng', en: 'Rumble of thunder', desc: '雷鸣声', ch_ex: '雷声轰隆隆地响彻天际。', en_ex: 'Thunder rumbled across the sky.' },
-                        { ch_pinyin: '呼呼 hū hū', en: 'Whoosh / Windy sound', desc: '风声', ch_ex: '风呼呼地吹得窗户直响。', en_ex: 'The wind whooshed against the window.' },
-                        { ch_pinyin: '砰 pēng', en: 'Bang', desc: '爆炸声', ch_ex: '他摔门时发出一声砰响。', en_ex: 'He slammed the door with a bang.' },
-                        { ch_pinyin: '轰 hōng', en: 'Boom', desc: '巨响', ch_ex: '炸弹发出轰的一声巨响。', en_ex: 'The bomb exploded with a huge boom.' },
-                        { ch_pinyin: '乒乓 pīng pāng', en: 'Ping-pong / Popping sounds', desc: '球体撞击声', ch_ex: '乒乓球在桌上乒乓作响。', en_ex: 'The ping pong ball bounced back and forth on the table.' },
-                        { ch_pinyin: '咚 dōng', en: 'Thud', desc: '重物坠落声', ch_ex: '他跳下楼梯，脚落地发出咚的一声。', en_ex: 'He landed with a thud after jumping off the stairs.' },
-                        { ch_pinyin: '咣当 guāng dāng', en: 'Clang or Bang', desc: '金属撞击声', ch_ex: '铁桶倒下发出咣当的声音。', en_ex: 'The metal bucket fell with a loud clang.' }
+                        { ch_pinyin: '哗啦 (huā lā)', en: 'Splash; Rustle', desc: '形容水流、雨声、纸张翻动等声音。Describes sounds of flowing water, rain, rustling paper, etc.', ch_ex: '雨点哗啦哗啦地打在窗户上。', en_ex: 'The raindrops splashed against the window.' },
+                        { ch_pinyin: '呼呼 (hū hū)', en: 'Whoosh; Whirr', desc: '形容风声、快速移动、喘气或睡着时的呼吸声。Describes sounds of wind, fast movement, panting, or breathing while asleep.', ch_ex: '大风呼呼地刮着。', en_ex: 'The strong wind was blowing whooshingly.' },
+                        { ch_pinyin: '轰隆 (hōng lōng)', en: 'Rumble; Boom', desc: '形容雷声、爆炸声或机器运转的巨大声响。Describes sounds of thunder, explosions, or loud machinery operation.', ch_ex: '天空中传来轰隆隆的雷声。', en_ex: 'A rumbling thunder came from the sky.' },
+                        { ch_pinyin: '淅沥 (xī lì)', en: 'Pitter-patter', desc: '形容小雨、落叶等细微的声音。Describes subtle sounds like light rain or falling leaves.', ch_ex: '细雨淅沥，打湿了窗台。', en_ex: 'The drizzle pitter-pattered, wetting the windowsill.' },
+                        { ch_pinyin: '潺潺 (chán chán)', en: 'Gurgle; Murmur', desc: '形容溪水、泉水等流动的声音。Describes the sound of flowing streams or springs.', ch_ex: '溪水潺潺地流淌着。', en_ex: 'The stream gurgled as it flowed.' },
+                        { ch_pinyin: '叮咚 (dīng dōng)', en: 'Ding-dong', desc: '形容清脆的金属、水滴或门铃声。Describes crisp sounds of metal, dripping water, or a doorbell.', ch_ex: '门铃叮咚响了。', en_ex: 'The doorbell rang ding-dong.' },
+                        { ch_pinyin: '啪嗒 (pā dā)', en: 'Plop; Pat', desc: '形容重物落下、脚步声或雨滴声。Describes the sound of heavy objects falling, footsteps, or raindrops.', ch_ex: '雨点啪嗒啪嗒地掉下来。', en_ex: 'Raindrops plopped down.' },
+                        { ch_pinyin: '滴答 (dī dā)', en: 'Tick-tock; Drip-drop', desc: '形容时钟走动、水滴下落的声音。Describes the sound of a clock ticking or water dripping.', ch_ex: '时钟滴答作响。', en_ex: 'The clock went tick-tock.' },
+                        { ch_pinyin: '咯吱 (gē zhī)', en: 'Creak; Squeak', desc: '形容门窗、木板等摩擦发出的声音。Describes friction sounds from doors, windows, wooden boards, etc.', ch_ex: '老旧的木门咯吱作响。', en_ex: 'The old wooden door creaked.' },
+                        { ch_pinyin: '沙沙 (shā shā)', en: 'Rustle; Swish', desc: '形容风吹树叶、细沙摩擦等声音。Describes sounds like wind blowing through leaves or fine sand rubbing.', ch_ex: '风吹树叶沙沙作响。', en_ex: 'The wind rustled the leaves.' },
+                        { ch_pinyin: '嗖 (sōu)', en: 'Whoosh', desc: '形容物体快速飞过或风声。Describes objects flying past quickly or the sound of wind.', ch_ex: '箭嗖的一声飞了过去。', en_ex: 'The arrow flew past with a whoosh.' },
+                        { ch_pinyin: '咚 (dōng)', en: 'Thump; Boom', desc: '形容重物落地的声音或敲击声。Describes the sound of heavy objects falling or a knocking sound.', ch_ex: '他咚的一声坐在地上。', en_ex: 'He sat on the ground with a thump.' },
+                        { ch_pinyin: '噼啪 (pī pā)', en: 'Crackling; Pop', desc: '形容鞭炮、炉火或拍打的声音。Describes the crackling of firecrackers, a stove fire, or slapping sounds.', ch_ex: '炉火噼里啪啦地燃烧着。', en_ex: 'The fire in the stove was crackling.' }
                     ],
                     human: [
-                        { ch_pinyin: '嗝 gé', en: 'Hiccup', desc: '打嗝声', ch_ex: '他吃太快，不小心打了个嗝。', en_ex: 'He ate too fast and hiccuped.' },
-                        { ch_pinyin: '哈欠 hā qiàn', en: 'Yawn', desc: '打哈欠声', ch_ex: '她连续打了三个哈欠。', en_ex: 'She yawned three times in a row.' },
-                        { ch_pinyin: '咳嗽 ké sòu', en: 'Cough', desc: '喉部咳出声', ch_ex: '他感冒了，一直咳嗽。', en_ex: 'He has a cold and keeps coughing.' },
-                        { ch_pinyin: '打喷嚏 dǎ pēn tì', en: 'Sneeze', desc: '喷出鼻气的声音', ch_ex: '她对花粉过敏，打了个喷嚏。', en_ex: 'She sneezed because of pollen allergy.' },
-                        { ch_pinyin: '哼哼 hēng hēng', en: 'Grunt / Hum', desc: '不满或轻声呻吟', ch_ex: '他不满意，开始哼哼。', en_ex: 'He started grunting in displeasure.' },
-                        { ch_pinyin: '呻吟 shēn yín', en: 'Moan', desc: '痛苦呻吟', ch_ex: '病人躺在床上不断呻吟。', en_ex: 'The patient moaned in bed.' },
-                        { ch_pinyin: '呜呜呜 wū wū wū', en: 'Wailing or sobbing', desc: '哭泣声', ch_ex: '小孩找不到妈妈，呜呜呜地哭了。', en_ex: 'The child cried “boo-hoo” when he couldn\'t find his mom.' },
-                        { ch_pinyin: '哈哈 hā hā', en: 'Laughing out loud', desc: '爆笑声', ch_ex: '他听了笑话，哈哈大笑。', en_ex: 'He laughed out loud at the joke.' },
-                        { ch_pinyin: '呵呵 hē hē', en: 'Light chuckle or awkward laugh', desc: '微笑或略显敷衍的笑声', ch_ex: '他只是呵呵一笑，没有回应。', en_ex: 'He gave a light chuckle and didn’t answer.' },
-                        { ch_pinyin: '嘻嘻 xī xī', en: 'Playful giggle', desc: '开心或调皮的笑声', ch_ex: '她偷偷看了看我，嘻嘻一笑。', en_ex: 'She peeked at me and giggled playfully.' },
-                        { ch_pinyin: '嘿嘿 hēi hēi', en: 'Sneaky laugh', desc: '偷笑、暗喜', ch_ex: '他嘿嘿地笑着准备恶作剧。', en_ex: 'He chuckled sneakily as he planned a prank.' },
-                        { ch_pinyin: '嚯嚯 huò huò', en: 'Heavy breathing or bold laughter', desc: '激烈喘气或夸张笑声', ch_ex: '他运动完嚯嚯喘着粗气。', en_ex: 'After exercising, he was breathing heavily.' },
-                        { ch_pinyin: '啪 pā', en: 'Slap / Clap', desc: '拍打声（如拍手、打人）', ch_ex: '他打了我一下，发出啪的一声。', en_ex: 'He slapped me with a loud smack.' },
-                        { ch_pinyin: '拍拍 pāi pāi', en: 'Pat pat', desc: '轻拍声', ch_ex: '妈妈拍拍我的背让我冷静。', en_ex: 'Mom patted me on the back to calm me down.' }
+                        { ch_pinyin: '哈哈 (hā hā)', en: 'Haha', desc: '形容开心的笑声。Describes a happy laughter.', ch_ex: '他听完笑话，哈哈大笑起来。', en_ex: 'He listened to the joke and laughed haha.' },
+                        { ch_pinyin: '呵呵 (hē hē)', en: 'Hehe', desc: '形容轻笑、傻笑或尴尬的笑声。Describes a light laugh, silly laugh, or awkward laugh.', ch_ex: '她呵呵地笑着，没说什么。', en_ex: 'She giggled, saying nothing.' },
+                        { ch_pinyin: '嘿嘿 (hēi hēi)', en: 'Hehe (mischievous)', desc: '形容得意、狡黠或不好意思的笑声。Describes a smug, cunning, or embarrassed laugh.', ch_ex: '他嘿嘿一笑，露出神秘的表情。', en_ex: 'He chuckled mischievously, showing a mysterious expression.' },
+                        { ch_pinyin: '嗤嗤 (chī chī)', en: 'Chuckle; Guffaw', desc: '形容轻蔑地笑、讥笑。Describes a scornful laugh, or sneer.', ch_ex: '听到他的话，大家都嗤嗤地笑了。', en_ex: 'Hearing his words, everyone chuckled derisively.' },
+                        { ch_pinyin: '哎哟 (āi yō)', en: 'Ouch; Oh dear', desc: '表示疼痛、惊讶或不满。Expressing pain, surprise, or dissatisfaction.', ch_ex: '哎哟，好痛！', en_ex: 'Ouch, that hurts.' },
+                        { ch_pinyin: '哼哼 (hēng hēng)', en: 'Humph; Grunt', desc: '表示不满、轻蔑或思考时的低语。Expressing dissatisfaction, disdain, or a low murmur while thinking.', ch_ex: '他哼哼了两声，表示不同意。', en_ex: 'He grunted twice, indicating disagreement.' },
+                        { ch_pinyin: '嗷嗷 (áo áo)', en: 'Wail; Howl', desc: '形容人或动物的哭叫声或饥饿时的叫声。Describes the crying or howling sound of a person or animal, or a sound when hungry.', ch_ex: '孩子嗷嗷大哭。', en_ex: 'The child cried and wailed loudly.' },
+                        { ch_pinyin: '哇哇 (wā wā)', en: 'Wah-wah', desc: '形容婴儿哭声或呕吐声。Describes a baby\'s cry or the sound of vomiting.', ch_ex: '小婴儿哇哇地哭着。', en_ex: 'The baby was crying wah-wah.' },
+                        { ch_pinyin: '咚咚 (dōng dōng)', en: 'Thump-thump', desc: '形容敲门、心跳或脚步声。Describes knocking on a door, heartbeat, or footsteps.', ch_ex: '门外传来咚咚的敲门声。', en_ex: 'There was a thump-thump knocking sound from outside the door.' },
+                        { ch_pinyin: '砰 (pēng)', en: 'Bang; Thump', desc: '形容重物撞击或枪声。Describes the sound of a heavy object striking or a gunshot.', ch_ex: '门砰的一声关上了。', en_ex: 'The door closed with a bang.' },
+                        { ch_pinyin: '扑通 (pū tōng)', en: 'Plop; Thump', desc: '形容重物落水、心跳或突然倒下。Describes a heavy object falling into water, a heartbeat, or suddenly falling down.', ch_ex: '他紧张得心扑通扑通直跳。', en_ex: 'His heart thumped nervously.' },
+                        { ch_pinyin: '咕噜 (gū lū)', en: 'Gurgle; Rumbling', desc: '形容肚子叫、液体流动或低语。Describes stomach rumbling, liquid flowing, or murmuring.', ch_ex: '肚子咕噜咕噜地叫。', en_ex: 'My stomach is rumbling.' },
+                        { ch_pinyin: '咔嚓 (kā chā)', en: 'Click; Snap', desc: '形容折断、拍照或咬碎的声音。Describes the sound of breaking, taking a photo, or biting something crunchy.', ch_ex: '树枝咔嚓一声断了。', en_ex: 'The branch snapped with a click.' },
+                        { ch_pinyin: '吱 (zī)', en: 'Squeak', desc: '形容小动物叫声或细微的摩擦声。Describes the sound of small animals or a subtle friction sound.', ch_ex: '老鼠吱吱地叫着。', en_ex: 'The mouse squeaked.' },
+                        { ch_pinyin: '哧哧 (chī chī)', en: 'Hee-hee; Snicker', desc: '形容低声笑、偷笑。Describes a low laugh or snicker.', ch_ex: '她哧哧地笑个不停。', en_ex: 'She kept snickering.' },
+                        { ch_pinyin: '嘎吱 (gā zhī)', en: 'Creak', desc: '形容物体摩擦、压迫发出的声音。Describes the sound of objects rubbing or being pressed.', ch_ex: '轮子嘎吱作响。', en_ex: 'The wheels creaked.' },
+                        { ch_pinyin: '砰砰 (pēng pēng)', en: 'Bang-bang; Thump-thump', desc: '形容连续的撞击声或心跳声。Describes continuous striking sounds or a heartbeat.', ch_ex: '心脏砰砰地跳着。', en_ex: 'The heart was thumping.' },
+                        { ch_pinyin: '吧嗒 (bā dā)', en: 'Pat; Click', desc: '形容眼泪、咀嚼或吸烟的声音。Describes the sound of tears, chewing, or smoking.', ch_ex: '他吧嗒吧嗒地抽着烟。', en_ex: 'He was puffing on his cigarette.' },
+                        { ch_pinyin: '嘎嘎 (gā gā)', en: 'Quack; Cackle', desc: '形容鸭子叫声或鹅的叫声。Describes the quacking of a duck or the cackling of a goose.', ch_ex: '鸭子在水里嘎嘎地叫。', en_ex: 'The duck quacked in the water.' },
+                        { ch_pinyin: '呼噜 (hū lū)', en: 'Snore; Slurp', desc: '形容睡觉时的鼾声或喝水时的声音。Describes snoring while sleeping or slurping while drinking.', ch_ex: '他睡着了，发出轻微的呼噜声。', en_ex: 'He was asleep, making a slight snoring sound.' }
                     ],
                     crowd: [
-                        { ch_pinyin: '喧哗 xuān huá', en: 'Noise', desc: '大声且杂乱的声音', ch_ex: '教室里突然一阵喧哗。', en_ex: 'A sudden noise broke out in the classroom.' },
-                        { ch_pinyin: '鼓掌 gǔ zhǎng', en: 'Clapping', desc: '用手拍打以表示赞赏的声音', ch_ex: '演出结束后，观众热烈鼓掌。', en_ex: 'The audience clapped enthusiastically after the performance.' },
-                        { ch_pinyin: '欢呼 huān hū', en: 'Cheering', desc: '由于兴奋或支持而发出的声音', ch_ex: '球进了，观众们欢呼起来。', en_ex: 'The audience cheered when the goal was scored.' },
-                        { ch_pinyin: '嘘声 xū shēng', en: 'Shushing', desc: '使别人安静的声音', ch_ex: '他发出嘘声让大家安静下来。', en_ex: 'He shushed the crowd to quiet down.' },
-                        { ch_pinyin: '呐喊 nà hǎn', en: 'Shouting', desc: '大声喊叫以表达情绪', ch_ex: '战士们发出嘹亮的呐喊。', en_ex: 'The soldiers shouted loudly in unison.' },
-                        { ch_pinyin: '嘲笑 cháo xiào', en: 'Mocking', desc: '表达不屑或取笑的声音', ch_ex: '他因失误被同学嘲笑。', en_ex: 'He was mocked by his classmates for the mistake.' },
-                        { ch_pinyin: '叫好 jiào hǎo', en: 'Applauding (with praise)', desc: '对某人或某事表示称赞的声音', ch_ex: '演员的表演引来观众的叫好。', en_ex: 'The actor’s performance earned the audience’s praise.' },
-                        { ch_pinyin: '喊叫 hǎn jiào', en: 'Yelling', desc: '高声喊叫，通常用于引起注意', ch_ex: '孩子们在操场上喊叫玩耍。', en_ex: 'The children were yelling and playing on the playground.' },
-                        { ch_pinyin: '呢喃 nī nán', en: 'Whisper', desc: '轻声细语', ch_ex: '情侣在角落里低声呢喃。', en_ex: 'The couple whispered softly in the corner.' }
+                        { ch_pinyin: '嗡嗡 (wēng wēng)', en: 'Buzz; Hum', desc: '形容蜜蜂、机器等发出的连续低沉的声音，也形容人群嘈杂声。Describes the continuous low sound made by bees or machines, also describes the noisy sound of a crowd.', ch_ex: '教室里嗡嗡作响，大家都在讨论。', en_ex: 'The classroom buzzed with discussion.' },
+                        { ch_pinyin: '嘈杂 (cáo zá)', en: 'Noisy; Clamorous', desc: '形容人多喧闹、杂乱的声音。Describes noisy, chaotic sounds from a large crowd.', ch_ex: '市场里一片嘈杂。', en_ex: 'The market was clamorous.' },
+                        { ch_pinyin: '喧哗 (xuān huá)', en: 'Uproar; Hubbub', desc: '形容人声喧闹、吵杂。Describes loud, noisy human voices.', ch_ex: '大厅里充满了喧哗声。', en_ex: 'The hall was filled with uproar.' },
+                        { ch_pinyin: '鼎沸 (dǐng fèi)', en: 'Boiling (with noise)', desc: '形容人声喧闹、沸腾，多用于“人声鼎沸”。Describes human voices as noisy and boiling, often used in "人声鼎沸" (a scene bustling with noise).', ch_ex: '广场上人声鼎沸。', en_ex: 'The square was boiling with noise.' },
+                        { ch_pinyin: '叽叽喳喳 (jī jī zhā zhā)', en: 'Chirp-chirp; Chatter', desc: '形容人群或鸟儿的吵闹声。Describes the noisy chirping of birds or chattering of a crowd.', ch_ex: '女孩子们叽叽喳喳地聊着天。', en_ex: 'The girls were chattering.' },
+                        { ch_pinyin: '哄 (hōng)', en: 'Roar; Burst (of laughter/cheers)', desc: '形容人群发出的响亮声音，如哄笑、哄闹。Describes loud sounds made by a crowd, such as roaring laughter or cheers.', ch_ex: '人群中发出一阵哄笑。', en_ex: 'There was a burst of laughter from the crowd.' },
+                        { ch_pinyin: '嚷 (rǎng)', en: 'Shout; Yell', desc: '形容大声说话或吵闹。Describes speaking loudly or making a ruckus.', ch_ex: '别在图书馆里大声嚷嚷。', en_ex: 'Don\'t shout loudly in the library.' },
+                        { ch_pinyin: '咕哝 (gū nóng)', en: 'Mutter; Grumble', desc: '形容小声说话，含糊不清。Describes speaking in a low, indistinct voice.', ch_ex: '他嘴里咕哝着什么。', en_ex: 'He was muttering something.' },
+                        { ch_pinyin: '窃窃私语 (qiè qiè sī yǔ)', en: 'Whisper', desc: '形容两个人或几个人小声地说话。Describes two or a few people speaking in a low voice.', ch_ex: '她们坐在角落里窃窃私语。', en_ex: 'They sat in the corner whispering.' }
                     ]
                 },
                 otherSounds: [
-                    { cat: '人类声音', subcat: '情绪类', ch_pinyin: '嚷 (rǎng)', en: 'Shout loudly, often in complaint or anger', desc: '多用于吵闹、争执 / Often used for noisy arguments or quarrels' },
-                    { cat: '人类声音', subcat: '群体声音', ch_pinyin: '喧哗 (xuān huá)', en: 'Noisy, chaotic voices', desc: '常见于人群吵闹 / Common in noisy crowds' },
-                    { cat: '人类声音', subcat: '群体声音', ch_pinyin: '喧嚣 (xuān xiāo)', en: 'Uproar, Clamor, Hubbub', desc: '与“喧哗”类似，更强调持续、压迫感，多形容城市或嘈杂场面 / Similar to “喧哗,” but emphasizes persistent, overwhelming sounds, often in cities or chaotic scenes' },
-                    { cat: '人类声音', subcat: '自然/物体声音', ch_pinyin: '呼啸 (hū xiào)', en: 'Howling or whistling sound of wind or objects', desc: '可描述强风、快速移动物体 / Describes strong winds or fast-moving objects' },
-                    { cat: '人类声音', subcat: '私语/低声', ch_pinyin: '呢喃 (ní nán)', en: 'Murmur, whisper', desc: '低声细语的声音 / Soft, low murmuring voice' },
-                    { cat: '人类声音', subcat: '情绪表达-笑声', ch_pinyin: '笑声 (xiào shēng)', en: 'Laugh', desc: '各种笑声 / Various types of laughter' },
-                    { cat: '人类声音', subcat: '情绪表达-哭声', ch_pinyin: '哭声 (kū shēng)', en: 'Crying', desc: '表达伤心、痛苦 / Expresses sadness or pain' },
-                    { cat: '人类声音', subcat: '情绪表达-叹息', ch_pinyin: '叹息 (tàn xī)', en: 'Sigh', desc: '叹气声 / The sound of sighing' },
-                    { cat: '动物叫声', subcat: '家畜叫声', ch_pinyin: '喵 (miāo)', en: 'Meow', desc: '模拟猫叫 / Mimics the sound of a cat' },
-                    { cat: '动物叫声', subcat: '家畜叫声', ch_pinyin: '汪 (wāng)', en: 'Woof', desc: '模拟狗叫 / Mimics the sound of a dog' },
-                    { cat: '动物叫声', subcat: '家畜叫声', ch_pinyin: '咩 (miē)', en: 'Baa', desc: '模拟绵羊叫声 / Mimics the bleating of a sheep' },
-                    { cat: '动物叫声', subcat: '家畜叫声', ch_pinyin: '唧唧叽叽咯咯 (jī jī jī, gē gē gē)', en: 'Cock-a-doodle-doo', desc: '表达鸡叫早、打鸣声 / Expresses roosters crowing at dawn' },
-                    { cat: '动物叫声', subcat: '家畜叫声', ch_pinyin: '吱吱吱 (zhī zhī zhī)', en: 'Squeak', desc: '模拟鼠类啼叫 / Mimics rodent squeaks' },
-                    { cat: '动物叫声', subcat: '家畜叫声', ch_pinyin: '哼哼 / 噜噜 (hēng hēng / lū lū)', en: 'Oink', desc: '哼声或打鼾声 / Grunting or snoring sound' },
-                    { cat: '动物叫声', subcat: '家畜叫声', ch_pinyin: '嘶 (sī)', en: 'Neigh', desc: '嘶叫、喷气声 / Neighing or snorting sound' },
-                    { cat: '动物叫声', subcat: '家畜叫声', ch_pinyin: '呱呱 (guā guā)', en: 'Quack', desc: '鸭子叫声 / The quacking sound of a duck' },
-                    { cat: '动物叫声', subcat: '家畜叫声', ch_pinyin: '哞 (mōu)', en: 'Moo', desc: '牛的叫声 / The mooing sound of a cow' },
-                    { cat: '动物叫声', subcat: '野兽叫声', ch_pinyin: '嚎叫 (háo jiào)', en: 'Howl', desc: '泛指野兽的长吼叫 / Refers to long howls by wild animals' },
-                    { cat: '动物叫声', subcat: '痛苦的叫声', ch_pinyin: '哀嚎 (āi háo)', en: 'Wail / Howl in pain', desc: '形容悲伤或疼痛中的吼叫 / Describes howls in sadness or pain' },
-                    { cat: '动物叫声', subcat: '狼叫', ch_pinyin: '嗷呜 (áo wū)', en: 'Awoo / Howl', desc: '狼的嚎叫声 / The howling sound of a wolf' },
-                    { cat: '动物叫声', subcat: '猩猩/猛兽', ch_pinyin: '怒吼、咆哮 (nù hǒu, páo xiào)', en: 'Roar', desc: '表达愤怒、威吓 / Expresses anger or intimidation' },
-                    { cat: '自然界声音', subcat: '天气现象', ch_pinyin: '雷声 (léi shēng)', en: 'Thunder', desc: '天气中雷声 / Thunder in weather' },
-                    { cat: '自然界声音', subcat: '天气现象', ch_pinyin: '风声 (fēng shēng)', en: 'Wind sound', desc: '吹风声音 / Sound of wind blowing' },
-                    { cat: '自然界声音', subcat: '水流声', ch_pinyin: '河流 (hé liú)', en: 'River flowing sound', desc: '自然水流声音 / Sound of flowing water in nature' },
-                    { cat: '物体声音', subcat: '机械声', ch_pinyin: '引擎声 (yǐn qíng shēng)', en: 'Engine sound', desc: '机械运行的声音 / Sound of machinery operating' },
-                    { cat: '物体声音', subcat: '日常物品声', ch_pinyin: '门铃声 (mén líng shēng)', en: 'Doorbell', desc: '门铃响声 / Sound of a doorbell' }
+                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '汪汪 (wāng wāng)', en: 'Woof woof', desc: '狗的叫声。Sound of a dog.' },
+                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '喵喵 (miāo miāo)', en: 'Meow meow', desc: '猫的叫声。Sound of a cat.' },
+                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '咩咩 (miē miē)', en: 'Baa baa', desc: '羊的叫声。Sound of a sheep.' },
+                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '哞 (mōu)', en: 'Moo', desc: '牛的叫声。Sound of a cow.' },
+                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '喔喔 (wō wō)', en: 'Cock-a-doodle-doo', desc: '公鸡打鸣声。Sound of a rooster crowing.' },
+                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '嘎嘎 (gā gā)', en: 'Quack quack', desc: '鸭子的叫声。Sound of a duck quacking.' },
+                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '吱吱 (zī zī)', en: 'Squeak squeak', desc: '老鼠的叫声。Sound of a mouse squeaking.' },
+                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '嘶嘶 (sī sī)', en: 'Hiss hiss', desc: '蛇的叫声。Sound of a snake hissing.' },
+                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '嗷呜 (áo wū)', en: 'Howl', desc: '狼或老虎的嚎叫声。Howl of a wolf or tiger.' },
+                    { cat: '自然声音', subcat: '水声', ch_pinyin: '哗啦 (huā lā)', en: 'Splash, gurgle', desc: '水流、雨水落下的声音。Sound of flowing water or falling rain.' },
+                    { cat: '自然声音', subcat: '风声', ch_pinyin: '呼呼 (hū hū)', en: 'Whoosh, whistle', desc: '风吹过的声音。Sound of wind blowing.' },
+                    { cat: '自然声音', subcat: '雷声', ch_pinyin: '轰隆 (hōng lōng)', en: 'Rumble, boom', desc: '打雷的声音。Sound of thunder.' },
+                    { cat: '自然声音', subcat: '雨声', ch_pinyin: '淅沥 (xī lì)', en: 'Pitter-patter', desc: '小雨落下的声音。Sound of light rain falling.' },
+                    { cat: '自然声音', subcat: '水声', ch_pinyin: '潺潺 (chán chán)', en: 'Gurgle, murmur', desc: '溪水、泉水流动的声音。Sound of streams or springs flowing.' },
+                    { cat: '物体声音', subcat: '撞击', ch_pinyin: '砰 (pēng)', en: 'Bang, thump', desc: '重物撞击或爆炸声。Sound of heavy objects striking or an explosion.' },
+                    { cat: '物体声音', subcat: '摩擦', ch_pinyin: '咯吱 (gē zhī)', en: 'Creak, squeak', desc: '物体摩擦或门窗开启的声音。Sound of objects rubbing or doors/windows opening.' },
+                    { cat: '物体声音', subcat: '破碎', ch_pinyin: '咔嚓 (kā chā)', en: 'Snap, crack', desc: '物体断裂、破碎的声音。Sound of objects breaking or shattering.' },
+                    { cat: '物体声音', subcat: '金属', ch_pinyin: '叮当 (dīng dāng)', en: 'Clang, jingle', desc: '金属碰撞或铃铛摇动的声音。Sound of metal colliding or bells jingling.' },
+                    { cat: '物体声音', subcat: '清脆', ch_pinyin: '叮咚 (dīng dōng)', en: 'Ding-dong', desc: '水滴、门铃或清脆的敲击声。Sound of water drops, a doorbell, or crisp knocking.' },
+                    { cat: '物体声音', subcat: '敲击', ch_pinyin: '咚咚 (dōng dōng)', en: 'Thump-thump', desc: '有节奏的敲击声，如敲门。Rhythmic knocking sound, like knocking on a door.' },
+                    { cat: '物体声音', subcat: '拍打', ch_pinyin: '啪 (pā)', en: 'Slap, clap', desc: '拍打或东西掉落的声音。Sound of slapping or something falling.' },
+                    { cat: '物体声音', subcat: '撕裂', ch_pinyin: '嘶啦 (sī lā)', en: 'Rip, tear', desc: '布料或纸张撕裂的声音。Sound of fabric or paper tearing.' },
+                    { cat: '物体声音', subcat: '爆裂', ch_pinyin: '噼里啪啦 (pī li pā lā)', en: 'Crackling, popping', desc: '爆竹、炉火或豆子爆开的声音。Crackling or popping sound of firecrackers, a stove fire, or bursting beans.' },
+                    { cat: '交通工具', subcat: '汽车', ch_pinyin: '嘀嘀 (dí dí)', en: 'Honk honk', desc: '汽车喇叭声。Sound of a car horn.' },
+                    { cat: '交通工具', subcat: '火车', ch_pinyin: '况且 (kuàng qiě)', en: 'Choo-choo', desc: '火车行驶的声音（拟声）。Sound of a train moving (onomatopoeia).' },
+                    { cat: '交通工具', subcat: '飞机', ch_pinyin: '轰鸣 (hōng míng)', en: 'Roar, drone', desc: '飞机引擎的声音。Sound of an airplane engine roaring.' },
+                    { cat: '日常生活', subcat: '咀嚼', ch_pinyin: '吧唧 (bā jī)', en: 'Smack, munch', desc: '吃东西咀嚼的声音。Sound of chewing food.' },
+                    { cat: '日常生活', subcat: '吸吮', ch_pinyin: '嘬 (zuō)', en: 'Slurp, suck', desc: '吸吮液体或食物的声音。Sound of slurping or sucking liquid or food.' },
+                    { cat: '日常生活', subcat: '切割', ch_pinyin: '嚓 (cā)', en: 'Snip, scrape', desc: '剪刀剪切或物体刮擦的声音。Sound of scissors cutting or objects scraping.' },
+                    { cat_pinyin: '日常生活', subcat: '搅拌', ch_pinyin: '咕嘟 (gū dū)', en: 'Gurgle, bubbling', desc: '液体沸腾或搅拌的声音。Sound of liquid boiling or stirring.' }
                 ],
                 insectOnomatopoeia: [
-                    { insect_ch: '棺头蟋', insect_pinyin: 'guān tóu xī', onomatopoeia_ch: '特特特特特特', onomatopoeia_pinyin: 'tè tè tè tè tè tè', desc: '（每四拍打停顿一下）' },
-                    { insect_ch: '小扁头蝇蜂', insect_pinyin: 'xiǎo biǎn tóu yíng fēng', onomatopoeia_ch: '特勒勒勒特勒勒特勒勒', onomatopoeia_pinyin: 'tè lè lè lè tè lè lè tè lè lè', desc: '（连续的感觉）' },
-                    { insect_ch: '黄斑黑蝇蜂', insect_pinyin: 'huáng bān hēi yíng fēng', onomatopoeia_ch: '哔唎—哔唎—哔唎—哔唎—', onomatopoeia_pinyin: 'bì lī — bì lī —', desc: '' },
-                    { insect_ch: '斗蟋', insect_pinyin: 'dòu xī', onomatopoeia_ch: '唧唧吱吱 唧唧吱吱', onomatopoeia_pinyin: 'jī jī zī zī jī jī zī zī', desc: '' },
-                    { insect_ch: '大扁头蟋', insect_pinyin: 'dà biǎn tóu xī', onomatopoeia_ch: '规规规规规规规规规规规规规规规', onomatopoeia_pinyin: 'guī guī guī...', desc: '' },
-                    { insect_ch: '黄脸油葫芦', insect_pinyin: 'huáng liǎn yóu hú lú', onomatopoeia_ch: '厚漏漏勒漏漏欧欧漏勒勒勒', onomatopoeia_pinyin: 'hòu lòu lòu lè...', desc: '' },
-                    { insect_ch: '铃虫', insect_pinyin: 'líng chóng', onomatopoeia_ch: '得漏漏漏漏漏得漏漏漏漏漏漏', onomatopoeia_pinyin: 'dé lòu... tè tè tè...', desc: '（特特特特特特特）' },
-                    { insect_ch: '长辫树螺', insect_pinyin: 'cháng biàn shù luó', onomatopoeia_ch: '利利利利利 利 利利利利利利利利利', onomatopoeia_pinyin: 'lì lì lì...', desc: '' },
-                    { insect_ch: '纺织娘', insect_pinyin: 'fǎng zhī niáng', onomatopoeia_ch: '丝—着！丝—着！丝—着！丝—着！', onomatopoeia_pinyin: 'sī — zhe!', desc: '' },
-                    { insect_ch: '日本条螽', insect_pinyin: 'rì běn tiáo zhōng', onomatopoeia_ch: '吃滋滋吃滋滋滋吃滋滋滋滋滋滋', onomatopoeia_pinyin: 'chī zī zī...', desc: '' },
-                    { insect_ch: '长尾华绿螽', insect_pinyin: 'cháng wěi huá lǜ zhōng', onomatopoeia_ch: '叽叽叽叽咿—', onomatopoeia_pinyin: 'jī jī jī jī yī —', desc: '' },
-                    { insect_ch: '蝈蝈', insect_pinyin: 'guō guō', onomatopoeia_ch: '叽都勒勒勒勒勒勒勒勒勒勒勒勒勒勒勒勒勒勒勒', onomatopoeia_pinyin: 'jī dōu lè...', desc: '（急速抓洗衣板的声音）' },
-                    { insect_ch: '乌苏里盾螽', insect_pinyin: 'wū sū lǐ dùn zhōng', onomatopoeia_ch: '走（都）勒勒勒勒勒！走（都）勒勒勒勒！', onomatopoeia_pinyin: 'zǒu (dōu) lè lè lè...', desc: '' },
-                    { insect_ch: '小翅螽斯', insect_pinyin: 'xiǎo chì zhōng sī', onomatopoeia_ch: '七呀七呀—七呀七呀—', onomatopoeia_pinyin: 'qī ya qī ya —', desc: '' },
-                    { insect_ch: '中华草螽', insect_pinyin: 'zhōng huá cǎo zhōng', onomatopoeia_ch: '追—追—追—追—', onomatopoeia_pinyin: 'zhuī — zhuī —', desc: '' },
-                    { insect_ch: '黑胫钩额草螽', insect_pinyin: 'hēi jìng gōu é cǎo zhōng', onomatopoeia_ch: '滴唧唧唧唧唧唧—', onomatopoeia_pinyin: 'dī jī jī jī jī jī —', desc: '' },
-                    { insect_ch: '东方螽蛉', insect_pinyin: 'dōng fāng zhōng líng', onomatopoeia_ch: '嘎唧唧唧唧唧唧唧唧唧唧唧唧', onomatopoeia_pinyin: 'gā jī jī jī...', desc: '' },
-                    { insect_ch: '宽翅纺织娘', insect_pinyin: 'kuān chì fǎng zhī niáng', onomatopoeia_ch: '织-织-织----织-织-织----织-织-织----', onomatopoeia_pinyin: 'zhī - zhī - zhī...', desc: '（叫声非常大）' },
-                    { insect_ch: '脊螽', insect_pinyin: 'jǐ zhōng', onomatopoeia_ch: '叽咿咿咿咿咿咿咿', onomatopoeia_pinyin: 'jī yī yī yī...', desc: '（叫声非常大）' },
-                    { insect_ch: '云斑金螽', insect_pinyin: 'yún bān jīn zhōng', onomatopoeia_ch: '今叽唎鈴—今叽唎鈴—', onomatopoeia_pinyin: 'jīn jī lī líng —', desc: '' },
-                    { insect_ch: '梨片螽', insect_pinyin: 'lí piàn zhōng', onomatopoeia_ch: '唎唎唎唎唎唎鈴—唎唎唎唎唎唎鈴', onomatopoeia_pinyin: 'lī lī lī lī lī líng —', desc: '' },
-                    { insect_ch: '伊凡杜兰螽', insect_pinyin: 'yī fán dù lán zhōng', onomatopoeia_ch: '咕唎咿—咕唎咿', onomatopoeia_pinyin: 'gū lī yī — gū lī yī', desc: '' }
-                ]
+                    { insect_ch: '蜜蜂', insect_pinyin: 'mì fēng', onomatopoeia_ch: '嗡嗡', onomatopoeia_pinyin: 'wēng wēng', desc: '蜜蜂振翅的声音。Sound of a bee flapping its wings.' },
+                    { insect_ch: '蚊子', insect_pinyin: 'wén zi', onomatopoeia_ch: '嗡嗡', onomatopoeia_pinyin: 'wēng wēng', desc: '蚊子飞行或叮咬的声音。Sound of a mosquito flying or biting.' },
+                    { insect_ch: '蝉', insect_pinyin: 'chán', onomatopoeia_ch: '吱吱', onomatopoeia_pinyin: 'zī zī', desc: '蝉鸣的声音。Sound of cicada chirping.' },
+                    { insect_ch: '蟋蟀', insect_pinyin: 'xī shuài', onomatopoeia_ch: '蛐蛐', onomatopoeia_pinyin: 'qū qū', desc: '蟋蟀鸣叫的声音。Sound of a cricket chirping.' },
+                    { insect_ch: '纺织娘', insect_pinyin: 'fǎng zhī niáng', onomatopoeia_ch: '扎扎', onomatopoeia_pinyin: 'zhā zhā', desc: '纺织娘鸣叫的声音。Sound of a katydid chirping.' },
+                    { insect_ch: '苍蝇', insect_pinyin: 'cāng yíng', onomatopoeia_ch: '嗡嗡', onomatopoeia_pinyin: 'wēng wēng', desc: '苍蝇飞行时的声音。Sound of a fly buzzing while flying.' },
+                    { insect_ch: '蚊蚋', insect_pinyin: 'wén ruì', onomatopoeia_ch: '嘤嘤', onomatopoeia_pinyin: 'yīng yīng', desc: '蚊虫细小的叫声。Small buzzing sound of mosquitoes or gnats.' },
+                    { insect_ch: '甲虫', insect_pinyin: 'jiǎ chóng', onomatopoeia_ch: '咯吱', onomatopoeia_pinyin: 'gē zhī', desc: '甲虫爬行或咬噬的声音。Sound of a beetle crawling or biting.' },
+                    { insect_ch: '飞蛾', insect_pinyin: 'fēi é', onomatopoeia_ch: '扑扑', onomatopoeia_pinyin: 'pū pū', desc: '飞蛾拍打翅膀的声音。Sound of a moth flapping its wings.' },
+                    { insect_ch: '蚂蚱', insect_pinyin: 'mà zha', onomatopoeia_ch: '呱唧', onomatopoeia_pinyin: 'guā jī', desc: '蚂蚱跳跃或摩擦发出的声音。Sound of a grasshopper jumping or rubbing.' },
+                    { insect_ch: '蝈蝈', insect_pinyin: 'guō guō', onomatopoeia_ch: '呱呱', onomatopoeia_pinyin: 'guā guā', desc: '蝈蝈的鸣叫声。Sound of a long-horned grasshopper chirping.' }
+                ],
+                voiceAdjectives: {
+                    timbre: [
+                        { ch_pinyin: '醇厚 (chún hòu)', en: 'mellow, full-bodied', desc: '低沉、丰满，富有质感，常形容男性声音。Low, full, rich in texture, often describes male voices.' },
+                        { ch_pinyin: '甜美 (tián měi)', en: 'sweet, melodious', desc: '清脆、柔和，常形容女性或孩子声音。Crisp, soft, often describes female or child voices.' },
+                        { ch_pinyin: '沙哑 (shā yǎ)', en: 'hoarse, raspy', desc: '粗糙、嘶哑，带沧桑感，多用于疲惫或年长者。Rough, hoarse, with a sense of vicissitude, often used for tired or older people.' },
+                        { ch_pinyin: '磁性 (cí xìng)', en: 'magnetic, captivating', desc: '富吸引力，有穿透力，有魅力的声音。Attractive, penetrating, charming voice.' },
+                        { ch_pinyin: '清脆 (qīng cuì)', en: 'crisp, clear', desc: '明亮、清晰，常形容年轻女性或儿童声音。Bright, clear, often describes young female or child voices.' },
+                        { ch_pinyin: '浑厚 (hún hòu)', en: 'sonorous, rich', desc: '宏亮、深沉，常形容男性或乐器声音。Loud, deep, often describes male voices or musical instruments.' },
+                        { ch_pinyin: '圆润 (yuán rùn)', en: 'smooth, full', desc: '流畅、饱满，无瑕疵，常形容歌声。Smooth, full, flawless, often describes singing voice.' },
+                        { ch_pinyin: '婉转 (wǎn zhuǎn)', en: 'melodious, lilting', desc: '柔和、流畅，常形容女性或旋律。Soft, fluid, often describes female voices or melodies.' },
+                        { ch_pinyin: '轻柔 (qīng róu)', en: 'soft, gentle', desc: '轻细柔和，常形容女性声音。Light, delicate, and soft, often describes female voices.' },
+                        { ch_pinyin: '粗犷 (cū guǎng)', en: 'rough, rugged', desc: '粗大、不细腻，常形容男性或乐器声音。Coarse, unrefined, often describes male voices or musical instruments.' },
+                        { ch_pinyin: '清亮 (qīng liàng)', en: 'clear, ringing', desc: '嗓音明亮纯净。Voice is bright and pure.' },
+                        { ch_pinyin: '尖细 (jiān xì)', en: 'shrill, high-pitched', desc: '嗓音高而细，常用于孩子。Voice is high and thin, often used for children.' },
+                        { ch_pinyin: '慵懒 (yōng lǎn)', en: 'lazy, drawling', desc: '嗓音放松、漫不经心。Voice is relaxed and casual.' },
+                        { ch_pinyin: '干涩 (gān sè)', en: 'dry, strained', desc: '长时间说话后的嗓音。Voice after speaking for a long time.' },
+                        { ch_pinyin: '奶声奶气 (nǎi shēng nǎi qì)', en: 'childlike, babyish', desc: '稚嫩嗓音，多用于模仿小孩。Tender voice, often used to imitate children.' },
+                        { ch_pinyin: '沙哑粗犷 (shā yǎ cū guǎng)', en: 'hoarse and rough', desc: '粗哑豪放的声音，强调原始力量。Rough and unrestrained voice, emphasizing raw power.' },
+                        { ch_pinyin: '悦耳动听 (yuè ěr dòng tīng)', en: 'pleasant-sounding', desc: '让人感到舒服、愉悦的声音。A voice that makes people feel comfortable and pleasant.' },
+                        { ch_pinyin: '纯净 (chún jìng)', en: 'pure, clean-toned', desc: '声音干净、无杂质。Voice is clean and free of impurities.' },
+                        { ch_pinyin: '幽雅 (yōu yǎ)', en: 'elegant and quiet', desc: '恬静优美，常用于古典或文艺风格。Quietly elegant and beautiful, often used for classical or artistic styles.' },
+                        { ch_pinyin: '爽朗 (shuǎng lǎng)', en: 'bright and hearty', desc: '声音令人感到舒心、开阔亮堂。Voice makes people feel comfortable, open, and bright.' },
+                        { ch_pinyin: '性感 (xìng gǎn)', en: 'sexy', desc: '富有魅力和吸引力的声音。A voice full of charm and attraction.' },
+                        { ch_pinyin: '美妙 (měi miào)', en: 'beautiful', desc: '美丽动听的声音。A beautiful and pleasant voice.' },
+                        { ch_pinyin: '美声 (měi shēng)', en: 'bel canto', desc: '歌唱中极为优美悦耳的声音。Extremely beautiful and pleasant voice in singing.' },
+                        { ch_pinyin: '柔软 (róu ruǎn)', en: 'soft and gentle', desc: '声音柔和、软糯，不生硬。Voice is soft, gentle, and not harsh.' }
+                    ],
+                    volume: [
+                        { ch_pinyin: '洪亮 (hóng liàng)', en: 'loud and clear', desc: '声音大，响亮，用于演讲者。Loud and resonant voice, used for speakers.' },
+                        { ch_pinyin: '响亮 (xiǎng liàng)', en: 'resonant, loud', desc: '大而清晰，引人注意。Loud and clear, attracting attention.' },
+                        { ch_pinyin: '低沉 (dī chén)', en: 'deep, low', desc: '音调低，不响亮，多形容男性声音。Low pitch, not loud, often describes male voices.' },
+                        { ch_pinyin: '轻声 (qīng shēng)', en: 'soft voice', desc: '声音小而柔和。Small and soft voice.' },
+                        { ch_pinyin: '大声 (dà shēng)', en: 'loud', desc: '非常响亮。Very loud.' },
+                        { ch_pinyin: '尖锐 (jiān ruì)', en: 'sharp, piercing', desc: '高而刺耳，不柔和。High-pitched and piercing, not gentle.' },
+                        { ch_pinyin: '微弱 (wēi ruò)', en: 'faint, weak', desc: '声音极小，几乎听不见。Extremely small voice, almost inaudible.' },
+                        { ch_pinyin: '喧哗 (xuān huá)', en: 'noisy', desc: '吵闹、嘈杂的声音。Noisy, clamorous sound.' },
+                        { ch_pinyin: '嘹亮 (liáo liàng)', en: 'loud and clear', desc: '明亮、响亮且有穿透力的声音。Bright, loud, and penetrating voice.' }
+                    ],
+                    pitch: [
+                        { ch_pinyin: '高亢 (gāo kàng)', en: 'high-pitched, impassioned', desc: '高昂、富激情。High-pitched and full of passion.' },
+                        { ch_pinyin: '低沉 (dī chén)', en: 'deep, low-pitched', desc: '不响亮，男性多用。Not loud, often used for male voices.' },
+                        { ch_pinyin: '尖锐 (jiān ruì)', en: 'shrill', desc: '高而刺耳，不柔和。High-pitched and piercing, not gentle.' },
+                        { ch_pinyin: '柔和 (róu hé)', en: 'gentle, soft', desc: '平稳、不刺激。Stable and not irritating.' },
+                        { ch_pinyin: '平缓 (píng huǎn)', en: 'smooth, slow', desc: '不急不慢，平稳。Not rushed, steady.' },
+                        { ch_pinyin: '单调 (dān diào)', en: 'monotone', desc: '没有起伏变化，令人乏味的声音。A voice without fluctuations, making it dull.' },
+                        { ch_pinyin: '起伏 (qǐ fú)', en: 'fluctuating', desc: '有高低变化的声音。A voice with varying highs and lows.' }
+                    ],
+                    features: [
+                        { ch_pinyin: '抑扬顿挫 (yì yáng dùn cuò)', en: 'rhythmic, intonated', desc: '有节奏感，起伏明显，朗诵演讲常见。Rhythmic, with clear fluctuations, common in recitations and speeches.' },
+                        { ch_pinyin: '声情并茂 (shēng qíng bìng mào)', en: 'expressive, emotional', desc: '富有感情，能表达内容。Full of emotion, able to convey meaning.' },
+                        { ch_pinyin: '娓娓动听 (wěi wěi dòng tīng)', en: 'captivating', desc: '优美动听，常用于善于讲话者。Beautiful and pleasant to listen to, often used for good speakers.' },
+                        { ch_pinyin: '绘声绘色 (huì shēng huì sè)', en: 'vivid and expressive', desc: '声音生动，有感染力。Voice is vivid and infectious.' },
+                        { ch_pinyin: '震耳欲聋 (zhèn ěr yù lóng)', en: 'deafening', desc: '极大声，令人难以忍受。Extremely loud, unbearable.' },
+                        { ch_pinyin: '人声鼎沸 (rén shēng dǐng fèi)', en: 'noisy with voices', desc: '嘈杂如沸水，多人声音混杂。Noisy like boiling water, with many voices mixed together.' },
+                        { ch_pinyin: '声如洪钟 (shēng rú hóng zhōng)', en: 'loud as a bell', desc: '非常洪亮。Very loud and resonant.' },
+                        { ch_pinyin: '余音绕梁 (yú yīn rào liáng)', en: 'lingering sound', desc: '声音优美，回荡不绝。Beautiful sound, lingering endlessly.' },
+                        { ch_pinyin: '靡靡之音 (mǐ mǐ zhī yīn)', en: 'decadent sounds', desc: '消极、颓废的音乐或声音。Negative, decadent music or sound.' },
+                        { ch_pinyin: '清脆悦耳 (qīng cuì yuè ěr)', en: 'crisp and pleasant', desc: '清脆动听。Crisp and pleasant to listen to.' },
+                        { ch_pinyin: '高山流水 (gāo shān liú shuǐ)', en: 'lofty and elegant', desc: '声音优美，象征知音。Beautiful voice, symbolizing a kindred spirit.' },
+                        { ch_pinyin: '百啭千声 (bǎi zhuàn qiān shēng)', en: 'warbling', desc: '声音婉转多变。Voice is melodious and varied.' },
+                        { ch_pinyin: '如泣如诉 (rú qì rú sù)', en: 'plaintive', desc: '像哭诉一样，凄楚伤感。Like crying and complaining, sorrowful and mournful.' },
+                        { ch_pinyin: '掷地有声 (zhì dì yǒu shēng)', en: 'resounding', desc: '声音有力，讲话有分量。Voice is powerful, speech has weight.' },
+                        { ch_pinyin: '铿锵有力 (kēng qiāng yǒu lì)', en: 'forceful, sonorous', desc: '清晰响亮，有力量。Clear and resonant, with power.' },
+                        { ch_pinyin: '呢喃细语 (ní nán xì yǔ)', en: 'whispering softly', desc: '轻声细语，如情话。Soft whispering, like sweet nothings.' },
+                        { ch_pinyin: '叽叽喳喳 (jī jī zhā zhā)', en: 'chirping, noisy', desc: '嘈杂如鸟叫，喧闹。Noisy like birds chirping, boisterous.' },
+                        { ch_pinyin: '呼噜呼噜 (hū lū hū lū)', en: 'snoring, slurping', desc: '打鼾或吸食声。Sound of snoring or slurping.' },
+                        { ch_pinyin: '喃喃自语 (nán nán zì yǔ)', en: 'muttering', desc: '自言自语般轻声说话。Speaking softly to oneself, muttering.' },
+                        { ch_pinyin: '叽里咕噜 (jī lǐ gū lū)', en: 'mumbling', desc: '含糊不清，听不懂。Indistinct, unintelligible.' },
+                        { ch_pinyin: '噼里啪啦 (pī lī pā lā)', en: 'crackling', desc: '连续短促声音，如鞭炮。Continuous short sounds, like firecrackers.' },
+                        { ch_pinyin: '叮咚 (dīng dōng)', en: 'ding-dong', desc: '清脆水声或敲击声。Crisp sound of water or knocking.' },
+                        { ch_pinyin: '哽咽 (gěng yè)', en: 'choked, sobbing', desc: '因哭泣断续不清。Intermittent and unclear due to crying.' },
+                        { ch_pinyin: '颤抖 (chàn dǒu)', en: 'trembling', desc: '因情绪紧张，声音发抖。Voice trembling due to nervousness.' },
+                        { ch_pinyin: '嘟囔 (dū nang)', en: 'grumble, murmur', desc: '含糊不清地低声说话。Speaking in a low, indistinct voice, grumbling.' },
+                        { ch_pinyin: '咆哮 (páo xiào)', en: 'roar, bellow', desc: '怒吼般的大声喊叫。Loud shouting like a roar.' },
+                        { ch_pinyin: '嘶喊 (sī hǎn)', en: 'scream, yell', desc: '用尽力气喊叫，声音破裂。Shouting with all one\'s might, voice breaking.' },
+                        { ch_pinyin: '瓮声瓮气 (wèng shēng wèng qì)', en: 'booming, resonant', desc: '形容声音粗大、低沉，如瓮中之声。Describes a coarse, deep voice, like a sound from a jar.' },
+                        { ch_pinyin: '宛转悠扬 (wǎn zhuǎn yōu yáng)', en: 'melodious and lingering', desc: '声音柔和、流畅，悦耳动听。Voice is soft, fluid, and pleasant to listen to.' },
+                        { ch_pinyin: '吴侬软语 (wú nóng ruǎn yǔ)', en: 'soft Wu dialect tone', desc: '温柔带江南口音的柔和声音。Gentle voice with a Jiangnan accent, soft and tender.' },
+                        { ch_pinyin: '字正腔圆 (zì zhèng qiāng yuán)', en: 'accurate and well-enunciated', desc: '发音清晰标准，强调准确度。Clear and standard pronunciation, emphasizing accuracy.' },
+                        { ch_pinyin: '声如莺啼 (shēng rú yīng tí)', en: 'oriole-like singing', desc: '比喻女子声音婉转悦耳。Metaphor for a woman\'s voice being melodious and pleasant like an oriole\'s song.' },
+                        { ch_pinyin: '莺声燕语 (yīng shēng yàn yǔ)', en: 'gentle and pleasant tones', desc: '形容女子说话柔美动听。Describes a woman\'s gentle and pleasant speaking voice.' },
+                        { ch_pinyin: '洋洋盈耳 (yáng yáng yíng ěr)', en: 'full and delightful', desc: '声音充满耳中，悦耳动听。Voice fills the ears, delightful to listen to.' },
+                        { ch_pinyin: '笑似银铃 (xiào sì yín líng)', en: 'laugh like silver bells', desc: '笑声清脆悦耳，有如铃铛。Laughter is crisp and pleasant, like silver bells.' },
+                        { ch_pinyin: '袅袅余音 (niǎo niǎo yú yīn)', en: 'lingering, graceful tones', desc: '声音绕梁，久久不散。Voice lingers around the beams, not dispersing for a long time.' },
+                        { ch_pinyin: '欢快 (huān kuài)', en: 'lively, cheerful', desc: '声音活泼、轻快，充满喜悦。Voice is lively, light, and full of joy.' },
+                        { ch_pinyin: '朗朗 (lǎng lǎng)', en: 'clear and resonant', desc: '声音清晰响亮，容易听清。Voice is clear and resonant, easy to hear clearly.' },
+                        { ch_pinyin: '轻快 (qīng kuài)', en: 'light and brisk', desc: '声音轻松、活泼，节奏明快。Voice is relaxed, lively, with a brisk rhythm.' },
+                        { ch_pinyin: '清新 (qīng xīn)', en: 'fresh and pure', desc: '声音清爽、自然，不带杂质。Voice is fresh, natural, and free of impurities.' },
+                        { ch_pinyin: '石破天惊 (shí pò tiān jīng)', en: 'startlingly loud; impactful', desc: '形容声音响亮惊人，或文章议论新奇惊人。Describes a startlingly loud voice, or novel and astonishing arguments in writing.' },
+                        { ch_pinyin: '动听 (dòng tīng)', en: 'pleasant to hear', desc: '声音好听，使人感到愉快。Voice is pleasant to hear, making people feel happy.' },
+                        { ch_pinyin: '悦耳 (yuè ěr)', en: 'pleasant to the ear', desc: '声音好听，使人感到愉快。Voice is pleasant to the ear, making people feel happy.' },
+                        { ch_pinyin: '似水如歌 (sì shuǐ rú gē)', en: 'gentle as water, beautiful as song', desc: '声音像流水般轻柔，又像歌曲般优美。Voice is gentle like flowing water, and beautiful like a song.' },
+                        { ch_pinyin: '龙吟虎啸 (lóng yín hǔ xiào)', en: 'majestic and resonant', desc: '形容声音高亢响亮，气势雄伟。Describes a high-pitched, resonant voice with majestic presence.' },
+                        { ch_pinyin: '鸮啼鬼啸 (xiāo tí guǐ xiào)', en: 'shrill and eerie', desc: '形容声音凄厉、阴森恐怖。Describes a shrill, eerie, and terrifying sound.' }
+                    ]
+                }
             };
 
             const tableInterjections = document.getElementById('tableInterjections');
             const tableOnomatopoeia = document.getElementById('tableOnomatopoeia');
             const tableOther = document.getElementById('tableOther');
             const tableInsect = document.getElementById('tableInsect');
+            const tableVoiceAdjectives = document.getElementById('tableVoiceAdjectives');
 
             function populateTable(tbody, dataArray, type) {
                 tbody.innerHTML = '';
@@ -399,7 +492,14 @@
                             <td class="p-3">${item.onomatopoeia_ch || ''} (${item.onomatopoeia_pinyin || ''})</td>
                             <td class="p-3 text-sm">${item.desc || ''}</td>
                         `;
-                    } else { // interjections and onomatopoeia sub-types
+                    } else if (type === 'voiceAdjectives') {
+                         row.innerHTML = `
+                            <td class="p-3">${item.ch_pinyin || ''}</td>
+                            <td class="p-3">${item.en || ''}</td>
+                            <td class="p-3 text-sm hidden md:table-cell">${item.desc || ''}</td>
+                        `;
+                    }
+                    else {
                          row.innerHTML = `
                             <td class="p-3">${item.ch_pinyin || ''}</td>
                             <td class="p-3">${item.en || ''}</td>
@@ -412,11 +512,15 @@
                 });
             }
 
+            // Initial population of tables
+            // The introduction page does not have a table to populate initially.
             populateTable(tableInterjections, data.interjections, 'interjections');
             populateTable(tableOnomatopoeia, data.onomatopoeia.nature, 'onomatopoeia');
             populateTable(tableOther, data.otherSounds, 'other');
             populateTable(tableInsect, data.insectOnomatopoeia, 'insect');
+            populateTable(tableVoiceAdjectives, data.voiceAdjectives.timbre, 'voiceAdjectives');
 
+            // Function to filter tables
             function filterTable(tableId, dataArray, searchTerm, type) {
                 const lowerCaseSearchTerm = searchTerm.toLowerCase();
                 const filteredData = dataArray.filter(item => {
@@ -432,7 +536,12 @@
                                (item.desc && item.desc.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.cat && item.cat.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.subcat && item.subcat.toLowerCase().includes(lowerCaseSearchTerm));
-                    } else { // interjections and onomatopoeia sub-types
+                    } else if (type === 'voiceAdjectives') {
+                        return (item.ch_pinyin && item.ch_pinyin.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                               (item.en && item.en.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                               (item.desc && item.desc.toLowerCase().includes(lowerCaseSearchTerm));
+                    }
+                    else {
                         return (item.ch_pinyin && item.ch_pinyin.toLowerCase().includes(lowerCaseSearchTerm)) || 
                                (item.en && item.en.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.desc && item.desc.toLowerCase().includes(lowerCaseSearchTerm)) ||
@@ -442,17 +551,18 @@
                 });
                 populateTable(document.getElementById(tableId), filteredData, type);
             }
-            
+
+            // Event Listeners for search inputs
             document.getElementById('searchInterjections').addEventListener('input', (e) => {
                 filterTable('tableInterjections', data.interjections, e.target.value.toLowerCase(), 'interjections');
             });
-            
-            let currentOnomatopoeiaSubTab = 'nature'; // Default active sub-tab
+
+            let currentOnomatopoeiaSubTab = 'nature'; // Default active sub-tab for onomatopoeia
             document.getElementById('searchOnomatopoeia').addEventListener('input', (e) => {
                 filterTable('tableOnomatopoeia', data.onomatopoeia[currentOnomatopoeiaSubTab], e.target.value.toLowerCase(), 'onomatopoeia');
             });
 
-            document.getElementById('searchOther').addEventListener('input', (e) => {
+            document.getElementById('searchOtherSounds').addEventListener('input', (e) => {
                 filterTable('tableOther', data.otherSounds, e.target.value.toLowerCase(), 'other');
             });
 
@@ -460,26 +570,38 @@
                 filterTable('tableInsect', data.insectOnomatopoeia, e.target.value.toLowerCase(), 'insect');
             });
 
-            const navButtons = document.querySelectorAll('.nav-item');
-            const contentSections = document.querySelectorAll('.content-section');
+            let currentVoiceAdjectiveSubTab = 'timbre'; // Default active sub-tab for voice adjectives
+            document.getElementById('searchVoiceAdjectives').addEventListener('input', (e) => {
+                filterTable('tableVoiceAdjectives', data.voiceAdjectives[currentVoiceAdjectiveSubTab], e.target.value.toLowerCase(), 'voiceAdjectives');
+            });
 
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    navButtons.forEach(btn => btn.classList.remove('nav-active'));
-                    button.classList.add('nav-active');
-
-                    const tab = button.getAttribute('data-tab');
-                    contentSections.forEach(section => {
-                        if (section.id === tab) {
-                            section.classList.remove('hidden');
-                        } else {
-                            section.classList.add('hidden');
-                        }
+            // Navigation logic for main tabs
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    navItems.forEach(nav => nav.classList.remove('nav-active', 'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-yellow-500', 'bg-red-500', 'bg-teal-500'));
+                    navItems.forEach(nav => {
+                        const tab = nav.getAttribute('data-tab');
+                        // Assign colors based on tab
+                        if (tab === 'introduction') nav.classList.add('bg-blue-500'); // New: Introduction tab color
+                        else if (tab === 'interjections') nav.classList.add('bg-green-500');
+                        else if (tab === 'onomatopoeia') nav.classList.add('bg-purple-500');
+                        else if (tab === 'otherSounds') nav.classList.add('bg-yellow-500');
+                        else if (tab === 'insectOnomatopoeia') nav.classList.add('bg-red-500');
+                        else if (tab === 'voiceAdjectives') nav.classList.add('bg-teal-500');
                     });
+                    item.classList.add('nav-active');
+                    
+                    contentSections.forEach(section => section.classList.add('hidden'));
+                    document.getElementById(item.dataset.tab).classList.remove('hidden');
                 });
             });
 
-            const subNavButtons = document.querySelectorAll('.sub-nav-item');
+            // Set initial active tab to "Introduction"
+            document.querySelector('.nav-item[data-tab="introduction"]').click();
+
+
+            // Sub-navigation logic for Onomatopoeia
+            const subNavButtons = document.querySelectorAll('#onomatopoeia .sub-nav-item');
             subNavButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     subNavButtons.forEach(btn => {
@@ -494,65 +616,26 @@
                     document.getElementById('searchOnomatopoeia').value = '';
                 });
             });
-            
-            const ctx = document.getElementById('categoryChart').getContext('2d');
-            const chartData = {
-                labels: ['气调与感叹词', '拟声词-自然', '拟声词-人体', '拟声词-人群', '万物之声', '昆虫拟声词'],
-                datasets: [{
-                    label: '词汇数量',
-                    data: [
-                        data.interjections.length, 
-                        data.onomatopoeia.nature.length, 
-                        data.onomatopoeia.human.length, 
-                        data.onomatopoeia.crowd.length,
-                        data.otherSounds.length,
-                        data.insectOnomatopoeia.length
-                    ],
-                    backgroundColor: [
-                        'rgba(217, 119, 6, 0.6)',
-                        'rgba(5, 150, 105, 0.6)',
-                        'rgba(29, 78, 216, 0.6)',
-                        'rgba(124, 58, 237, 0.6)',
-                        'rgba(156, 163, 175, 0.6)',
-                        'rgba(255, 193, 7, 0.6)' // New color for insect category
-                    ],
-                    borderColor: [
-                        'rgba(217, 119, 6, 1)',
-                        'rgba(5, 150, 105, 1)',
-                        'rgba(29, 78, 216, 1)',
-                        'rgba(124, 58, 237, 1)',
-                        'rgba(156, 163, 175, 1)',
-                        'rgba(255, 193, 7, 1)' // New color for insect category
-                    ],
-                    borderWidth: 1
-                }]
-            };
-            new Chart(ctx, {
-                type: 'bar',
-                data: chartData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y',
-                    scales: {
-                        x: {
-                            beginAtZero: true
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.dataset.label}: ${context.raw}`;
-                                }
-                            }
-                        }
-                    }
-                }
+
+            // Sub-navigation logic for Voice Adjectives
+            const subNavVoiceAdjectiveButtons = document.querySelectorAll('.sub-nav-item-voice');
+            subNavVoiceAdjectiveButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    subNavVoiceAdjectiveButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-amber-100', 'text-amber-800');
+                        btn.classList.add('bg-gray-100', 'text-gray-700');
+                    });
+                    button.classList.add('active', 'bg-amber-100', 'text-amber-800');
+                    button.classList.remove('bg-gray-100', 'text-gray-700');
+                    
+                    currentVoiceAdjectiveSubTab = button.getAttribute('data-sub-tab');
+                    populateTable(tableVoiceAdjectives, data.voiceAdjectives[currentVoiceAdjectiveSubTab], 'voiceAdjectives');
+                    document.getElementById('searchVoiceAdjectives').value = '';
+                });
             });
+
+            // Chart.js for Data Overview - REMOVED
+            // No chart is present, so no chart-related code is needed.
         });
     </script>
 
