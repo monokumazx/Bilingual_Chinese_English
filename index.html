@@ -222,20 +222,27 @@
                     <p class="text-gray-600 mb-2">这里整理了描述人声音特点的形容词，按音色、音量、音调和声音特点进行分类。请选择一个子类别进行查看。</p>
                     <p class="text-gray-600 text-sm mb-4">This section compiles adjectives describing human voice characteristics, categorized by timbre, volume, pitch, and other features. Please select a sub-category to view.</p>
                     <div class="flex flex-wrap justify-center gap-2 mb-6">
-                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold active" data-sub-tab="timbre">一、按音色分类</button>
-                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="volume">二、按音量分类</button>
-                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="pitch">三、按音调分类</button>
-                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="features">四、按声音特点分类</button>
+                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold active" data-sub-tab="timbre">
+                            一、按音色分类<br><span class="text-xs opacity-90">By Timbre</span>
+                        </button>
+                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="volume">
+                            二、按音量分类<br><span class="text-xs opacity-90">By Volume</span>
+                        </button>
+                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="pitch">
+                            三、按音调分类<br><span class="text-xs opacity-90">By Pitch</span>
+                        </button>
+                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="features">
+                            四、按声音特点分类<br><span class="text-xs opacity-90">By Sound Characteristics</span>
+                        </button>
+                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="internetSlangs">
+                            五、网络声音俚语<br><span class="text-xs opacity-90">Internet Sound Slangs</span>
+                        </button>
                     </div>
                     <input type="text" id="searchVoiceAdjectives" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="🔍 搜索中文/拼音或英文...">
                     <div class="table-container overflow-x-auto">
                         <table class="w-full text-left border-collapse min-w-[700px]">
-                             <thead class="sticky top-0 bg-gray-100">
-                                <tr>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音)</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">英文释义</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">中英说明（Chinese and English Description）</th>
-                                </tr>
+                             <thead class="sticky top-0 bg-gray-100" id="voiceAdjectivesTableHeader">
+                                <!-- Table headers will be dynamically populated by JavaScript -->
                             </thead>
                             <tbody id="tableVoiceAdjectives">
                             </tbody>
@@ -310,7 +317,8 @@
                         { ch_pinyin: '砰砰 (pēng pēng)', en: 'Bang-bang; Thump-thump', desc: '形容连续的撞击声或心跳声。Describes continuous striking sounds or a heartbeat.', ch_ex: '心脏砰砰地跳着。', en_ex: 'The heart was thumping.' },
                         { ch_pinyin: '吧嗒 (bā dā)', en: 'Pat; Click', desc: '形容眼泪、咀嚼或吸烟的声音。Describes the sound of tears, chewing, or smoking.', ch_ex: '他吧嗒吧嗒地抽着烟。', en_ex: 'He was puffing on his cigarette.' },
                         { ch_pinyin: '嘎嘎 (gā gā)', en: 'Quack; Cackle', desc: '形容鸭子叫声或鹅的叫声。Describes the quacking of a duck or the cackling of a goose.', ch_ex: '鸭子在水里嘎嘎地叫。', en_ex: 'The duck quacked in the water.' },
-                        { ch_pinyin: '呼噜 (hū lū)', en: 'Snore; Slurp', desc: '形容睡觉时的鼾声或喝水时的声音。Describes snoring while sleeping or slurping while drinking.', ch_ex: '他睡着了，发出轻微的呼噜声。', en_ex: 'He was asleep, making a slight snoring sound.' }
+                        { ch_pinyin: '呼噜 (hū lū)', en: 'Snore; Slurp', desc: '形容睡觉时的鼾声或喝水时的声音。Describes snoring while sleeping or slurping while drinking.', ch_ex: '他睡着了，发出轻微的呼噜声。', en_ex: 'He was asleep, making a slight snoring sound.' },
+                        { ch_pinyin: '哼唧 (hēng ji)', en: 'Mutter; Whimper', desc: '形容因不满、疼痛或撒娇而发出的哼声或低语。Describes a grunting or whimpering sound made due to dissatisfaction, pain, or acting spoiled.', ch_ex: '他疼得哼哼唧唧。', en_ex: 'He whimpered with pain.' }
                     ],
                     crowd: [
                         { ch_pinyin: '嗡嗡 (wēng wēng)', en: 'Buzz; Hum', desc: '形容蜜蜂、机器等发出的连续低沉的声音，也形容人群嘈杂声。Describes the continuous low sound made by bees or machines, also describes the noisy sound of a crowd.', ch_ex: '教室里嗡嗡作响，大家都在讨论。', en_ex: 'The classroom buzzed with discussion.' },
@@ -462,7 +470,20 @@
                         { ch_pinyin: '悦耳 (yuè ěr)', en: 'pleasant to the ear', desc: '声音好听，使人感到愉快。Voice is pleasant to the ear, making people feel happy.' },
                         { ch_pinyin: '似水如歌 (sì shuǐ rú gē)', en: 'gentle as water, beautiful as song', desc: '声音像流水般轻柔，又像歌曲般优美。Voice is gentle like flowing water, and beautiful like a song.' },
                         { ch_pinyin: '龙吟虎啸 (lóng yín hǔ xiào)', en: 'majestic and resonant', desc: '形容声音高亢响亮，气势雄伟。Describes a high-pitched, resonant voice with majestic presence.' },
-                        { ch_pinyin: '鸮啼鬼啸 (xiāo tí guǐ xiào)', en: 'shrill and eerie', desc: '形容声音凄厉、阴森恐怖。Describes a shrill, eerie, and terrifying sound.' }
+                        { ch_pinyin: '鸮啼鬼啸 (xiāo tí guǐ xiào)', en: 'shrill and eerie', desc: '形容声音凄厉、阴森恐怖。Describes a shrill, eerie, and terrifying sound.' },
+                        { ch_pinyin: '夹 (jiā)', en: 'strained, forced (voice)', desc: '形容声音不自然，像是被挤压或刻意改变的，常带有不适或做作感。Describes a voice that sounds unnatural, as if squeezed or deliberately altered, often conveying discomfort or artificiality.' }
+                    ],
+                    internetSlangs: [ // New category for internet slangs
+                        { name_ch: '夹子音', name_en: 'Strained/Cutesy Voice, Valley Girl accent', description_ch: '形容故意捏嗓发出尖细刻意的声音，常用于批评不自然的配音、演讲或语音表演。Describes a deliberately high-pitched and artificial voice, often used to criticize unnatural voice acting, speeches, or voice performances.', notes_ch: '多为贬义，源自模仿夹着嗓子讲话的感觉。Mostly derogatory, originating from imitating the feeling of speaking with a squeezed throat.' },
+                        { name_ch: '奶里奶气', name_en: 'Babyish/Childlike Voice', description_ch: '描述声音像小孩一样柔软稚嫩，可天然可做作。Describes a voice that is soft and tender like a child\'s, which can be natural or feigned.', notes_ch: '有时带调侃意味。Sometimes carries a teasing connotation.' },
+                        { name_ch: '气泡音', name_en: 'Vocal Fry/Creaky Voice', description_ch: '发声时带有轻微喉音振动，如同气泡破裂，声音低沉性感。A voice with slight vocal cord vibrations, like popping bubbles, resulting in a low, sensual sound.', notes_ch: '多为褒义，尤其在ASMR中常见。Mostly positive, especially common in ASMR.' },
+                        { name_ch: '电音', name_en: 'Electronic Voice', description_ch: '电子音效处理后的声音，常用于电音歌曲或搞怪变声。A voice processed with electronic effects, often used in electronic music or for humorous voice changes.', notes_ch: '也可用于调侃“说话像加了滤镜”。Can also be used to jokingly describe "speaking as if with a filter".' },
+                        { name_ch: '死夹子', name_en: 'Extreme Strained Voice', description_ch: '指特别极端的“夹子音”，令人不适，语气极具贬义。Refers to an extremely exaggerated "strained voice" that is uncomfortable to listen to, with a strong derogatory tone.', notes_ch: '属于“夹子音”的升级贬义词。An intensified derogatory term for "strained voice".' },
+                        { name_ch: '御姐音', name_en: 'Queen/Mature Sister Voice', description_ch: '声音低沉、冷冽、有女王范的女性声音，常用于角色配音。A low, cool, queen-like female voice, often used for character dubbing.', notes_ch: '常见于动漫、小说改编作品。Common in anime and novel adaptations.' },
+                        { name_ch: '正太音', name_en: 'Shota Voice', description_ch: '清亮、有少年感的男性声音。A clear, youthful male voice.', notes_ch: '常用于萌化角色演绎，受欢迎。Often used for moe character portrayals, popular.' },
+                        { name_ch: '萝莉音', name_en: 'Loli Voice', description_ch: '甜美尖细的“少女声”，类似动漫中萝莉角色。A sweet, high-pitched "girl\'s voice", similar to loli characters in anime.', notes_ch: '可自然也可故意模仿，广泛使用。Can be natural or deliberately imitated, widely used.' },
+                        { name_ch: '霸总音', name_en: 'Overbearing CEO Voice', description_ch: '模仿“霸道总裁”式的低沉、强势声线。Imitates the low, dominant vocal style of an "overbearing CEO".', notes_ch: '属于“土味配音”流行文化一部分。Part of the "tacky dubbing" popular culture.' },
+                        { name_ch: '蚊子音', name_en: 'Mosquito Voice', description_ch: '形容说话声音极小，听不清楚。Describes a voice that is extremely quiet and hard to hear clearly.', notes_ch: '多用于批评演讲者语音不清晰。Mostly used to criticize speakers for unclear pronunciation.' }
                     ]
                 }
             };
@@ -472,13 +493,81 @@
             const tableOther = document.getElementById('tableOther');
             const tableInsect = document.getElementById('tableInsect');
             const tableVoiceAdjectives = document.getElementById('tableVoiceAdjectives');
+            const voiceAdjectivesTableHeader = document.getElementById('voiceAdjectivesTableHeader');
 
             function populateTable(tbody, dataArray, type) {
                 tbody.innerHTML = '';
+                let headersHtml = '';
+
+                if (type === 'internetSlangs') {
+                    headersHtml = `
+                        <tr>
+                            <th class="p-3 font-semibold text-sm text-gray-600">名称 (Name)</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">注释 (Notes)</th>
+                        </tr>
+                    `;
+                } else if (type === 'other') {
+                    headersHtml = `
+                        <tr>
+                            <th class="p-3 font-semibold text-sm text-gray-600">类别 (Category)</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">子类别 (Sub-category)</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音) (Chinese Term (Pinyin))</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600">英文释义 (English Meaning)</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
+                        </tr>
+                    `;
+                } else if (type === 'insect') {
+                    headersHtml = `
+                        <tr>
+                            <th class="p-3 font-semibold text-sm text-gray-600">昆虫 (拼音) (Insect (Pinyin))</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600">拟声词 (拼音) (Onomatopoeia (Pinyin))</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
+                        </tr>
+                    `;
+                } else if (type === 'voiceAdjectives') {
+                    headersHtml = `
+                        <tr>
+                            <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音) (Chinese Term (Pinyin))</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600">英文释义 (English Meaning)</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">中英说明（Chinese and English Description）</th>
+                        </tr>
+                    `;
+                } else { // For interjections and onomatopoeia (nature, human, crowd)
+                    headersHtml = `
+                        <tr>
+                            <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音) (Chinese Term (Pinyin))</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600">英文释义 (English Meaning)</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">中英说明（Chinese and English Description）</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">中文例句 (Chinese Example)</th>
+                            <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">英文例句 (English Example)</th>
+                        </tr>
+                    `;
+                }
+                
+                // Update the specific header for voiceAdjectives section
+                if (type.includes('voiceAdjectives') || type === 'internetSlangs') {
+                    voiceAdjectivesTableHeader.innerHTML = headersHtml;
+                } else {
+                    // For other tables, assume their headers are static in HTML or handled elsewhere
+                    // This part might need adjustment if other tables also need dynamic headers
+                    const currentTableHead = tbody.previousElementSibling;
+                    if (currentTableHead) {
+                        currentTableHead.innerHTML = headersHtml;
+                    }
+                }
+
+
                 dataArray.forEach(item => {
                     const row = document.createElement('tr');
                     row.className = 'border-b border-gray-200 hover:bg-amber-50';
-                    if (type === 'other') {
+                    if (type === 'internetSlangs') {
+                        row.innerHTML = `
+                            <td class="p-3">${item.name_ch || ''} (${item.name_en || ''})</td>
+                            <td class="p-3 text-sm">${item.description_ch || ''} ${item.description_en || ''}</td>
+                            <td class="p-3 text-sm hidden lg:table-cell">${item.notes_ch || ''} ${item.notes_en || ''}</td>
+                        `;
+                    } else if (type === 'other') {
                         row.innerHTML = `
                             <td class="p-3 text-sm">${item.cat || ''}</td>
                             <td class="p-3 text-sm hidden md:table-cell">${item.subcat || ''}</td>
@@ -518,13 +607,20 @@
             populateTable(tableOnomatopoeia, data.onomatopoeia.nature, 'onomatopoeia');
             populateTable(tableOther, data.otherSounds, 'other');
             populateTable(tableInsect, data.insectOnomatopoeia, 'insect');
-            populateTable(tableVoiceAdjectives, data.voiceAdjectives.timbre, 'voiceAdjectives');
+            populateTable(tableVoiceAdjectives, data.voiceAdjectives.timbre, 'voiceAdjectives'); // Default to timbre
+
 
             // Function to filter tables
             function filterTable(tableId, dataArray, searchTerm, type) {
                 const lowerCaseSearchTerm = searchTerm.toLowerCase();
                 const filteredData = dataArray.filter(item => {
-                    if (type === 'insect') {
+                    if (type === 'internetSlangs') {
+                        return (item.name_ch && item.name_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                               (item.name_en && item.name_en.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                               (item.description_ch && item.description_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                               (item.notes_ch && item.notes_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                               (item.notes_en && item.notes_en.toLowerCase().includes(lowerCaseSearchTerm));
+                    } else if (type === 'insect') {
                         return (item.insect_ch && item.insect_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.insect_pinyin && item.insect_pinyin.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.onomatopoeia_ch && item.onomatopoeia_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
@@ -572,7 +668,7 @@
 
             let currentVoiceAdjectiveSubTab = 'timbre'; // Default active sub-tab for voice adjectives
             document.getElementById('searchVoiceAdjectives').addEventListener('input', (e) => {
-                filterTable('tableVoiceAdjectives', data.voiceAdjectives[currentVoiceAdjectiveSubTab], e.target.value.toLowerCase(), 'voiceAdjectives');
+                filterTable('tableVoiceAdjectives', data.voiceAdjectives[currentVoiceAdjectiveSubTab], e.target.value.toLowerCase(), currentVoiceAdjectiveSubTab);
             });
 
             // Navigation logic for main tabs
@@ -629,7 +725,7 @@
                     button.classList.remove('bg-gray-100', 'text-gray-700');
                     
                     currentVoiceAdjectiveSubTab = button.getAttribute('data-sub-tab');
-                    populateTable(tableVoiceAdjectives, data.voiceAdjectives[currentVoiceAdjectiveSubTab], 'voiceAdjectives');
+                    populateTable(tableVoiceAdjectives, data.voiceAdjectives[currentVoiceAdjectiveSubTab], currentVoiceAdjectiveSubTab);
                     document.getElementById('searchVoiceAdjectives').value = '';
                 });
             });
