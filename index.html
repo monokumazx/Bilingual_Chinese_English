@@ -6,11 +6,72 @@
     <title>Bilingual: Chinese-English Audio Vocabulary
     中英声音词典：双语发音词汇</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js script is no longer needed as the dashboard is removed -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
-    <!-- Chosen Palette: Warm Neutrals -->
-    <!-- Application Structure Plan: 本应用采用仪表盘和标签页相结合的结构。顶部是一个固定的导航栏，用于在“数据概览”、“气调与感叹词”、“拟声词”、“万物之声”和“昆虫拟声词”五大核心类别之间切换。主内容区域首先展示一个数据概览图表，直观显示各词汇子类的数量分布。下方是具体的词汇内容区，根据导航选择显示相应的表格。每个表格都配有实时搜索功能。拟声词部分进一步细分为子标签页，以更好地组织内容。这种结构旨在将静态的报告数据转化为一个动态的、便于探索和查询的工具，用户既可以宏观地了解数据概况，也可以快速深入到具体类别进行学习和查找，极大地提升了报告内容的可用性和用户体验。 -->
-    <!-- Visualization & Content Choices: 1. 概览图表 (目标: 比较): 使用Chart.js创建一个条形图，展示不同声音子类（如气调与感叹词、拟声词-自然、拟声词-人体、拟声词-人群、万物之声、昆虫拟声词、人声音的形容词汇）的词汇数量分布。2. 详细列表 (目标: 查找): 每个标签页都包含一个可搜索的表格，表格列包括中文、拼音、英文和中文描述（如适用）。3. 子标签页 (目标: 组织): 拟声词和人声音的形容词汇内部使用子标签页进一步细分，如拟声词分为“自然”、“人体”、“人群”，人声音的形容词汇分为“音色”、“音量”、“音调”、“声音特点”。-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        .nav-item.nav-active {
+            background-color: #1d4ed8 !important; /* Darker blue for active nav item */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .sub-nav-item.active {
+            background-color: #fbbf24; /* amber-400 */
+            color: #78350f; /* amber-900 */
+            font-weight: 600;
+        }
+        .audio-btn {
+            background: none;
+            border: none;
+            color: #3b82f6; /* Blue color for icon */
+            cursor: pointer;
+            font-size: 0.9rem; /* Slightly smaller for table cells */
+            margin-left: 0.25rem;
+            vertical-align: middle;
+            padding: 0; /* Remove padding */
+            line-height: 1; /* Adjust line height */
+        }
+        .audio-btn:hover {
+            color: #1d4ed8; /* Darker blue on hover */
+        }
+        .table-container {
+            max-height: 600px; /* Limit height for scrollable tables */
+            overflow-y: auto;
+        }
+        table {
+            border-collapse: separate; /* Required for rounded corners on cells */
+            border-spacing: 0; /* Remove spacing between cells */
+        }
+        th, td {
+            padding: 0.75rem; /* Default padding */
+            border-bottom: 1px solid #e5e7eb; /* Light gray border */
+        }
+        thead th {
+            background-color: #f3f4f6; /* Light gray for header */
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        tbody tr:last-child td {
+            border-bottom: none; /* No border for the last row */
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            text-align: center;
+            font-family: 'Noto Sans SC', sans-serif;
+            color: #333;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
@@ -254,6 +315,49 @@
     </div>
 
     <script>
+        // Global variable to hold the current speech synthesis utterance
+        let currentUtterance = null;
+
+        // Function to play or stop audio
+        function playAudio(text, lang) {
+            if ('speechSynthesis' in window) {
+                // If an utterance is currently speaking, stop it
+                if (window.speechSynthesis.speaking && currentUtterance) {
+                    window.speechSynthesis.cancel();
+                    currentUtterance = null; // Clear the reference
+                    // If the same text is clicked again, it means stop
+                    if (currentUtterance && currentUtterance.text === text) {
+                        return;
+                    }
+                }
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                if (lang === 'zh') {
+                    utterance.lang = 'zh-CN';
+                } else if (lang === 'en') {
+                    utterance.lang = 'en-US';
+                }
+                window.speechSynthesis.speak(utterance);
+                currentUtterance = utterance; // Store the current utterance
+
+                // Clear currentUtterance when speaking ends
+                utterance.onend = () => {
+                    currentUtterance = null;
+                };
+            } else {
+                // Using a custom message box instead of alert()
+                const messageBox = document.createElement('div');
+                messageBox.className = 'message-box';
+                messageBox.innerHTML = `
+                    <p>Text-to-speech not supported in this browser.</p>
+                    <p class="text-sm text-gray-500 mt-2">You would need to integrate a TTS API or provide audio files.</p>
+                    <button onclick="this.parentNode.remove()" style="margin-top: 15px; padding: 8px 15px; background-color: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+                `;
+                document.body.appendChild(messageBox);
+            }
+        }
+        window.playAudio = playAudio; // Make the function globally accessible
+
         document.addEventListener('DOMContentLoaded', () => {
             const navItems = document.querySelectorAll('.nav-item');
             const contentSections = document.querySelectorAll('.content-section');
@@ -375,7 +479,7 @@
                     { insect_ch: '甲虫', insect_pinyin: 'jiǎ chóng', onomatopoeia_ch: '咯吱', onomatopoeia_pinyin: 'gē zhī', desc: '甲虫爬行或咬噬的声音。Sound of a beetle crawling or biting.' },
                     { insect_ch: '飞蛾', insect_pinyin: 'fēi é', onomatopoeia_ch: '扑扑', onomatopoeia_pinyin: 'pū pū', desc: '飞蛾拍打翅膀的声音。Sound of a moth flapping its wings.' },
                     { insect_ch: '蚂蚱', insect_pinyin: 'mà zha', onomatopoeia_ch: '呱唧', onomatopoeia_pinyin: 'guā jī', desc: '蚂蚱跳跃或摩擦发出的声音。Sound of a grasshopper jumping or rubbing.' },
-                    { insect_ch: '蝈蝈', insect_pinyin: 'guō guō', onomatopoeia_ch: '呱呱', onomatopoeia_pinyin: 'guā guā', desc: '蝈蝈的鸣叫声。Sound of a long-horned grasshopper chirping.' }
+                    { ch_pinyin: '蝈蝈', en: 'Long-horned grasshopper', desc: '蝈蝈的鸣叫声。Sound of a long-horned grasshopper chirping.' }
                 ],
                 voiceAdjectives: {
                     timbre: [
@@ -474,16 +578,16 @@
                         { ch_pinyin: '夹 (jiā)', en: 'strained, forced (voice)', desc: '形容声音不自然，像是被挤压或刻意改变的，常带有不适或做作感。Describes a voice that sounds unnatural, as if squeezed or deliberately altered, often conveying discomfort or artificiality.' }
                     ],
                     internetSlangs: [ // New category for internet slangs
-                        { name_ch: '夹子音', name_en: 'Strained/Cutesy Voice, Valley Girl accent', description_ch: '形容故意捏嗓发出尖细刻意的声音，常用于批评不自然的配音、演讲或语音表演。Describes a deliberately high-pitched and artificial voice, often used to criticize unnatural voice acting, speeches, or voice performances.', notes_ch: '多为贬义，源自模仿夹着嗓子讲话的感觉。Mostly derogatory, originating from imitating the feeling of speaking with a squeezed throat.' },
-                        { name_ch: '奶里奶气', name_en: 'Babyish/Childlike Voice', description_ch: '描述声音像小孩一样柔软稚嫩，可天然可做作。Describes a voice that is soft and tender like a child\'s, which can be natural or feigned.', notes_ch: '有时带调侃意味。Sometimes carries a teasing connotation.' },
-                        { name_ch: '气泡音', name_en: 'Vocal Fry/Creaky Voice', description_ch: '发声时带有轻微喉音振动，如同气泡破裂，声音低沉性感。A voice with slight vocal cord vibrations, like popping bubbles, resulting in a low, sensual sound.', notes_ch: '多为褒义，尤其在ASMR中常见。Mostly positive, especially common in ASMR.' },
-                        { name_ch: '电音', name_en: 'Electronic Voice', description_ch: '电子音效处理后的声音，常用于电音歌曲或搞怪变声。A voice processed with electronic effects, often used in electronic music or for humorous voice changes.', notes_ch: '也可用于调侃“说话像加了滤镜”。Can also be used to jokingly describe "speaking as if with a filter".' },
-                        { name_ch: '死夹子', name_en: 'Extreme Strained Voice', description_ch: '指特别极端的“夹子音”，令人不适，语气极具贬义。Refers to an extremely exaggerated "strained voice" that is uncomfortable to listen to, with a strong derogatory tone.', notes_ch: '属于“夹子音”的升级贬义词。An intensified derogatory term for "strained voice".' },
-                        { name_ch: '御姐音', name_en: 'Queen/Mature Sister Voice', description_ch: '声音低沉、冷冽、有女王范的女性声音，常用于角色配音。A low, cool, queen-like female voice, often used for character dubbing.', notes_ch: '常见于动漫、小说改编作品。Common in anime and novel adaptations.' },
-                        { name_ch: '正太音', name_en: 'Shota Voice', description_ch: '清亮、有少年感的男性声音。A clear, youthful male voice.', notes_ch: '常用于萌化角色演绎，受欢迎。Often used for moe character portrayals, popular.' },
-                        { name_ch: '萝莉音', name_en: 'Loli Voice', description_ch: '甜美尖细的“少女声”，类似动漫中萝莉角色。A sweet, high-pitched "girl\'s voice", similar to loli characters in anime.', notes_ch: '可自然也可故意模仿，广泛使用。Can be natural or deliberately imitated, widely used.' },
-                        { name_ch: '霸总音', name_en: 'Overbearing CEO Voice', description_ch: '模仿“霸道总裁”式的低沉、强势声线。Imitates the low, dominant vocal style of an "overbearing CEO".', notes_ch: '属于“土味配音”流行文化一部分。Part of the "tacky dubbing" popular culture.' },
-                        { name_ch: '蚊子音', name_en: 'Mosquito Voice', description_ch: '形容说话声音极小，听不清楚。Describes a voice that is extremely quiet and hard to hear clearly.', notes_ch: '多用于批评演讲者语音不清晰。Mostly used to criticize speakers for unclear pronunciation.' }
+                        { name_ch: '夹子音', name_en: 'Strained/Cutesy Voice, Valley Girl accent', description_ch: '形容故意捏嗓发出尖细刻意的声音，常用于批评不自然的配音、演讲或语音表演。', description_en: 'Describes a deliberately high-pitched and artificial voice, often used to criticize unnatural voice acting, speeches, or voice performances.', notes_ch: '多为贬义，源自模仿夹着嗓子讲话的感觉。', notes_en: 'Mostly derogatory, originating from imitating the feeling of speaking with a squeezed throat.' },
+                        { name_ch: '奶里奶气', name_en: 'Babyish/Childlike Voice', description_ch: '描述声音像小孩一样柔软稚嫩，可天然可做作。', description_en: 'Describes a voice that is soft and tender like a child\'s, which can be natural or feigned.', notes_ch: '有时带调侃意味。', notes_en: 'Sometimes carries a teasing connotation.' },
+                        { name_ch: '气泡音', name_en: 'Vocal Fry/Creaky Voice', description_ch: '发声时带有轻微喉音振动，如同气泡破裂，声音低沉性感。', description_en: 'A voice with slight vocal cord vibrations, like popping bubbles, resulting in a low, sensual sound.', notes_ch: '多为褒义，尤其在ASMR中常见。', notes_en: 'Mostly positive, especially common in ASMR.' },
+                        { name_ch: '电音', name_en: 'Electronic Voice', description_ch: '电子音效处理后的声音，常用于电音歌曲或搞怪变声。', description_en: 'A voice processed with electronic effects, often used in electronic music or for humorous voice changes.', notes_ch: '也可用于调侃“说话像加了滤镜”。', notes_en: 'Can also be used to jokingly describe "speaking as if with a filter".' },
+                        { name_ch: '死夹子', name_en: 'Extreme Strained Voice', description_ch: '指特别极端的“夹子音”，令人不适，语气极具贬义。', description_en: 'Refers to an extremely exaggerated "strained voice" that is uncomfortable to listen to, with a strong derogatory tone.', notes_ch: '属于“夹子音”的升级贬义词。', notes_en: 'An intensified derogatory term for "strained voice".' },
+                        { name_ch: '御姐音', name_en: 'Queen/Mature Sister Voice', description_ch: '声音低沉、冷冽、有女王范的女性声音，常用于角色配音。', description_en: 'A low, cool, queen-like female voice, often used for character dubbing.', notes_ch: '常见于动漫、小说改编作品。', notes_en: 'Common in anime and novel adaptations.' },
+                        { name_ch: '正太音', name_en: 'Shota Voice', description_ch: '清亮、有少年感的男性声音。', description_en: 'A clear, youthful male voice.', notes_ch: '常用于萌化角色演绎，受欢迎。', notes_en: 'Often used for moe character portrayals, popular.' },
+                        { name_ch: '萝莉音', name_en: 'Loli Voice', description_ch: '甜美尖细的“少女声”，类似动漫中萝莉角色。', description_en: 'A sweet, high-pitched "girl\'s voice", similar to loli characters in anime.', notes_ch: '可自然也可故意模仿，广泛使用。', notes_en: 'Can be natural or deliberately imitated, widely used.' },
+                        { name_ch: '霸总音', name_en: 'Overbearing CEO Voice', description_ch: '模仿“霸道总裁”式的低沉、强势声线。', description_en: 'Imitates the low, dominant vocal style of an "overbearing CEO".', notes_ch: '属于“土味配音”流行文化一部分。', notes_en: 'Part of the "tacky dubbing" popular culture.' },
+                        { name_ch: '蚊子音', name_en: 'Mosquito Voice', description_ch: '形容说话声音极小，听不清楚。', description_en: 'Describes a voice that is extremely quiet and hard to hear clearly.', notes_ch: '多用于批评演讲者语音不清晰。', notes_en: 'Mostly used to criticize speakers for unclear pronunciation.' }
                     ]
                 }
             };
@@ -525,7 +629,7 @@
                             <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
                         </tr>
                     `;
-                } else if (type === 'voiceAdjectives') {
+                } else if (['timbre', 'volume', 'pitch', 'features'].includes(type)) { // For voice adjectives sub-categories
                     headersHtml = `
                         <tr>
                             <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音) (Chinese Term (Pinyin))</th>
@@ -546,55 +650,153 @@
                 }
                 
                 // Update the specific header for voiceAdjectives section
-                if (type.includes('voiceAdjectives') || type === 'internetSlangs') {
+                if (type.includes('voiceAdjectives') || type === 'internetSlangs' || ['timbre', 'volume', 'pitch', 'features'].includes(type)) {
                     voiceAdjectivesTableHeader.innerHTML = headersHtml;
                 } else {
-                    // For other tables, assume their headers are static in HTML or handled elsewhere
-                    // This part might need adjustment if other tables also need dynamic headers
                     const currentTableHead = tbody.previousElementSibling;
                     if (currentTableHead) {
                         currentTableHead.innerHTML = headersHtml;
                     }
                 }
 
+                // Helper function to escape text for HTML attribute
+                const escapeHtmlAttribute = (text) => {
+                    if (!text) return '';
+                    return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                };
+
+                // Helper function to split description into Chinese and English parts
+                const splitDescription = (description) => {
+                    let chPart = description || '';
+                    let enPart = '';
+
+                    // Try to find the last Chinese full stop '。'
+                    const lastChinesePeriodIndex = description.lastIndexOf('。');
+
+                    if (lastChinesePeriodIndex !== -1 && lastChinesePeriodIndex < description.length - 1) {
+                        // If a Chinese period is found and it's not the very last character
+                        chPart = description.substring(0, lastChinesePeriodIndex + 1).trim(); // Include the Chinese period
+                        enPart = description.substring(lastChinesePeriodIndex + 1).trim(); // Everything after it is English
+                    } else {
+                        // Fallback: If no Chinese period, or if it's the very last character,
+                        // try to split by the first English period '.'
+                        const firstEnglishPeriodIndex = description.indexOf('.');
+                        if (firstEnglishPeriodIndex !== -1 && firstEnglishPeriodIndex < description.length - 1) {
+                            chPart = description.substring(0, firstEnglishPeriodIndex + 1).trim();
+                            enPart = description.substring(firstEnglishPeriodIndex + 1).trim();
+                        } else {
+                            // If no clear split, assume the whole string is Chinese
+                            chPart = description || '';
+                            enPart = ''; // No distinct English part found
+                        }
+                    }
+
+                    // Further refinement: if chPart is empty and enPart is not, assume it's all English
+                    if (chPart === '' && enPart !== '' && description.trim().startsWith(enPart)) {
+                        chPart = '';
+                        enPart = description.trim();
+                    } else if (enPart === '' && chPart !== '' && description.trim().startsWith(chPart)) {
+                        chPart = description.trim();
+                        enPart = '';
+                    } else if (chPart === '' && enPart === '' && description.trim() !== '') {
+                        chPart = description.trim(); // Default to Chinese if no split found
+                    }
+                    
+                    return { ch: chPart, en: enPart };
+                };
+
 
                 dataArray.forEach(item => {
                     const row = document.createElement('tr');
                     row.className = 'border-b border-gray-200 hover:bg-amber-50';
+
                     if (type === 'internetSlangs') {
+                        const description = splitDescription(item.description_ch + (item.description_en ? '.' + item.description_en : ''));
+                        const notes = splitDescription(item.notes_ch + (item.notes_en ? '.' + item.notes_en : ''));
+
                         row.innerHTML = `
-                            <td class="p-3">${item.name_ch || ''} (${item.name_en || ''})</td>
-                            <td class="p-3 text-sm">${item.description_ch || ''} ${item.description_en || ''}</td>
-                            <td class="p-3 text-sm hidden lg:table-cell">${item.notes_ch || ''} ${item.notes_en || ''}</td>
+                            <td class="p-3">
+                                <span>${item.name_ch || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.name_ch || '')}', 'zh')">🔊</button><br>
+                                <span class="text-sm text-gray-500">${item.name_en || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.name_en || '')}', 'en')">🔊</button>
+                            </td>
+                            <td class="p-3 text-sm">
+                                <span>${description.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.ch)}', 'zh')">🔊</button><br>
+                                <span class="text-gray-500">${description.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.en)}', 'en')">🔊</button>
+                            </td>
+                            <td class="p-3 text-sm hidden lg:table-cell">
+                                <span>${notes.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(notes.ch)}', 'zh')">🔊</button><br>
+                                <span class="text-gray-500">${notes.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(notes.en)}', 'en')">🔊</button>
+                            </td>
                         `;
                     } else if (type === 'other') {
+                        const description = splitDescription(item.desc || '');
                         row.innerHTML = `
-                            <td class="p-3 text-sm">${item.cat || ''}</td>
-                            <td class="p-3 text-sm hidden md:table-cell">${item.subcat || ''}</td>
-                            <td class="p-3">${item.ch_pinyin || ''}</td>
-                            <td class="p-3">${item.en || ''}</td>
-                            <td class="p-3 text-sm">${item.desc || ''}</td>
+                            <td class="p-3 text-sm">
+                                <span>${item.cat || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.cat || '')}', 'zh')">🔊</button>
+                            </td>
+                            <td class="p-3 text-sm hidden md:table-cell">
+                                <span>${item.subcat || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.subcat || '')}', 'zh')">🔊</button>
+                            </td>
+                            <td class="p-3">
+                                <span>${item.ch_pinyin || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.ch_pinyin || '')}', 'zh')">🔊</button>
+                            </td>
+                            <td class="p-3">
+                                <span>${item.en || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.en || '')}', 'en')">🔊</button>
+                            </td>
+                            <td class="p-3 text-sm">
+                                <span>${description.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.ch)}', 'zh')">🔊</button><br>
+                                <span class="text-gray-500">${description.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.en)}', 'en')">🔊</button>
+                            </td>
                         `;
                     } else if (type === 'insect') {
+                        const description = splitDescription(item.desc || '');
                         row.innerHTML = `
-                            <td class="p-3">${item.insect_ch || ''} (${item.insect_pinyin || ''})</td>
-                            <td class="p-3">${item.onomatopoeia_ch || ''} (${item.onomatopoeia_pinyin || ''})</td>
-                            <td class="p-3 text-sm">${item.desc || ''}</td>
+                            <td class="p-3">
+                                <span>${item.insect_ch || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.insect_ch || '')}', 'zh')">🔊</button>
+                                (${item.insect_pinyin || ''})
+                            </td>
+                            <td class="p-3">
+                                <span>${item.onomatopoeia_ch || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.onomatopoeia_ch || '')}', 'zh')">🔊</button>
+                                (${item.onomatopoeia_pinyin || ''})
+                            </td>
+                            <td class="p-3 text-sm">
+                                <span>${description.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.ch)}', 'zh')">🔊</button><br>
+                                <span class="text-gray-500">${description.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.en)}', 'en')">🔊</button>
+                            </td>
                         `;
-                    } else if (type === 'voiceAdjectives') {
-                         row.innerHTML = `
-                            <td class="p-3">${item.ch_pinyin || ''}</td>
-                            <td class="p-3">${item.en || ''}</td>
-                            <td class="p-3 text-sm hidden md:table-cell">${item.desc || ''}</td>
+                    } else if (['timbre', 'volume', 'pitch', 'features'].includes(type)) {
+                        const description = splitDescription(item.desc || '');
+                        row.innerHTML = `
+                            <td class="p-3">
+                                <span>${item.ch_pinyin || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.ch_pinyin || '')}', 'zh')">🔊</button>
+                            </td>
+                            <td class="p-3">
+                                <span>${item.en || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.en || '')}', 'en')">🔊</button>
+                            </td>
+                            <td class="p-3 text-sm hidden md:table-cell">
+                                <span>${description.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.ch)}', 'zh')">🔊</button><br>
+                                <span class="text-gray-500">${description.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.en)}', 'en')">🔊</button>
+                            </td>
                         `;
-                    }
-                    else {
-                         row.innerHTML = `
-                            <td class="p-3">${item.ch_pinyin || ''}</td>
-                            <td class="p-3">${item.en || ''}</td>
-                            <td class="p-3 text-sm hidden md:table-cell">${item.desc || ''}</td>
-                            <td class="p-3 text-sm hidden lg:table-cell">${item.ch_ex || ''}</td>
-                            <td class="p-3 text-sm hidden lg:table-cell">${item.en_ex || ''}</td>
+                    } else { // For interjections and onomatopoeia (nature, human, crowd)
+                        const description = splitDescription(item.desc || '');
+                        row.innerHTML = `
+                            <td class="p-3">
+                                <span>${item.ch_pinyin || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.ch_pinyin || '')}', 'zh')">🔊</button>
+                            </td>
+                            <td class="p-3">
+                                <span>${item.en || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.en || '')}', 'en')">🔊</button>
+                            </td>
+                            <td class="p-3 text-sm hidden md:table-cell">
+                                <span>${description.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.ch)}', 'zh')">🔊</button><br>
+                                <span class="text-gray-500">${description.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.en)}', 'en')">🔊</button>
+                            </td>
+                            <td class="p-3 text-sm hidden lg:table-cell">
+                                <span>${item.ch_ex || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.ch_ex || '')}', 'zh')">🔊</button>
+                            </td>
+                            <td class="p-3 text-sm hidden lg:table-cell">
+                                <span>${item.en_ex || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.en_ex || '')}', 'en')">🔊</button>
+                            </td>
                         `;
                     }
                     tbody.appendChild(row);
@@ -607,7 +809,7 @@
             populateTable(tableOnomatopoeia, data.onomatopoeia.nature, 'onomatopoeia');
             populateTable(tableOther, data.otherSounds, 'other');
             populateTable(tableInsect, data.insectOnomatopoeia, 'insect');
-            populateTable(tableVoiceAdjectives, data.voiceAdjectives.timbre, 'voiceAdjectives'); // Default to timbre
+            populateTable(tableVoiceAdjectives, data.voiceAdjectives.timbre, 'timbre'); // Default to timbre
 
 
             // Function to filter tables
@@ -618,6 +820,7 @@
                         return (item.name_ch && item.name_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.name_en && item.name_en.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.description_ch && item.description_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                               (item.description_en && item.description_en.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.notes_ch && item.notes_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.notes_en && item.notes_en.toLowerCase().includes(lowerCaseSearchTerm));
                     } else if (type === 'insect') {
@@ -632,7 +835,7 @@
                                (item.desc && item.desc.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.cat && item.cat.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.subcat && item.subcat.toLowerCase().includes(lowerCaseSearchTerm));
-                    } else if (type === 'voiceAdjectives') {
+                    } else if (['timbre', 'volume', 'pitch', 'features'].includes(type)) {
                         return (item.ch_pinyin && item.ch_pinyin.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.en && item.en.toLowerCase().includes(lowerCaseSearchTerm)) ||
                                (item.desc && item.desc.toLowerCase().includes(lowerCaseSearchTerm));
@@ -729,9 +932,6 @@
                     document.getElementById('searchVoiceAdjectives').value = '';
                 });
             });
-
-            // Chart.js for Data Overview - REMOVED
-            // No chart is present, so no chart-related code is needed.
         });
     </script>
 
