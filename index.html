@@ -3,937 +3,1256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bilingual: Chinese-English Audio Vocabulary
-    中英声音词典：双语发音词汇</title>
+    <title>生理期科普 | Menstrual Education 月经教育</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Noto Sans SC', sans-serif;
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Light blue-gray background */
         }
-        .nav-item.nav-active {
-            background-color: #1d4ed8 !important; /* Darker blue for active nav item */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        .section-header {
+            border-bottom: 2px solid #cbd5e1; /* Slate-300 */
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
         }
-        .sub-nav-item.active {
-            background-color: #fbbf24; /* amber-400 */
-            color: #78350f; /* amber-900 */
-            font-weight: 600;
+        .language-pair p {
+            margin-bottom: 0.5rem;
         }
-        .audio-btn {
-            background: none;
-            border: none;
-            color: #3b82f6; /* Blue color for icon */
-            cursor: pointer;
-            font-size: 0.9rem; /* Slightly smaller for table cells */
-            margin-left: 0.25rem;
-            vertical-align: middle;
-            padding: 0; /* Remove padding */
-            line-height: 1; /* Adjust line height */
+        .language-pair p:last-child {
+            margin-bottom: 0;
         }
-        .audio-btn:hover {
-            color: #1d4ed8; /* Darker blue on hover */
+        .table-header {
+            background-color: #e2e8f0; /* Slate-200 */
         }
-        .table-container {
-            max-height: 600px; /* Limit height for scrollable tables */
-            overflow-y: auto;
+        .table-row:nth-child(even) {
+            background-color: #f1f5f9; /* Slate-100 */
         }
-        table {
-            border-collapse: separate; /* Required for rounded corners on cells */
-            border-spacing: 0; /* Remove spacing between cells */
-        }
-        th, td {
-            padding: 0.75rem; /* Default padding */
-            border-bottom: 1px solid #e5e7eb; /* Light gray border */
-        }
-        thead th {
-            background-color: #f3f4f6; /* Light gray for header */
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        tbody tr:last-child td {
-            border-bottom: none; /* No border for the last row */
-        }
-        .message-box {
+        .scroll-to-top {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            bottom: 2rem;
+            right: 2rem;
+            background-color: #475569; /* Slate-600 */
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            font-weight: 600;
+            display: none; /* Hidden by default */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             z-index: 1000;
-            text-align: center;
-            font-family: 'Noto Sans SC', sans-serif;
-            color: #333;
+        }
+        .scroll-to-top:hover {
+            background-color: #334155; /* Slate-700 */
+        }
+        /* Style for pinyin */
+        .pinyin {
+            font-size: 0.75rem; /* Smaller font size for pinyin */
+            color: #6b7280; /* Gray-500 */
+            margin-top: -0.25rem; /* Adjust spacing */
+            margin-bottom: 0.25rem;
+        }
+
+        /* Custom styles for the definition popup */
+        .definition-popup {
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none; /* Allow clicks to pass through when hidden */
+            position: absolute; /* Added position absolute */
+            top: calc(100% + 5px); /* Position below the trigger */
+            left: 0;
+            transform: translateY(5px); /* Slight initial offset for transition */
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out, transform 0.2s ease-in-out;
+        }
+
+        /* Show on hover for the parent group */
+        .group:hover .definition-popup {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto; /* Enable clicks when visible */
+            transform: translateY(0);
+        }
+
+        /* Show on click (active state) */
+        .definition-popup.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto; /* Enable clicks when active */
+            transform: translateY(0);
+        }
+
+        /* Arrow for the popup */
+        .definition-popup::before {
+            content: '';
+            position: absolute;
+            bottom: 100%; /* Position above the popup */
+            left: 15px; /* Adjust as needed to align with term */
+            border-width: 8px;
+            border-style: solid;
+            border-color: transparent transparent #db2777 transparent; /* Match bg-pink-700 */
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans leading-normal tracking-normal">
-
-    <div class="min-h-screen flex flex-col">
-        <!-- Header & Navigation -->
-        <header class="bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-lg p-4 sticky top-0 z-50">
-            <h1 class="text-3xl font-extrabold text-center mb-2">中英声音词典：双语发音词汇</h1>
-            <p class="text-center text-lg opacity-90">Bilingual: Chinese-English Audio Vocabulary</p>
-
-            <nav class="flex flex-wrap justify-center gap-3 mt-4">
-                <!-- 📚 应用概览 (Application Overview) - Re-added as Introduction -->
-                <button class="nav-item nav-active text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-blue-500 text-white shadow-md hover:bg-blue-600 transition-colors duration-200" data-tab="introduction">
-                    <span class="mb-1">📚 应用概览</span>
-                    <span class="text-xs opacity-90">Application Overview</span>
-                </button>
-
-                <!-- 🗣️ 气调与感叹词 (Interjections & Exclamations) -->
-                <button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-green-500 text-white shadow-md hover:bg-green-600 transition-colors duration-200" data-tab="interjections">
-                    <span class="mb-1">🗣️ 气调与感叹词</span>
-                    <span class="text-xs opacity-90">Interjections & Exclamations</span>
-                </button>
-
-                <!-- 🔊 拟声词 (Onomatopoeia) -->
-                <button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-purple-500 text-white shadow-md hover:bg-purple-600 transition-colors duration-200" data-tab="onomatopoeia">
-                    <span class="mb-1">🔊 拟声词</span>
-                    <span class="text-xs opacity-90">Onomatopoeia</span>
-                </button>
-
-                <!-- 🌍 万物之声 (Sounds of All Things) -->
-                <button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-yellow-500 text-white shadow-md hover:bg-yellow-600 transition-colors duration-200" data-tab="otherSounds">
-                    <span class="mb-1">🌍 万物之声</span>
-                    <span class="text-xs opacity-90">Sounds of All Things</span>
-                </button>
-
-                <!-- 🐞 昆虫拟声词 (Insect Onomatopoeia) -->
-                <button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-red-500 text-white shadow-md hover:bg-red-600 transition-colors duration-200" data-tab="insectOnomatopoeia">
-                    <span class="mb-1">🐞 昆虫拟声词</span>
-                    <span class="text-xs opacity-90">Insect Onomatopoeia</span>
-                </button>
-                
-                <!-- 🗣️ 人声音的形容词汇 (Adjectives Describing Human Voices) -->
-                <button class="nav-item text-base px-3 py-2 rounded-lg flex flex-col items-center justify-center bg-teal-500 text-white shadow-md hover:bg-teal-600 transition-colors duration-200" data-tab="voiceAdjectives">
-                    <span class="mb-1">🗣️ 人声音的形容词汇</span>
-                    <span class="text-xs opacity-90">Adjectives Describing Human Voices</span>
-                </button>
-            </nav>
-        </header>
-
-        <!-- Main Content -->
-        <main class="flex-grow container mx-auto p-4 md:p-6 lg:p-8">
-            <!-- 📚 应用概览 (Application Overview) - Re-added as Introduction -->
-            <section id="introduction" class="content-section">
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">📚 欢迎来到中英声音词典！</h2>
-                    <p class="text-gray-700 mb-2 leading-relaxed">
-                        本应用旨在为您提供一个便捷的中文与英文声音词汇学习和查询工具。我们整理了多种类别与特点的声音词汇，帮助您更好地理解和使用它们。
-                    </p>
-                    <p class="text-gray-600 text-sm mb-6 leading-relaxed">
-                        This application aims to provide you with a convenient tool for learning and looking up Chinese and English sound vocabulary. We have organized sound vocabulary by various categories and characteristics to help you better understand and use them.
-                    </p>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-3">主要功能与内容概览：</h3>
-                    <ul class="list-disc list-inside text-gray-700 space-y-2">
-                        <li>
-                            <span class="font-medium text-green-600">🗣️ 气调与感叹词 (Interjections & Exclamations):</span>
-                            这类词汇主要用于表达情感、引起注意或模拟特定情景下的语气。
-                            <p class="text-gray-600 text-sm mt-1">These words are mainly used to express emotions, attract attention, or simulate tones in specific situations.</p>
-                        </li>
-                        <li>
-                            <span class="font-medium text-purple-600">🔊 拟声词 (Onomatopoeia):</span>
-                            这类词汇通过模仿自然界、人与行为、人群与环境的声音来描述事物。
-                            <p class="text-gray-600 text-sm mt-1">These words describe things by imitating sounds from nature, human actions, and crowds/environments.</p>
-                        </li>
-                        <li>
-                            <span class="font-medium text-yellow-600">🌍 万物之声 (Sounds of All Things):</span>
-                            本节收录了自然界、动物、物体等各种声音的描述。
-                            <p class="text-gray-600 text-sm mt-1">This section includes descriptions of various sounds from nature, animals, objects, and more.</p>
-                        </li>
-                        <li>
-                            <span class="font-medium text-red-600">🐞 昆虫拟声词 (Insect Onomatopoeia):</span>
-                            本节收录了不同昆虫发出的声音。
-                            <p class="text-gray-600 text-sm mt-1">This section collects sounds made by different insects.</p>
-                        </li>
-                        <li>
-                            <span class="font-medium text-teal-600">🗣️ 人声音的形容词汇 (Adjectives Describing Human Voices):</span>
-                            这里整理了描述人声音特点的形容词，按音色、音量、音调和声音特点进行分类。
-                            <p class="text-gray-600 text-sm mt-1">This section compiles adjectives describing human voice characteristics, categorized by timbre, volume, pitch, and other features.</p>
-                        </li>
-                    </ul>
-                    <p class="text-gray-700 mt-6 leading-relaxed">
-                        每个类别都配有实时搜索功能，方便您快速查找所需词汇。希望本词典能成为您学习和探索声音词汇的得力助手！
-                    </p>
-                    <p class="text-gray-600 text-sm mt-2 leading-relaxed">
-                        Each category is equipped with a real-time search function, making it convenient for you to quickly find the vocabulary you need. We hope this dictionary becomes a powerful assistant in your learning and exploration of sound vocabulary!
-                    </p>
-                </div>
-            </section>
-
-            <!-- 🗣️ 气调与感叹词 (Interjections & Exclamations) -->
-            <section id="interjections" class="content-section hidden">
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-green-700 mb-2">🗣️ 气调与感叹词</h2>
-                    <p class="text-gray-600 mb-2">这类词汇主要用于表达情感、引起注意或模拟特定情景下的语气。</p>
-                    <p class="text-gray-600 text-sm mb-4">These words are mainly used to express emotions, attract attention, or simulate tones in specific situations.</p>
-                    <input type="text" id="searchInterjections" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="🔍 搜索中文/拼音或英文...">
-                    <div class="table-container overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[700px]">
-                            <thead class="sticky top-0 bg-gray-100">
-                                <tr>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音)</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">英文释义</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">中英说明（Chinese and English Description）</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">中文例句</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">英文例句</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableInterjections">
-                                <!-- Data will be populated here by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 🔊 拟声词 (Onomatopoeia) -->
-            <section id="onomatopoeia" class="content-section hidden">
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-purple-700 mb-2">🔊 拟声词</h2>
-                    <p class="text-gray-600 mb-2">这类词汇通过模仿声音来描述事物。请选择一个子类别进行查看。</p>
-                    <p class="text-600 text-sm mb-4">These words describe things by imitating sounds. Please select a sub-category to view.</p>
-                    <div class="flex flex-wrap justify-center gap-2 mb-6">
-                        <button class="sub-nav-item bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold active" data-sub-tab="nature">一、自然界</button>
-                        <button class="sub-nav-item bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="human">二、人与行为</button>
-                        <button class="sub-nav-item bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="crowd">三、人群与环境</button>
-                    </div>
-                    <input type="text" id="searchOnomatopoeia" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-purple-500 focus:border-purple-500" placeholder="🔍 搜索中文/拼音或英文...">
-                    <div class="table-container overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[700px]">
-                            <thead class="sticky top-0 bg-gray-100">
-                                <tr>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音)</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">英文释义</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">中英说明（Chinese and English Description）</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">中文例句</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">英文例句</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableOnomatopoeia">
-                                <!-- Data will be populated here by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 🌍 万物之声 (Sounds of All Things) -->
-            <section id="otherSounds" class="content-section hidden">
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-yellow-700 mb-2">🌍 万物之声</h2>
-                    <p class="text-gray-600 mb-2">本节收录了自然界、动物、物体等各种声音的描述。</p>
-                    <p class="text-gray-600 text-sm mb-4">This section includes descriptions of various sounds from nature, animals, objects, and more.</p>
-                    <input type="text" id="searchOtherSounds" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" placeholder="🔍 搜索中文/拼音或英文...">
-                    <div class="table-container overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[700px]">
-                            <thead class="sticky top-0 bg-gray-100">
-                                <tr>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">类别</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">子类别</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音)</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">英文释义</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableOther">
-                                <!-- Data will be populated here by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 🐞 昆虫拟声词 (Insect Onomatopoeia) -->
-            <section id="insectOnomatopoeia" class="content-section hidden">
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-red-700 mb-2">🐞 昆虫拟声词</h2>
-                    <p class="text-gray-600 mb-2">本节收录了不同昆虫发出的声音。</p>
-                    <p class="text-gray-600 text-sm mb-4">This section collects sounds made by different insects.</p>
-                    <input type="text" id="searchInsect" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-red-500 focus:border-red-500" placeholder="🔍 搜索中文/拼音或英文...">
-                    <div class="table-container overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[700px]">
-                            <thead class="sticky top-0 bg-gray-100">
-                                <tr>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">昆虫 (拼音)</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">拟声词 (拼音)</th>
-                                    <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableInsect">
-                                <!-- Data will be populated here by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-            </section>
-
-            <!-- 🗣️ 人声音的形容词汇 (Adjectives Describing Human Voices) -->
-            <section id="voiceAdjectives" class="content-section hidden">
-                <div class="bg-white p-6 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-teal-700 mb-2">人声音的形容词汇 (Adjectives Describing Human Voices)</h2>
-                    <p class="text-gray-600 mb-2">这里整理了描述人声音特点的形容词，按音色、音量、音调和声音特点进行分类。请选择一个子类别进行查看。</p>
-                    <p class="text-gray-600 text-sm mb-4">This section compiles adjectives describing human voice characteristics, categorized by timbre, volume, pitch, and other features. Please select a sub-category to view.</p>
-                    <div class="flex flex-wrap justify-center gap-2 mb-6">
-                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold active" data-sub-tab="timbre">
-                            一、按音色分类<br><span class="text-xs opacity-90">By Timbre</span>
-                        </button>
-                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="volume">
-                            二、按音量分类<br><span class="text-xs opacity-90">By Volume</span>
-                        </button>
-                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="pitch">
-                            三、按音调分类<br><span class="text-xs opacity-90">By Pitch</span>
-                        </button>
-                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="features">
-                            四、按声音特点分类<br><span class="text-xs opacity-90">By Sound Characteristics</span>
-                        </button>
-                        <button class="sub-nav-item sub-nav-item-voice bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold" data-sub-tab="internetSlangs">
-                            五、网络声音俚语<br><span class="text-xs opacity-90">Internet Sound Slangs</span>
-                        </button>
-                    </div>
-                    <input type="text" id="searchVoiceAdjectives" class="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-teal-500 focus:border-teal-500" placeholder="🔍 搜索中文/拼音或英文...">
-                    <div class="table-container overflow-x-auto">
-                        <table class="w-full text-left border-collapse min-w-[700px]">
-                             <thead class="sticky top-0 bg-gray-100" id="voiceAdjectivesTableHeader">
-                                <!-- Table headers will be dynamically populated by JavaScript -->
-                            </thead>
-                            <tbody id="tableVoiceAdjectives">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-        </main>
+<body class="text-slate-800">
+    <div class="bg-gray-100 text-gray-700 p-3 text-center text-sm rounded-b-lg shadow-md mb-4">
+        <p><strong>请注意：我已尽力通过检查验证部分数据，但内容中仍可能存在不准确之处。</strong></p>
+        <p><strong>Please note: I have done my best to verify some of the data through checks, but there may still be inaccuracies in the content.</strong></p>
     </div>
 
+    <div class="bg-red-100 text-red-800 p-3 text-center text-sm rounded-b-lg shadow-md">
+        <p><strong>仅用于参考和学习。此为生成数据合集，我们无法保证其准确性。</strong></p>
+        <p><strong>For reference and learning only. This is a generated collection of data, and we cannot guarantee its accuracy.</strong></p>
+    </div>
+
+    <nav class="bg-pink-600 p-4 shadow-lg sticky top-0 z-50 rounded-b-lg">
+        <div class="container mx-auto flex flex-wrap justify-center md:justify-between items-center">
+            <a href="#" class="text-white text-2xl font-bold mb-2 md:mb-0">生理期科普 | Menstrual Education</a>
+            <div class="flex flex-wrap gap-4 text-sm md:text-base">
+                <a href="#introduction" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">简介 | Intro</a>
+                <a href="#terms" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">常用词汇 | Terms</a>
+                <a href="#sentences" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">例句 | Sentences</a>
+                <a href="#phases" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">周期阶段 | Phases</a>
+                <a href="#hygiene" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">卫生 | Hygiene</a>
+                <a href="#emotional-health" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">情绪 | Emotions</a>
+                <a href="#myths" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">误解 | Myths</a>
+                <a href="#tracking" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">追踪 | Tracking</a>
+                <a href="#disorders" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">疾病 | Disorders</a>
+                <a href="#environmental" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">环保 | Eco</a>
+                <a href="#male-ally" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">男性支持 | Male Ally</a>
+                <a href="#faqs" class="text-white hover:text-pink-200 transition duration-300 px-2 py-1 rounded-md">常见问题 | FAQs</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-8 mt-8 bg-white shadow-xl rounded-lg">
+
+        <section id="introduction" class="mb-12 p-6 bg-pink-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-pink-700 mb-4 section-header">简介 | Introduction</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <p class="text-lg leading-relaxed mb-4">
+                        欢迎来到这份关于生理期的中英双语科普网页。我们提供简单、准确的信息，帮助每个人更好地了解月经周期。
+                    </p>
+                    <p class="text-lg leading-relaxed">
+                        无论你是初次来月经的女孩、想了解伴侣的男士，还是对女性健康感兴趣的读者，都可以在这里找到有用的知识。
+                    </p>
+                    <p class="text-lg leading-relaxed">
+                        理解生理期有助于照顾自己，也促进相互尊重和理解。
+                    </p>
+                </div>
+                <div>
+                    <p class="text-lg leading-relaxed mb-4">
+                        Welcome to this bilingual educational page about menstruation. We provide clear and accurate information to help everyone better understand the menstrual cycle.
+                    </p>
+                    <p class="text-lg leading-relaxed">
+                        Whether you're experiencing your first period, a male partner wanting to learn more, or simply curious about women's health — you'll find helpful knowledge here.
+                    </p>
+                    <p class="text-lg leading-relaxed">
+                        Understanding menstruation helps us take better care of ourselves and promotes respect and understanding among all genders.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="terms" class="mb-12 p-6 bg-green-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-green-700 mb-4 section-header">常用词汇 | Common Terms</h2>
+
+            <h3 class="text-2xl font-semibold text-green-800 mb-3 mt-6">基本词汇 | Basic Terms</h3>
+            <p class="text-base text-gray-700 mb-4">
+                这些是了解月经周期和女性生殖健康所需的核心术语。掌握它们将帮助您更好地理解后续内容。
+                <br>These are the core terms needed to understand the menstrual cycle and female reproductive health. Mastering them will help you better understand the subsequent content.
+            </p>
+            <hr class="my-4 border-gray-300">
+            <div id="basicTerms" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-lg">
+                <!-- Terms will be dynamically loaded here -->
+            </div>
+
+            <h3 class="text-2xl font-semibold text-green-800 mb-3 mt-6">生理现象与过程 | Physiological Phenomena & Processes</h3>
+            <p class="text-base text-gray-700 mb-4">
+                本节介绍与月经周期相关的关键生理过程和身体部位。了解这些有助于您理解身体内部的运作方式。
+                <br>This section introduces key physiological processes and body parts related to the menstrual cycle. Understanding these will help you comprehend how your body works internally.
+            </p>
+            <hr class="my-4 border-gray-300">
+            <div id="physiologicalTerms" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-lg">
+                <!-- Terms will be dynamically loaded here -->
+            </div>
+
+            <h3 class="text-2xl font-semibold text-green-800 mb-3 mt-6">激素 | Hormones</h3>
+            <p class="text-base text-gray-700 mb-4">
+                激素在月经周期中扮演着至关重要的角色，它们调节着从排卵到月经的整个过程。了解这些激素有助于理解身体的复杂性。
+                <br>Hormones play a crucial role in the menstrual cycle, regulating the entire process from ovulation to menstruation. Understanding these hormones helps in comprehending the body's complexity.
+            </p>
+            <hr class="my-4 border-gray-300">
+            <div id="hormoneTerms" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-lg">
+                <!-- Terms will be dynamically loaded here -->
+            </div>
+
+            <h3 class="text-2xl font-semibold text-green-800 mb-3 mt-6">卫生用品 | Hygiene Products</h3>
+            <p class="text-base text-gray-700 mb-4">
+                选择合适的卫生用品对于生理期期间的舒适和卫生至关重要。这里介绍了几种常见的选择。
+                <br>Choosing the right hygiene products is crucial for comfort and hygiene during your period. Here are some common options.
+            </p>
+            <hr class="my-4 border-gray-300">
+            <p class="text-lg leading-relaxed mb-4">
+                市面上的卫生用品大多是一次性的，如卫生巾和卫生棉条。虽然可重复使用的产品（如月经杯和布卫生巾）是更环保的选择，但它们需要严格的清洁和维护，以确保卫生和安全。
+            </p>
+            <p class="text-lg leading-relaxed mb-4">
+                Most hygiene products available are disposable, such as sanitary pads and tampons. While reusable products (like menstrual cups and cloth pads) are more environmentally friendly options, they require strict cleaning and maintenance to ensure hygiene and safety.
+            </p>
+            <div id="hygieneProductsTerms" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-lg">
+                <!-- Terms will be dynamically loaded here -->
+            </div>
+
+            <h3 class="text-2xl font-semibold text-green-800 mb-3 mt-6">症状与异常 | Symptoms & Irregularities</h3>
+            <p class="text-base text-gray-700 mb-4">
+                月经期间可能会出现各种症状，有些是常见的，有些则可能预示着需要医疗关注。了解这些症状有助于您更好地管理自己的健康。
+                <br>Various symptoms may occur during menstruation, some common and others indicating a need for medical attention. Understanding these symptoms helps you better manage your health.
+            </p>
+            <hr class="my-4 border-gray-300">
+            <div id="symptomsTerms" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-lg">
+                <!-- Terms will be dynamically loaded here -->
+            </div>
+
+            <h3 class="text-2xl font-semibold text-green-800 mb-3 mt-6">相关疾病 | Related Disorders</h3>
+            <p class="text-base text-gray-700 mb-4">
+                除了正常的生理现象，有些女性可能会遇到与月经相关的健康问题。了解这些疾病有助于及时寻求医疗帮助。
+                <br>Beyond normal physiological phenomena, some women may encounter menstrual-related health issues. Understanding these disorders helps in seeking timely medical assistance.
+            </p>
+            <hr class="my-4 border-gray-300">
+            <div id="disorderTerms" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-lg">
+                <!-- Terms will be dynamically loaded here -->
+            </div>
+
+            <h3 class="text-2xl font-semibold text-green-800 mb-3 mt-6">其他相关术语 | Other Related Terms</h3>
+            <p class="text-base text-gray-700 mb-4">
+                本节包含一些可能在您了解月经周期时遇到的其他重要术语，它们有助于提供更全面的视角。
+                <br>This section includes other important terms you might encounter when learning about the menstrual cycle, providing a more comprehensive perspective.
+            </p>
+            <hr class="my-4 border-gray-300">
+            <div id="otherTerms" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-lg">
+                <!-- Terms will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <section id="sentences" class="mb-12 p-6 bg-blue-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-blue-700 mb-4 section-header">例句 | Example Sentences</h2>
+            <p class="text-base text-gray-700 mb-6">
+                以下是一些关于生理期的常用例句，包含中文、拼音和英文翻译，帮助您更好地理解和使用这些词汇。
+                <br>Here are some common example sentences about menstruation, including Chinese, Pinyin, and English translations, to help you better understand and use these terms.
+            </p>
+
+            <div class="space-y-6">
+                <div class="p-4 bg-white border border-blue-200 rounded-lg shadow-sm">
+                    <p class="text-lg font-semibold text-gray-800">1. 我的生理期通常持续五天。</p>
+                    <p class="pinyin text-blue-600">Wǒ de shēnglǐqī tōngcháng chíxù wǔ tiān.</p>
+                    <p class="text-gray-600">My period usually lasts five days.</p>
+                </div>
+                <div class="p-4 bg-white border border-blue-200 rounded-lg shadow-sm">
+                    <p class="text-lg font-semibold text-gray-800">2. 她有痛经，每个月都很难受。</p>
+                    <p class="pinyin text-blue-600">Tā yǒu tòngjīng, měi ge yuè dōu hěn nánshòu.</p>
+                    <p class="text-gray-600">She has menstrual cramps and feels uncomfortable every month.</p>
+                </div>
+                <div class="p-4 bg-white border border-blue-200 rounded-lg shadow-sm">
+                    <p class="text-lg font-semibold text-gray-800">3. 月经杯是一种环保的生理期用品。</p>
+                    <p class="pinyin text-blue-600">Yuèjīngbēi shì yī zhǒng huánbǎo de shēnglǐqī yòngpǐn.</p>
+                    <p class="text-gray-600">A menstrual cup is an eco-friendly period product.</p>
+                </div>
+                <div class="p-4 bg-white border border-blue-200 rounded-lg shadow-sm">
+                    <p class="text-lg font-semibold text-gray-800">4. 记录月经周期有助于预测排卵日。</p>
+                    <p class="pinyin text-blue-600">Jìlù yuèjīng zhōuqī yǒu zhù yú yùcè páiluǎnrì.</p>
+                    <p class="text-gray-600">Tracking your menstrual cycle helps to predict ovulation day.</p>
+                </div>
+                <div class="p-4 bg-white border border-blue-200 rounded-lg shadow-sm">
+                    <p class="text-lg font-semibold text-gray-800">5. 青春期少女需要接受月经教育。</p>
+                    <p class="pinyin text-blue-600">Qīngchūnqī shàonǚ xūyào jiēshòu yuèjīng jiàoyù.</p>
+                    <p class="text-gray-600">Adolescent girls need to receive menstrual education.</p>
+                </div>
+                <div class="p-4 bg-white border border-blue-200 rounded-lg shadow-sm">
+                    <p class="text-lg font-semibold text-gray-800">6. 均衡饮食和适度运动有助于缓解PMS症状。</p>
+                    <p class="pinyin text-blue-600">Jūnhéng yǐnshí hé shìdù yùndòng yǒu zhù yú huǎnjiě PMS zhèngzhuàng.</p>
+                    <p class="text-gray-600">Balanced diet and moderate exercise help alleviate PMS symptoms.</p>
+                </div>
+                <div class="p-4 bg-white border border-blue-200 rounded-lg shadow-sm">
+                    <p class="text-lg font-semibold text-gray-800">7. 如果月经量异常，应该及时就医。</p>
+                    <p class="pinyin text-blue-600">Rúguǒ yuèjīng liàng yìcháng, yīnggāi jíshí jiùyī.</p>
+                    <p class="text-gray-600">If menstrual flow is abnormal, you should seek medical attention promptly.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="phases" class="mb-12 p-6 bg-purple-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-purple-700 mb-4 section-header">月经周期阶段 | Menstrual Cycle Phases</h2>
+            <p class="text-base text-gray-700 mb-6">
+                了解月经周期的四个主要阶段对于女性健康管理至关重要。
+                <br>Understanding the four main phases of the menstrual cycle is crucial for women's health management.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="p-5 bg-white border border-purple-200 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold text-purple-800 mb-2">月经期 | Menstrual Phase</h3>
+                    <p class="text-gray-700 mb-2">
+                        <strong>天数 | Days:</strong> 第 1-5 天 | Days 1-5
+                    </p>
+                    <p class="text-gray-700">
+                        <strong>描述 | Description:</strong> 子宫内膜脱落并排出体外，即为月经。
+                        <br>The uterine lining sheds and exits the body, which is menstruation.
+                    </p>
+                </div>
+
+                <div class="p-5 bg-white border border-purple-200 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold text-purple-800 mb-2">卵泡期 | Follicular Phase</h3>
+                    <p class="text-gray-700 mb-2">
+                        <strong>天数 | Days:</strong> 第 6-13 天 | Days 6-13
+                    </p>
+                    <p class="text-gray-700">
+                        <strong>描述 | Description:</strong> 卵巢中的卵泡开始发育，子宫内膜增厚为可能怀孕做准备。
+                        <br>Follicles in the ovaries begin to develop, and the uterine lining thickens in preparation for possible pregnancy.
+                    </p>
+                </div>
+
+                <div class="p-5 bg-white border border-purple-200 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold text-purple-800 mb-2">排卵期 | Ovulation Phase</h3>
+                    <p class="text-gray-700 mb-2">
+                        <strong>天数 | Days:</strong> 第 14 天左右 | Around Day 14
+                    </p>
+                    <p class="text-gray-700">
+                        <strong>描述 | Description:</strong> 成熟的卵子从卵巢中释放出来，可以受精。
+                        <br>A mature egg is released from the ovary and can be fertilized.
+                    </p>
+                </div>
+
+                <div class="p-5 bg-white border border-purple-200 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold text-purple-800 mb-2">黄体期 | Luteal Phase</h3>
+                    <p class="text-gray-700 mb-2">
+                        <strong>天数 | Days:</strong> 第 15-28 天 | Days 15-28
+                    </p>
+                    <p class="text-gray-700">
+                        <strong>描述 | Description:</strong> 如果卵子未受精，子宫内膜会开始分解，为下次月经做准备。
+                        <br>If the egg is not fertilized, the uterine lining begins to break down, preparing for the next period.
+                    </p>
+                </div>
+            </div>
+
+            <p class="text-base text-gray-700 mb-6">
+                <strong>请注意：</strong>这些天数是基于一个平均 28 天的周期，实际情况可能因人而异。
+                <br><strong>Note:</strong> These days are based on an average 28-day cycle, and actual situations may vary from person to person.
+            </p>
+
+            <div class="flex justify-center items-center py-6 bg-purple-100 rounded-lg shadow-inner">
+                <svg id="menstrualCycleChart" width="300" height="300" viewBox="0 0 300 300">
+                    <circle cx="150" cy="150" r="140" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+
+                    <circle cx="150" cy="150" r="120" fill="none" stroke="#cbd5e1" stroke-width="1"/>
+
+                    <circle cx="150" cy="150" r="80" fill="none" stroke="#94a3b8" stroke-width="1"/>
+                </svg>
+            </div>
+        </section>
+
+        <section id="hygiene" class="mb-12 p-6 bg-red-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-red-700 mb-4 section-header">经期卫生 | Menstrual Hygiene</h2>
+            <p class="text-base text-gray-700 mb-6">
+                良好的经期卫生习惯对于健康和舒适至关重要。
+                <br>Good menstrual hygiene practices are essential for health and comfort.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-2xl font-semibold text-red-800 mb-3">经期卫生习惯 | Hygiene Practices</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>勤更换卫生用品:</strong> 根据流量每 4-6 小时更换一次卫生巾或卫生棉条，月经杯则根据说明更换。
+                            <br><strong>Change products frequently:</strong> Change pads or tampons every 4-6 hours depending on flow. Menstrual cups according to instructions.</li>
+                        <li><strong>正确清洗:</strong> 用温水和温和的肥皂清洗外阴，避免冲洗阴道内部。
+                            <br><strong>Proper washing:</strong> Wash the vulva with warm water and mild soap, avoid douching inside the vagina.</li>
+                        <li><strong>妥善处理:</strong> 将用过的卫生用品用纸巾包裹好，扔进垃圾桶，不要冲入马桶。
+                            <br><strong>Proper disposal:</strong> Wrap used hygiene products in tissue and dispose of them in a trash can, do not flush down the toilet.</li>
+                        <li><strong>穿透气的内裤:</strong> 棉质内裤有助于保持私处透气干燥。
+                            <br><strong>Wear breathable underwear:</strong> Cotton underwear helps keep the private area airy and dry.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-red-800 mb-3">误区避免 | Avoid Misconceptions</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>避免过度清洁:</strong> 阴道有自我清洁的能力，过度清洁会破坏其自然菌群。
+                            <br><strong>Avoid over-cleaning:</strong> The vagina has self-cleaning abilities; over-cleaning can disrupt its natural flora.</li>
+                        <li><strong>避免使用香味产品:</strong> 香味卫生巾或洗液可能引起刺激或过敏。
+                            <br><strong>Avoid scented products:</strong> Scented pads or washes may cause irritation or allergies.</li>
+                        <li><strong>不要长时间使用同一卫生用品::</strong> 可能导致细菌滋生，增加感染风险。
+                            <br><strong>Do not use the same product for too long:</strong> Can lead to bacterial growth and increase infection risk.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="emotional-health" class="mb-12 p-6 bg-indigo-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-indigo-700 mb-4 section-header">情绪与生理期 | Emotions & Period</h2>
+            <p class="text-base text-gray-700 mb-6">
+                生理期前后，由于激素水平波动，许多人会经历情绪变化。理解并管理这些情绪至关重要。
+                <br>Around the menstrual period, many individuals experience mood changes due to hormone fluctuations. Understanding and managing these emotions is crucial.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-2xl font-semibold text-indigo-800 mb-3">常见情绪 | Common Emotions</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>烦躁易怒:</strong> 感觉情绪不稳定，容易生气或不耐烦。
+                            <br><strong>Irritability:</strong> Feeling emotionally unstable, easily angered or impatient.</li>
+                        <li><strong>情绪低落:</strong> 可能感到悲伤、沮丧或缺乏动力。
+                            <br><strong>Low mood:</strong> May feel sad, depressed, or lack motivation.</li>
+                        <li><strong>焦虑不安:</strong> 感到紧张、担忧，难以放松。
+                            <br><strong>Anxiety:</strong> Feeling tense, worried, and difficulty relaxing.</li>
+                        <li><strong>疲劳:</strong> 即使休息也可能感到持续的疲惫。
+                            <br><strong>Fatigue:</strong> May feel persistent tiredness even with rest.</li>
+                        <li><strong>食欲变化:</strong> 可能对某些食物有强烈的渴望，或食欲不振。
+                            <br><strong>Appetite changes:</strong> May have strong cravings for certain foods, or lack of appetite.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-indigo-800 mb-3">应对策略 | Coping Strategies</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>健康饮食:</strong> 减少咖啡因、糖和盐的摄入，多吃富含复合碳水化合物的食物。
+                            <br><strong>Healthy diet:</strong> Reduce caffeine, sugar, and salt intake, eat more complex carbohydrates.</li>
+                        <li><strong>适度运动:</strong> 轻度运动如散步、瑜伽可以帮助缓解情绪和身体不适。
+                            <br><strong>Moderate exercise:</strong> Light exercise like walking, yoga can help alleviate emotional and physical discomfort.</li>
+                        <li><strong>充足睡眠:</strong> 保证 7-9 小时的高质量睡眠。
+                            <br><strong>Adequate sleep:</strong> Ensure 7-9 hours of quality sleep.</li>
+                        <li><strong>放松技巧:</strong> 尝试冥想、深呼吸或听音乐等放松活动。
+                            <br><strong>Relaxation techniques:</strong> Try relaxation activities such as meditation, deep breathing, or listening to music.</li>
+                        <li><strong>寻求支持:</strong> 和信任的朋友、家人交流，或考虑寻求专业心理咨询。
+                            <br><strong>Seek support:</b> Talk to trusted friends, family, or consider professional psychological counseling.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="myths" class="mb-12 p-6 bg-yellow-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-yellow-700 mb-4 section-header">文化禁忌与误解 | Cultural Taboos & Misconceptions</h2>
+            <p class="text-base text-gray-700 mb-6">
+                在许多文化中，月经常与各种禁忌和误解相关联。这些错误的观念可能导致歧视和不必要的心理负担。
+                <br>In many cultures, menstruation is often associated with various taboos and misconceptions. These wrong notions can lead to discrimination and unnecessary psychological burdens.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-2xl font-semibold text-yellow-800 mb-3">常见误解 | Common Misconceptions</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>“经期不能洗头洗澡”：</strong> 这是错误的。经期保持清洁很重要，温水洗浴有助于缓解不适。
+                            <br><strong>"Cannot wash hair or bathe during period":</strong> This is wrong. It's important to maintain hygiene during menstruation; warm baths can help alleviate discomfort.</li>
+                        <li><strong>“经期不能剧烈运动”：</strong> 适度运动有益健康，有助于缓解经期症状。
+                            <br><strong>"Cannot do strenuous exercise during period":</strong> Moderate exercise is beneficial for health and can help alleviate menstrual symptoms.</li>
+                        <li><strong>“经血是污秽的”：</strong> 经血是身体正常生理过程的一部分，并非不洁。
+                            <br><strong>"Menstrual blood is dirty":</strong> Menstrual blood is part of a normal physiological process of the body and is not unclean.</li>
+                        <li><strong>“经期女性不能参与宗教活动或烹饪”：</strong> 这些是文化习俗，没有科学依据。
+                            <br><strong>"Menstruating women cannot participate in religious activities or cooking":</strong> These are cultural customs with no scientific basis.</li>
+                        <li><strong>“初潮很晚或经期不规律说明不健康”：</strong> 初潮年龄和周期长度因人而异，初期不规律很常见。
+                            <br><strong>"Late menarche or irregular periods indicate ill health":</strong> Age of menarche and cycle length vary among individuals, and irregularity in the early stages is common.</li>
+                        <li><strong>“生理期需要严格忌口”：</strong> 均衡饮食即可，没有特殊禁忌，但可根据个人体验调整。
+                            <br><strong>"Strict dietary restrictions during period":</strong> A balanced diet is sufficient; there are no special taboos, but adjustments can be made based on personal experience.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-yellow-800 mb-3">破除误解的重要性 | Importance of Dispelling Misconceptions</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>促进健康:</strong> 消除误解能鼓励女性采取正确的卫生和健康管理方式。
+                            <br><strong>Promote health:</strong> Dispelling misconceptions encourages women to adopt correct hygiene and health management practices.</li>
+                        <li><strong>减少歧视:</strong> 有助于营造一个对月经更开放、更尊重的社会环境。
+                            <br><strong>Reduce discrimination:</strong> Helps create a more open and respectful social environment regarding menstruation.</li>
+                        <li><strong>增强自信:</strong> 帮助女性摆脱不必要的羞耻感和心理负担。
+                            <br><strong>Boost confidence:</strong> Helps women shed unnecessary feelings of shame and psychological burden.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="tracking" class="mb-12 p-6 bg-teal-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-teal-700 mb-4 section-header">追踪月经周期 | Tracking Menstrual Cycle</h2>
+            <p class="text-base text-gray-700 mb-6">
+                追踪月经周期可以帮助您更好地了解自己的身体，预测月经和排卵，并发现潜在的健康问题。
+                <br>Tracking your menstrual cycle can help you better understand your body, predict periods and ovulation, and identify potential health issues.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-2xl font-semibold text-teal-800 mb-3">为什么要追踪？ | Why Track?</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>预测月经:</strong> 准确预测下次月经来潮时间。
+                            <br><strong>Predict periods:</strong> Accurately predict the timing of your next period.</li>
+                        <li><strong>了解排卵期:</strong> 对于计划怀孕或避免怀孕都很重要。
+                            <br><strong>Understand ovulation:</strong> Important for both planning or avoiding pregnancy.</li>
+                        <li><strong>识别模式:</strong> 发现经期症状、情绪和身体变化的规律。
+                            <br><strong>Identify patterns:</strong> Discover patterns in menstrual symptoms, moods, and physical changes.</li>
+                        <li><strong>健康监测:</strong> 发现月经周期的异常，及时就医。
+                            <br><strong>Health monitoring:</strong> Detect abnormalities in the menstrual cycle and seek medical attention promptly.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-teal-800 mb-3">如何追踪？ | How to Track?</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>日历法:</strong> 在日历上标记月经开始和结束日期。
+                            <br><strong>Calendar method:</strong> Mark the start and end dates of your period on a calendar.</li>
+                        <li><strong>App 应用:</strong> 使用月经追踪 App，如 Clue, Flo, Period Tracker 等。
+                            <br><strong>App:</strong> Use menstrual tracking apps like Clue, Flo, Period Tracker, etc.</li>
+                        <li><strong>基础体温法 (BBT):</strong> 每天早上测量基础体温，记录变化以预测排卵。
+                            <br><strong>Basal Body Temperature (BBT) method:</strong> Measure basal body temperature every morning and record changes to predict ovulation.</li>
+                        <li><strong>宫颈粘液法:</strong> 观察宫颈粘液的变化以了解排卵状态。
+                            <br><strong>Cervical Mucus method:</strong> Observe changes in cervical mucus to understand ovulation status.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="disorders" class="mb-12 p-6 bg-orange-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-orange-700 mb-4 section-header">常见月经疾病 | Common Menstrual Disorders</h2>
+            <p class="text-base text-gray-700 mb-6">
+                除了正常的月经周期变化，有些女性可能会经历需要医疗关注的月经疾病。
+                <br>Beyond normal menstrual cycle variations, some women may experience menstrual disorders that require medical attention.
+            </p>
+            <div class="space-y-6">
+                <div class="p-4 bg-white border border-orange-200 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold text-orange-800 mb-2">痛经 | Dysmenorrhea (Menstrual Cramps)</h3>
+                    <p class="text-gray-700 mb-2">
+                        <strong>描述 | Description:</strong> 月经期间出现的下腹部或骨盆区域的疼痛，可能伴有腰痛、恶心、疲劳等。
+                        <br>Pain in the lower abdomen or pelvic area during menstruation, possibly accompanied by back pain, nausea, fatigue, etc.
+                    </p>
+                    <p class="text-gray-700">
+                        <strong>何时就医 | When to seek medical attention:</strong> 如果疼痛剧烈影响日常生活，或非处方止痛药无效。
+                        <br>If pain is severe and affects daily life, or if over-the-counter pain relievers are ineffective.
+                    </p>
+                </div>
+                <div class="p-4 bg-white border border-orange-200 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold text-orange-800 mb-2">经前综合征 (PMS) 和 经前烦躁障碍 (PMDD) | PMS & PMDD</h3>
+                    <p class="text-gray-700 mb-2">
+                        <strong>描述 | Description:</strong>
+                        <ul class="list-disc list-inside ml-4">
+                            <li><strong>PMS:</strong> 月经前出现的身体和情绪症状，如情绪波动、乳房胀痛、疲劳。
+                                <br><strong>PMS:</strong> Physical and emotional symptoms occurring before menstruation, such as mood swings, breast tenderness, fatigue.</li>
+                            <li><strong>PMDD:</strong> 更严重的PMS形式，情绪症状更为剧烈，严重影响生活。
+                                <br><strong>PMDD:</strong> A more severe form of PMS, with more intense emotional symptoms that severely impact life.</li>
+                        </ul>
+                    </p>
+                    <p class="text-gray-700">
+                        <strong>何时就医 | When to seek medical attention:</strong> 如果症状严重影响情绪、工作或人际关系。
+                        <br>If symptoms severely affect mood, work, or relationships.
+                    </p>
+                </div>
+                <div class="p-4 bg-white border border-orange-200 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold text-orange-800 mb-2">多囊卵巢综合征 (PCOS) | Polycystic Ovary Syndrome (PCOS)</h3>
+                    <p class="text-gray-700 mb-2">
+                        <strong>描述 | Description:</strong> 一种激素失衡疾病，可能导致月经不规律、雄激素过高（如多毛、痤疮）、卵巢囊肿。
+                        <br>A hormonal imbalance disorder that can lead to irregular periods, high androgen levels (e.g., excessive hair growth, acne), and ovarian cysts.
+                    </p>
+                    <p class="text-gray-700">
+                        <strong>何时就医 | When to seek medical attention:</strong> 出现长期月经不规律、不明原因的体重增加、多毛或生育问题。
+                        <br>If experiencing long-term irregular periods, unexplained weight gain, excessive hair growth, or fertility issues.
+                    </p>
+                </div>
+                <div class="p-4 bg-white border border-orange-200 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold text-orange-800 mb-2">子宫内膜异位症 | Endometriosis</h3>
+                    <p class="text-gray-700 mb-2">
+                        <strong>描述 | Description:</strong> 子宫内膜样组织在子宫外生长，引起剧烈疼痛（尤其经期）、性交痛和不孕。
+                        <br>Endometrial-like tissue grows outside the uterus, causing severe pain (especially during periods), painful intercourse, and infertility.
+                    </p>
+                    <p class="text-gray-700">
+                        <strong>何时就医 | When to seek medical attention:</strong> 出现慢性盆腔疼痛、严重痛经且无法缓解、或生育困难。
+                        <br>If experiencing chronic pelvic pain, severe and unrelieved menstrual pain, or difficulty conceiving.
+                    </p>
+                </div>
+                <div class="p-4 bg-white border border-orange-200 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-semibold text-orange-800 mb-2">子宫肌瘤 | Uterine Fibroids</h3>
+                    <p class="text-gray-700 mb-2">
+                        <strong>描述 | Description:</strong> 子宫内良性肿瘤，可能导致月经过多、经期延长、盆腔压迫感。
+                        <br>Benign growths in the uterus that can cause heavy menstrual bleeding, prolonged periods, and pelvic pressure.
+                    </p>
+                    <p class="text-gray-700">
+                        <strong>何时就医 | When to seek medical attention:</strong> 出现月经过多导致贫血、盆腔持续疼痛或压迫症状。
+                        <br>If experiencing heavy menstrual bleeding leading to anemia, persistent pelvic pain, or pressure symptoms.
+                    </p>
+                </div>
+            </div>
+            <p class="text-base text-gray-700 mt-6">
+                <strong>重要提示:</strong> 如果您怀疑自己有任何月经疾病症状，请务必咨询医生。早期诊断和治疗有助于改善生活质量。
+                <br><strong>Important Note:</strong> If you suspect you have any symptoms of menstrual disorders, please consult a doctor. Early diagnosis and treatment can help improve quality of life.
+            </p>
+        </section>
+
+        <section id="environmental" class="mb-12 p-6 bg-green-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-green-700 mb-4 section-header">生理期用品的环保影响 | Environmental Impact of Period Products</h2>
+            <p class="text-base text-gray-700 mb-6">
+                一次性生理期用品对环境造成的影响不容忽视，而可重复使用的替代品则能有效减少垃圾。
+                <br>The environmental impact of disposable period products cannot be ignored, while reusable alternatives can effectively reduce waste.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-2xl font-semibold text-green-800 mb-3">一次性用品的问题 | Issues with Disposable Products</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>垃圾填埋:</strong> 卫生巾和棉条含有塑料成分，分解需要数百年。
+                            <br><strong>Landfill waste:</strong> Pads and tampons contain plastic components that take hundreds of years to decompose.</li>
+                        <li><strong>塑料污染:</strong> 大量塑料包装和应用器增加了塑料垃圾。
+                            <br><strong>Plastic pollution:</strong> Large amounts of plastic packaging and applicators contribute to plastic waste.</li>
+                        <li><strong>化学物质:</strong> 生产过程中可能使用化学漂白剂，对环境和人体健康有潜在影响。
+                            <br><strong>Chemicals:</strong> Chemical bleaches may be used in production, with potential impacts on the environment and human health.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-green-800 mb-3">可持续替代品 | Sustainable Alternatives</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>月经杯:</strong> 可重复使用多年，显著减少垃圾。
+                            <br><strong>Menstrual cups:</strong> Reusable for many years, significantly reducing waste.</li>
+                        <li><strong>布卫生巾:</strong> 可清洗重复使用，减少一次性用品消耗。
+                            <br><strong>Cloth pads:</strong> Washable and reusable, reducing consumption of disposable products.</li>
+                        <li><strong>经期裤:</strong> 吸收经血的特殊内裤，可直接清洗重复使用。
+                            <br><strong>Period underwear:</strong> Special absorbent underwear that can be washed and reused.</li>
+                        <li><strong>有机棉产品:</strong> 减少农药使用和环境污染。
+                            <br><strong>Organic cotton products:</strong> Reduce pesticide use and environmental pollution.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="male-ally" class="mb-12 p-6 bg-blue-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-blue-700 mb-4 section-header">男性作为生理期支持者 | Men as Period Allies</h2>
+            <p class="text-base text-gray-700 mb-6">
+                男性理解和支持女性的生理期体验，对于促进性别平等和打破月经污名至关重要。
+                <br>For men to understand and support women's menstrual experiences is crucial for promoting gender equality and breaking menstrual stigma.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-2xl font-semibold text-blue-800 mb-3">如何提供支持 | How to Offer Support</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>学习月经知识:</strong> 主动了解月经周期的生理知识和常见症状。
+                            <br><strong>Learn about menstruation:</strong> Actively learn about the physiology of the menstrual cycle and common symptoms.</li>
+                        <li><strong>倾听与尊重:</strong> 认真倾听女性的感受和需求，不贬低或嘲笑。
+                            <br><strong>Listen and respect:</strong> Listen attentively to women's feelings and needs, without belittling or mocking.</li>
+                        <li><strong>提供帮助:</strong> 在对方不适时，主动提供热水袋、止痛药或做家务等实际帮助。
+                            <br><strong>Offer help:</strong> When the person is uncomfortable, actively offer practical help like hot water bottles, pain relievers, or doing chores.</li>
+                        <li><strong>正常化对话:</strong> 在日常对话中，不避讳地谈论月经，将其视为正常的生理现象。
+                            <br><strong>Normalize conversation:</strong> In daily conversations, talk about menstruation openly, treating it as a normal physiological phenomenon.</li>
+                        <li><strong>反对污名化:</strong> 当听到有关月经的负面或错误言论时，积极纠正和反对。
+                            <br><strong>Oppose stigmatization:</strong> When hearing negative or incorrect remarks about menstruation, actively correct and oppose them.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-blue-800 mb-3">支持的好处 | Benefits of Support</h3>
+                    <ul class="list-disc list-inside space-y-2 text-lg text-gray-700">
+                        <li><strong>增强关系:</strong> 增进伴侣、家人或朋友之间的理解和亲密度。
+                            <br><strong>Strengthen relationships:</strong> Enhance understanding and intimacy among partners, family, or friends.</li>
+                        <li><strong>创造包容环境:</strong> 帮助营造一个让女性感到安全、被理解的社会和工作环境。
+                            <br><strong>Create inclusive environment:</strong> Help foster a social and work environment where women feel safe and understood.</li>
+                        <li><strong>促进性别平等:</strong> 挑战传统的性别刻板印象，推动真正的平等。
+                            <br><strong>Promote gender equality:</strong> Challenge traditional gender stereotypes and advance true equality.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="faqs" class="mb-12 p-6 bg-gray-50 rounded-lg shadow-md">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-700 mb-4 section-header">常见问题解答 (FAQs) | Frequently Asked Questions</h2>
+            <div class="space-y-6">
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button class="w-full text-left p-4 bg-white hover:bg-gray-100 transition duration-200 ease-in-out flex justify-between items-center faq-toggle">
+                        <span class="text-lg font-semibold text-gray-800">Q: 月经周期多长才算正常？ | How long is a normal menstrual cycle?</span>
+                        <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="p-4 bg-gray-50 faq-answer hidden">
+                        <p class="text-gray-700">
+                            <strong>A:</strong> 正常月经周期范围为 21 到 35 天，平均为 28 天。个体差异很大。
+                            <br><strong>A:</strong> A normal menstrual cycle ranges from 21 to 35 days, with an average of 28 days. There is significant individual variation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button class="w-full text-left p-4 bg-white hover:bg-gray-100 transition duration-200 ease-in-out flex justify-between items-center faq-toggle">
+                        <span class="text-lg font-semibold text-gray-800">Q: 痛经很厉害怎么办？ | What to do if menstrual cramps are severe?</span>
+                        <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="p-4 bg-gray-50 faq-answer hidden">
+                        <p class="text-gray-700">
+                            <strong>A:</strong> 可以尝试热敷、适度运动和非处方止痛药。如果疼痛持续剧烈或影响生活，建议及时就医，可能是潜在疾病的信号。
+                            <br><strong>A:</strong> You can try heat packs, moderate exercise, and over-the-counter pain relievers. If the pain remains severe or affects daily life, it's advisable to seek medical attention promptly, as it might be a sign of an underlying condition.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button class="w-full text-left p-4 bg-white hover:bg-gray-100 transition duration-200 ease-in-out flex justify-between items-center faq-toggle">
+                        <span class="text-lg font-semibold text-gray-800">Q: 怎么知道自己是否排卵了？ | How do I know if I'm ovulating?</span>
+                        <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="p-4 bg-gray-50 faq-answer hidden">
+                        <p class="text-gray-700">
+                            <strong>A:</strong> 可以通过追踪基础体温、观察宫颈粘液变化或使用排卵试纸来判断。
+                            <br><strong>A:</strong> You can determine this by tracking basal body temperature, observing changes in cervical mucus, or using ovulation predictor kits.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button class="w-full text-left p-4 bg-white hover:bg-gray-100 transition duration-200 ease-in-out flex justify-between items-center faq-toggle">
+                        <span class="text-lg font-semibold text-gray-800">Q: 月经期间可以游泳吗？ | Can I swim during my period?</span>
+                        <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="p-4 bg-gray-50 faq-answer hidden">
+                        <p class="text-gray-700">
+                            <strong>A:</strong> 可以。使用卫生棉条或月经杯可以有效防止经血渗漏，游泳对健康没有负面影响。
+                            <br><strong>A:</strong> Yes. Using tampons or menstrual cups can effectively prevent leakage, and swimming has no negative impact on health.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg overflow-hidden">
+                    <button class="w-full text-left p-4 bg-white hover:bg-gray-100 transition duration-200 ease-in-out flex justify-between items-center faq-toggle">
+                        <span class="text-lg font-semibold text-gray-800">Q: 男性如何更好地支持来月经的女性？ | How can men better support menstruating women?</span>
+                        <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="p-4 bg-gray-50 faq-answer hidden">
+                        <p class="text-gray-700">
+                            <strong>A:</strong> 学习月经知识，倾听并尊重女性的感受，提供实际帮助，并正常化关于月经的对话，反对月经污名化。
+                            <br><strong>A:</strong> By learning about menstruation, listening to and respecting women's feelings, offering practical help, and normalizing conversations about menstruation, opposing menstrual stigmatization.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <button id="scrollToTopBtn" class="scroll-to-top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <footer class="bg-pink-600 text-white py-4 mt-8 shadow-inner">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2023 生理期科普. All rights reserved.</p>
+        </div>
+    </footer>
+
     <script>
-        // Global variable to hold the current speech synthesis utterance
-        let currentUtterance = null;
+        document.addEventListener('DOMContentLoaded', () => {
+            // FAQ Toggle
+            const faqToggles = document.querySelectorAll('.faq-toggle');
+            faqToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const answer = toggle.nextElementSibling;
+                    const icon = toggle.querySelector('svg');
 
-        // Function to play or stop audio
-        function playAudio(text, lang) {
-            if ('speechSynthesis' in window) {
-                // If an utterance is currently speaking, stop it
-                if (window.speechSynthesis.speaking && currentUtterance) {
-                    window.speechSynthesis.cancel();
-                    currentUtterance = null; // Clear the reference
-                    // If the same text is clicked again, it means stop
-                    if (currentUtterance && currentUtterance.text === text) {
-                        return;
-                    }
+                    answer.classList.toggle('hidden');
+                    icon.classList.toggle('rotate-180');
+                });
+            });
+
+            // Scroll to Top Button
+            const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    scrollToTopBtn.style.display = 'flex';
+                } else {
+                    scrollToTopBtn.style.display = 'none';
                 }
+            });
 
-                const utterance = new SpeechSynthesisUtterance(text);
-                if (lang === 'zh') {
-                    utterance.lang = 'zh-CN';
-                } else if (lang === 'en') {
-                    utterance.lang = 'en-US';
-                }
-                window.speechSynthesis.speak(utterance);
-                currentUtterance = utterance; // Store the current utterance
+            scrollToTopBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
 
-                // Clear currentUtterance when speaking ends
-                utterance.onend = () => {
-                    currentUtterance = null;
+            // Menstrual Cycle Chart (SVG) Dynamic Generation
+            const totalDays = 28;
+            const phases = [
+                { name: '月经期', duration: 5, color: '#f43f5e' }, // Rose-500
+                { name: '卵泡期', duration: 8, color: '#facc15' }, // Yellow-500
+                { name: '排卵期', duration: 1, color: '#22c55e' }, // Green-500
+                { name: '黄体期', duration: 14, color: '#8b5cf6' } // Violet-500
+            ];
+
+            const svg = document.getElementById('menstrualCycleChart');
+            const centerX = 150;
+            const centerY = 150;
+            const outerRadius = 140;
+            const innerRadius = 80;
+            const dayNumberRadius = 120; // Radius for day numbers
+            const labelRadius = (outerRadius + innerRadius) / 2;
+
+            const degreesPerDay = 360 / totalDays;
+
+            // Helper to convert polar to Cartesian coordinates for SVG (0 degrees at top, clockwise)
+            function getCoordinates(angle, radius) {
+                const radians = (angle - 90) * Math.PI / 180; // Adjust angle for 12 o'clock start
+                return {
+                    x: centerX + radius * Math.cos(radians),
+                    y: centerY + radius * Math.sin(radians)
                 };
+            }
+
+            let currentAngle = 0; // Start at 0 degrees (which is 12 o'clock after adjustment in getCoordinates)
+
+            phases.forEach(phase => {
+                const startAngle = currentAngle;
+                const endAngle = startAngle + (phase.duration * degreesPerDay);
+
+                // Draw arc for each phase
+                const startCoordsOuter = getCoordinates(startAngle, outerRadius);
+                const endCoordsOuter = getCoordinates(endAngle, outerRadius);
+                const startCoordsInner = getCoordinates(startAngle, innerRadius);
+                const endCoordsInner = getCoordinates(endAngle, innerRadius);
+
+                const largeArcFlag = phase.duration * degreesPerDay > 180 ? 1 : 0;
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                path.setAttribute('d', `
+                    M ${startCoordsInner.x} ${startCoordsInner.y}
+                    L ${startCoordsOuter.x} ${startCoordsOuter.y}
+                    A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${endCoordsOuter.x} ${endCoordsOuter.y}
+                    L ${endCoordsInner.x} ${endCoordsInner.y}
+                    A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${startCoordsInner.x} ${startCoordsInner.y}
+                `);
+                path.setAttribute('fill', phase.color);
+                path.setAttribute('stroke', '#fff'); // White border between phases
+                path.setAttribute('stroke-width', '1');
+                svg.appendChild(path);
+
+                // Add text label for each phase
+                const labelAngle = startAngle + (phase.duration * degreesPerDay / 2);
+                const labelCoords = getCoordinates(labelAngle, labelRadius);
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', labelCoords.x);
+                text.setAttribute('y', labelCoords.y);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('alignment-baseline', 'middle');
+                text.setAttribute('font-size', '14');
+                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('fill', '#fff'); // White text for labels
+                text.textContent = phase.name;
+                svg.appendChild(text);
+
+                currentAngle = endAngle;
+            });
+
+            // Add day numbers around the outer circle
+            for (let i = 1; i <= totalDays; i++) {
+                const angle = (i - 0.5) * degreesPerDay; // Center of each day's arc
+                const coords = getCoordinates(angle, dayNumberRadius);
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', coords.x);
+                text.setAttribute('y', coords.y);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('alignment-baseline', 'middle');
+                text.setAttribute('font-size', '10');
+                text.setAttribute('fill', '#475569'); // Slate-600 for day numbers
+                text.textContent = i;
+                svg.appendChild(text);
+            }
+        });
+
+        // Data for terms with definitions
+        const termsData = {
+            "生理期 / 月经": {
+                zh: "生理期 / 月经",
+                pinyin: "shēng lǐ qī / yuè jīng",
+                en: "Menstruation / Period",
+                definition_zh: "女性子宫内膜周期性脱落并排出体外的过程。",
+                definition_en: "The periodic shedding of the uterine lining in women, discharged from the body."
+            },
+            "月经周期": {
+                zh: "月经周期",
+                pinyin: "yuè jīng zhōu qī",
+                en: "Menstrual Cycle",
+                definition_zh: "从一次月经开始到下一次月经开始的整个过程。",
+                definition_en: "The entire process from the start of one menstrual period to the start of the next."
+            },
+            "经血": {
+                zh: "经血",
+                pinyin: "jīng xuè",
+                en: "Menstrual Blood",
+                definition_zh: "月经期间从子宫排出的血液和组织。",
+                definition_en: "The blood and tissue discharged from the uterus during menstruation."
+            },
+            "初潮": {
+                zh: "初潮",
+                pinyin: "chū cháo",
+                en: "Menarche (First Period)",
+                definition_zh: "女性的第一次月经。",
+                definition_en: "A female's first menstrual period."
+            },
+            "更年期": {
+                zh: "更年期",
+                pinyin: "gēng nián qī",
+                en: "Menopause",
+                definition_zh: "女性卵巢功能衰退，月经永久停止的时期。",
+                definition_en: "The time in a woman's life when her ovaries stop producing hormones and menstrual periods permanently stop."
+            },
+            "月经教育": {
+                zh: "月经教育",
+                pinyin: "yuè jīng jiào yù",
+                en: "Menstrual Education",
+                definition_zh: "关于月经生理、卫生和相关社会问题的教育。",
+                definition_en: "Education about menstrual physiology, hygiene, and related social issues."
+            },
+            "排卵": {
+                zh: "排卵",
+                pinyin: "pái luǎn",
+                en: "Ovulation",
+                definition_zh: "卵巢释放成熟卵子的过程。",
+                definition_en: "The process by which a mature egg is released from the ovary."
+            },
+            "卵子": {
+                zh: "卵子",
+                pinyin: "luǎn zǐ",
+                en: "Egg / Ovum",
+                definition_zh: "女性生殖细胞。",
+                definition_en: "The female reproductive cell."
+            },
+            "子宫": {
+                zh: "子宫",
+                pinyin: "zǐ gōng",
+                en: "Uterus",
+                definition_zh: "女性生殖系统中的一个器官，胎儿在此发育。",
+                definition_en: "A hollow muscular organ in the female reproductive system where a fetus develops."
+            },
+            "卵巢": {
+                zh: "卵巢",
+                pinyin: "luǎn cháo",
+                en: "Ovaries",
+                definition_zh: "女性生殖腺，产生卵子和女性激素。",
+                definition_en: "Female reproductive glands that produce eggs and female hormones."
+            },
+            "子宫内膜": {
+                zh: "子宫内膜",
+                pinyin: "zǐ gōng nèi mó",
+                en: "Endometrium",
+                definition_zh: "子宫的内壁，在月经周期中增厚和脱落。",
+                definition_en: "The inner lining of the uterus, which thickens and sheds during the menstrual cycle."
+            },
+            "黄体": {
+                zh: "黄体",
+                pinyin: "huáng tǐ",
+                en: "Corpus Luteum",
+                definition_zh: "排卵后在卵巢中形成的临时内分泌结构，产生黄体酮。",
+                definition_en: "A temporary endocrine structure formed in the ovary after ovulation, which produces progesterone."
+            },
+            "经间痛": {
+                zh: "经间痛",
+                pinyin: "jīng jiān tòng",
+                en: "Mittelschmerz (Ovulation Pain)",
+                definition_zh: "排卵时可能感受到的轻微腹痛。",
+                definition_en: "Mild abdominal pain that some women experience during ovulation."
+            },
+            "激素 / 荷尔蒙": {
+                zh: "激素 / 荷尔蒙",
+                pinyin: "jī sù / hé ěr méng",
+                en: "Hormones",
+                definition_zh: "由内分泌腺分泌的化学物质，调节身体功能。",
+                definition_en: "Chemical substances secreted by endocrine glands that regulate bodily functions."
+            },
+            "黄体酮": {
+                zh: "黄体酮",
+                pinyin: "huáng tǐ tóng",
+                en: "Progesterone",
+                definition_zh: "一种女性激素，在月经周期和怀孕中起重要作用。",
+                definition_en: "A female hormone that plays a crucial role in the menstrual cycle and pregnancy."
+            },
+            "雌激素": {
+                zh: "雌激素",
+                pinyin: "cí jī sù",
+                en: "Estrogen",
+                definition_zh: "一组主要由卵巢产生的女性激素，负责女性性特征和生殖功能。",
+                definition_en: "A group of female hormones primarily produced by the ovaries, responsible for female sexual characteristics and reproductive function."
+            },
+            "卫生巾": {
+                zh: "卫生巾",
+                pinyin: "wèi shēng jīn",
+                en: "Sanitary Pad / Maxi Pad",
+                definition_zh: "用于吸收经血的吸水垫，贴在内裤上。",
+                definition_en: "An absorbent pad worn in underwear to absorb menstrual flow."
+            },
+            "卫生棉条": {
+                zh: "卫生棉条",
+                pinyin: "wèi shēng mián tiáo",
+                en: "Tampon",
+                definition_zh: "插入阴道内部吸收经血的棉质产品。",
+                definition_en: "A cotton product inserted into the vagina to absorb menstrual blood."
+            },
+            "月经杯": {
+                zh: "月经杯",
+                pinyin: "yuè jīng bēi",
+                en: "Menstrual Cup",
+                definition_zh: "可重复使用的柔性杯状产品，插入阴道收集经血。",
+                definition_en: "A reusable, flexible cup-shaped product inserted into the vagina to collect menstrual blood."
+            },
+            "护垫": {
+                zh: "护垫",
+                pinyin: "hù diàn",
+                en: "Pantyliner",
+                definition_zh: "比卫生巾薄的吸水垫，用于轻微分泌物或月经末期。",
+                definition_en: "A thinner, absorbent pad used for light discharge or at the end of a period."
+            },
+            "可重复使用卫生巾": {
+                zh: "可重复使用卫生巾",
+                pinyin: "kě chóng fù shǐ yòng wèi shēng jīn",
+                en: "Reusable Cloth Pad",
+                definition_zh: "由布料制成，可清洗和重复使用的卫生巾。",
+                definition_en: "A sanitary pad made of cloth that can be washed and reused."
+            },
+            "经期卫生裤": {
+                zh: "经期卫生裤",
+                pinyin: "jīng qī wèi shēng kù",
+                en: "Period Underwear",
+                definition_zh: "具有吸水层的特殊内裤，可直接吸收经血。",
+                definition_en: "Special underwear with an absorbent layer designed to absorb menstrual blood directly."
+            },
+            "安睡裤": {
+                zh: "安睡裤",
+                pinyin: "ān shuì kù",
+                en: "Overnight Pad Pants",
+                definition_zh: "为夜间或大流量设计的一次性裤型卫生用品。",
+                definition_en: "Disposable pant-style hygiene product designed for overnight use or heavy flow."
+            },
+            "经期不调": {
+                zh: "经期不调",
+                pinyin: "jīng qī bù tiáo",
+                en: "Irregular Period",
+                definition_zh: "月经周期长度、经血量或持续时间不规律。",
+                definition_en: "Irregularities in the length, flow, or duration of the menstrual cycle."
+            },
+            "月经过多": {
+                zh: "月经过多",
+                pinyin: "yuè jīng guò duō",
+                en: "Heavy Menstrual Bleeding / Menorrhagia",
+                definition_zh: "月经量异常多或持续时间过长。",
+                definition_en: "Abnormally heavy or prolonged menstrual bleeding."
+            },
+            "月经过少": {
+                zh: "月经过少",
+                pinyin: "yuè jīng guò shǎo",
+                en: "Light Period / Hypomenorrhea",
+                definition_zh: "月经量异常少。",
+                definition_en: "Abnormally light menstrual bleeding."
+            },
+            "点滴出血": {
+                zh: "点滴出血",
+                pinyin: "diǎn dī chū xuè",
+                en: "Spotting",
+                definition_zh: "两次月经之间少量出血。",
+                definition_en: "Light bleeding between menstrual periods."
+            },
+            "痛经": {
+                zh: "痛经",
+                pinyin: "tòng jīng",
+                en: "Menstrual Cramps / Dysmenorrhea",
+                definition_zh: "月经期间的腹部疼痛。",
+                definition_en: "Abdominal pain experienced during menstruation."
+            },
+            "经前综合征 (PMS)": {
+                zh: "经前综合征 (PMS)",
+                pinyin: "jīng qián zōng hé zhēng",
+                en: "Premenstrual Syndrome (PMS)",
+                definition_zh: "月经前出现的身体和情绪症状，如情绪波动、乳房胀痛、疲劳。",
+                definition_en: "A group of physical and emotional symptoms that occur before menstruation, such as mood swings, breast tenderness, and fatigue."
+            },
+            "经前烦躁障碍": {
+                zh: "经前烦躁障碍",
+                pinyin: "jīng qián fán zào zhàng ài",
+                en: "Premenstrual Dysphoric Disorder",
+                definition_zh: "一种更严重的PMS形式，情绪症状更为剧烈，严重影响生活。",
+                definition_en: "A more severe form of PMS, characterized by more intense emotional symptoms that significantly impact daily life."
+            },
+            "闭经": {
+                zh: "闭经",
+                pinyin: "bì jīng",
+                en: "Amenorrhea",
+                definition_zh: "月经停止，分为原发性（从未有过月经）和继发性（月经停止6个月或3个周期以上）。",
+                definition_en: "The absence of menstruation, either primary (never having had a period) or secondary (cessation of periods for 6 months or more than 3 cycles)."
+            },
+            "潮热": {
+                zh: "潮热",
+                pinyin: "cháo rè",
+                en: "Hot Flashes / Hot Flushes",
+                definition_zh: "突然感到身体发热，常伴有出汗和心跳加速，常见于更年期。",
+                definition_en: "Sudden feelings of warmth, often accompanied by sweating and rapid heartbeat, common during menopause."
+            },
+            "经期情绪变化": {
+                zh: "经期情绪变化",
+                pinyin: "jīng qī qíng xù biàn huà",
+                en: "Mood Swings during Period",
+                definition_zh: "月经周期中，特别是经前和经期，情绪波动较大。",
+                definition_en: "Significant fluctuations in mood during the menstrual cycle, especially pre-menstrual and during the period."
+            },
+            "子宫内膜异位症": {
+                zh: "子宫内膜异位症",
+                pinyin: "zǐ gōng nèi mó yì wèi zhèng",
+                en: "Endometriosis",
+                definition_zh: "子宫内膜样组织在子宫外生长，引起疼痛和不孕。",
+                definition_en: "A condition where tissue similar to the lining of the uterus grows outside the uterus, causing pain and infertility."
+            },
+            "多囊卵巢综合征 (PCOS)": {
+                zh: "多囊卵巢综合征 (PCOS)",
+                pinyin: "duō náng luǎn cháo zōng hé zhēng",
+                en: "Polycystic Ovary Syndrome (PCOS)",
+                definition_zh: "一种激素失衡疾病，可能导致月经不规律、雄激素过高和卵巢囊肿。",
+                definition_en: "A hormonal disorder causing irregular periods, excess androgen, and polycystic ovaries."
+            },
+            "性教育": {
+                zh: "性教育",
+                pinyin: "xìng jiào yù",
+                en: "Sex Education",
+                definition_zh: "关于性、生殖和性健康的教育。",
+                definition_en: "Education about sexuality, reproduction, and sexual health."
+            },
+            "生殖健康": {
+                zh: "生殖健康",
+                pinyin: "shēng zhí jiàn kāng",
+                en: "Reproductive Health",
+                definition_zh: "生殖系统在所有生命阶段的健康状态。",
+                definition_en: "A state of complete physical, mental, and social well-being in all matters relating to the reproductive system."
+            }
+        };
+
+        // Function to speak text using Web Speech API
+        function speakText(text, lang) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                // Optional: Set voice if specific voices are preferred and available
+                // let voices = speechSynthesis.getVoices();
+                // if (lang.startsWith('zh')) {
+                //     utterance.voice = voices.find(voice => voice.lang === 'zh-CN' || voice.lang === 'zh-TW');
+                // } else if (lang.startsWith('en')) {
+                //     utterance.voice = voices.find(voice => voice.lang === 'en-US');
+                // }
+                speechSynthesis.speak(utterance);
             } else {
-                // Using a custom message box instead of alert()
-                const messageBox = document.createElement('div');
-                messageBox.className = 'message-box';
-                messageBox.innerHTML = `
-                    <p>Text-to-speech not supported in this browser.</p>
-                    <p class="text-sm text-gray-500 mt-2">You would need to integrate a TTS API or provide audio files.</p>
-                    <button onclick="this.parentNode.remove()" style="margin-top: 15px; padding: 8px 15px; background-color: #3b82f6; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
-                `;
-                document.body.appendChild(messageBox);
+                console.warn('Web Speech API is not supported in this browser.');
+                // Could display a message to the user that audio is not supported
             }
         }
-        window.playAudio = playAudio; // Make the function globally accessible
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const navItems = document.querySelectorAll('.nav-item');
-            const contentSections = document.querySelectorAll('.content-section');
+        // Function to create a play button SVG
+        function createPlayButton(text, lang) {
+            const button = document.createElement('button');
+            button.classList.add('play-audio-btn', 'ml-2', 'text-gray-500', 'hover:text-pink-600', 'inline-block', 'align-middle');
+            button.setAttribute('data-text', text);
+            button.setAttribute('data-lang', lang);
+            button.innerHTML = `
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path>
+                </svg>
+            `;
+            button.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent parent click events (e.g., popup toggle)
+                speakText(button.dataset.text, button.dataset.lang);
+            });
+            return button;
+        }
 
-            const data = {
-                interjections: [
-                    { ch_pinyin: '哎 (āi)', en: 'Hey; Alas', desc: '表示惊讶、提醒、应答或叹息。Expressing surprise, reminder, response or sigh.', ch_ex: '哎，你去哪儿？', en_ex: 'Hey, where are you going?' },
-                    { ch_pinyin: '嗯 (ēn/èn/ňg)', en: 'Hmm; Mmm-hmm', desc: '表示疑问、肯定、否定或沉思。Expressing doubt, affirmation, negation or contemplation.', ch_ex: '嗯，知道了。', en_ex: 'Mmm-hmm, got it.' },
-                    { ch_pinyin: '哦 (ò)', en: 'Oh; I see', desc: '表示明白、领会或疑问。Expressing understanding, comprehension or doubt.', ch_ex: '哦，原来是这样。', en_ex: 'Oh, so that\'s how it is.' },
-                    { ch_pinyin: '哇 (wā)', en: 'Wow', desc: '表示惊讶、赞叹。Expressing surprise, admiration.', ch_ex: '哇，好漂亮！', en_ex: 'Wow, so beautiful!' },
-                    { ch_pinyin: '哈 (hā)', en: 'Ha', desc: '表示笑声、得意。Expressing laughter, smugness.', ch_ex: '哈哈哈，真好笑。', en_ex: 'Hahaha, so funny.' },
-                    { ch_pinyin: '呀 (ya)', en: 'Ah; Oh', desc: '表示惊讶、感叹、疑问。Expressing surprise, exclamation, or doubt.', ch_ex: '呀，你来了！', en_ex: 'Ah, you\'re here!' },
-                    { ch_pinyin: '喂 (wèi)', en: 'Hello; Hey', desc: '表示呼唤、打招呼。Used to call out or greet someone.', ch_ex: '喂，请问是李明吗？', en_ex: 'Hello, is this Li Ming?' },
-                    { ch_pinyin: '呸 (pēi)', en: 'Pooh; Bah', desc: '表示鄙视、不屑或唾弃。Expressing contempt, disdain or spitting.', ch_ex: '呸，真恶心！', en_ex: 'Pooh, how disgusting.' },
-                    { ch_pinyin: '唉 (ài)', en: 'Alas; Oh dear', desc: '表示叹息、无奈。Expressing sigh, helplessness.', ch_ex: '唉，又失败了。', en_ex: 'Alas, failed again.' },
-                    { ch_pinyin: '哟 (yō)', en: 'Yo; Oh', desc: '表示惊讶、提醒、疑问。Expressing surprise, reminder, or doubt.', ch_ex: '哟，这么巧！', en_ex: 'Yo, what a coincidence!' },
-                    { ch_pinyin: '哼 (hēng)', en: 'Humph; Hmph', desc: '表示不满、不屑或威胁。Expressing dissatisfaction, disdain or threat.', ch_ex: '哼，我才不怕你。', en_ex: 'Humph, I\'m not afraid of you.' },
-                    { ch_pinyin: '嘿 (hēi)', en: 'Hey', desc: '表示引起注意或招呼。Used to attract attention or greet.', ch_ex: '嘿，看这边！', en_ex: 'Hey, look over here!' },
-                    { ch_pinyin: '嘻 (xī)', en: 'Hehe', desc: '表示窃笑、高兴。Expressing snickering, happiness.', ch_ex: '嘻嘻，被我发现了。', en_ex: 'Hehe, I found it.' },
-                    { ch_pinyin: '嘘 (xū)', en: 'Shh', desc: '表示让别人安静。Used to tell others to be quiet.', ch_ex: '嘘，别吵。', en_ex: 'Shh, don\'t make noise.' },
-                    { ch_pinyin: '呕 (ǒu)', en: 'Ugh', desc: '表示厌恶、恶心。Expressing disgust, nausea.', ch_ex: '呕，这味道真难闻。', en_ex: 'Ugh, this smell is awful.' },
-                    { ch_pinyin: '嗤 (chī)', en: 'Hmph', desc: '表示嗤笑、不以为然。Expressing sneer, disapproval.', ch_ex: '嗤，这算什么？', en_ex: 'Hmph, what is this.' },
-                    { ch_pinyin: '呸 (pēi)', en: 'Ptooey', desc: '表示厌恶、唾弃。Expressing disgust, rejection.', ch_ex: '呸，我才不信。', en_ex: 'Ptooey, I don\'t believe it.' },
-                    { ch_pinyin: '咳 (hāi/ké)', en: 'Ahem; Cough', desc: '表示提醒、清嗓子或叹息。Expressing reminder, clearing throat, or sighing.', ch_ex: '咳，该走了。', en_ex: 'Ahem, it\'s time to go.' },
-                    { ch_pinyin: '得 (dé)', en: 'Got it; Fine', desc: '表示同意、完成或得意。Expressing agreement, completion, or smugness.', ch_ex: '得，这事就这么定了。', en_ex: 'Fine, it\'s settled.' },
-                    { ch_pinyin: '嘶 (sī)', en: 'Hiss; Sigh', desc: '表示吸气声、痛苦或寒冷。Expressing inhaling sound, pain, or cold.', ch_ex: '嘶，好冷！', en_ex: 'Hiss, so cold.' }
-                ],
-                onomatopoeia: {
-                    nature: [
-                        { ch_pinyin: '哗啦 (huā lā)', en: 'Splash; Rustle', desc: '形容水流、雨声、纸张翻动等声音。Describes sounds of flowing water, rain, rustling paper, etc.', ch_ex: '雨点哗啦哗啦地打在窗户上。', en_ex: 'The raindrops splashed against the window.' },
-                        { ch_pinyin: '呼呼 (hū hū)', en: 'Whoosh; Whirr', desc: '形容风声、快速移动、喘气或睡着时的呼吸声。Describes sounds of wind, fast movement, panting, or breathing while asleep.', ch_ex: '大风呼呼地刮着。', en_ex: 'The strong wind was blowing whooshingly.' },
-                        { ch_pinyin: '轰隆 (hōng lōng)', en: 'Rumble; Boom', desc: '形容雷声、爆炸声或机器运转的巨大声响。Describes sounds of thunder, explosions, or loud machinery operation.', ch_ex: '天空中传来轰隆隆的雷声。', en_ex: 'A rumbling thunder came from the sky.' },
-                        { ch_pinyin: '淅沥 (xī lì)', en: 'Pitter-patter', desc: '形容小雨、落叶等细微的声音。Describes subtle sounds like light rain or falling leaves.', ch_ex: '细雨淅沥，打湿了窗台。', en_ex: 'The drizzle pitter-pattered, wetting the windowsill.' },
-                        { ch_pinyin: '潺潺 (chán chán)', en: 'Gurgle; Murmur', desc: '形容溪水、泉水等流动的声音。Describes the sound of flowing streams or springs.', ch_ex: '溪水潺潺地流淌着。', en_ex: 'The stream gurgled as it flowed.' },
-                        { ch_pinyin: '叮咚 (dīng dōng)', en: 'Ding-dong', desc: '形容清脆的金属、水滴或门铃声。Describes crisp sounds of metal, dripping water, or a doorbell.', ch_ex: '门铃叮咚响了。', en_ex: 'The doorbell rang ding-dong.' },
-                        { ch_pinyin: '啪嗒 (pā dā)', en: 'Plop; Pat', desc: '形容重物落下、脚步声或雨滴声。Describes the sound of heavy objects falling, footsteps, or raindrops.', ch_ex: '雨点啪嗒啪嗒地掉下来。', en_ex: 'Raindrops plopped down.' },
-                        { ch_pinyin: '滴答 (dī dā)', en: 'Tick-tock; Drip-drop', desc: '形容时钟走动、水滴下落的声音。Describes the sound of a clock ticking or water dripping.', ch_ex: '时钟滴答作响。', en_ex: 'The clock went tick-tock.' },
-                        { ch_pinyin: '咯吱 (gē zhī)', en: 'Creak; Squeak', desc: '形容门窗、木板等摩擦发出的声音。Describes friction sounds from doors, windows, wooden boards, etc.', ch_ex: '老旧的木门咯吱作响。', en_ex: 'The old wooden door creaked.' },
-                        { ch_pinyin: '沙沙 (shā shā)', en: 'Rustle; Swish', desc: '形容风吹树叶、细沙摩擦等声音。Describes sounds like wind blowing through leaves or fine sand rubbing.', ch_ex: '风吹树叶沙沙作响。', en_ex: 'The wind rustled the leaves.' },
-                        { ch_pinyin: '嗖 (sōu)', en: 'Whoosh', desc: '形容物体快速飞过或风声。Describes objects flying past quickly or the sound of wind.', ch_ex: '箭嗖的一声飞了过去。', en_ex: 'The arrow flew past with a whoosh.' },
-                        { ch_pinyin: '咚 (dōng)', en: 'Thump; Boom', desc: '形容重物落地的声音或敲击声。Describes the sound of heavy objects falling or a knocking sound.', ch_ex: '他咚的一声坐在地上。', en_ex: 'He sat on the ground with a thump.' },
-                        { ch_pinyin: '噼啪 (pī pā)', en: 'Crackling; Pop', desc: '形容鞭炮、炉火或拍打的声音。Describes the crackling of firecrackers, a stove fire, or slapping sounds.', ch_ex: '炉火噼里啪啦地燃烧着。', en_ex: 'The fire in the stove was crackling.' }
-                    ],
-                    human: [
-                        { ch_pinyin: '哈哈 (hā hā)', en: 'Haha', desc: '形容开心的笑声。Describes a happy laughter.', ch_ex: '他听完笑话，哈哈大笑起来。', en_ex: 'He listened to the joke and laughed haha.' },
-                        { ch_pinyin: '呵呵 (hē hē)', en: 'Hehe', desc: '形容轻笑、傻笑或尴尬的笑声。Describes a light laugh, silly laugh, or awkward laugh.', ch_ex: '她呵呵地笑着，没说什么。', en_ex: 'She giggled, saying nothing.' },
-                        { ch_pinyin: '嘿嘿 (hēi hēi)', en: 'Hehe (mischievous)', desc: '形容得意、狡黠或不好意思的笑声。Describes a smug, cunning, or embarrassed laugh.', ch_ex: '他嘿嘿一笑，露出神秘的表情。', en_ex: 'He chuckled mischievously, showing a mysterious expression.' },
-                        { ch_pinyin: '嗤嗤 (chī chī)', en: 'Chuckle; Guffaw', desc: '形容轻蔑地笑、讥笑。Describes a scornful laugh, or sneer.', ch_ex: '听到他的话，大家都嗤嗤地笑了。', en_ex: 'Hearing his words, everyone chuckled derisively.' },
-                        { ch_pinyin: '哎哟 (āi yō)', en: 'Ouch; Oh dear', desc: '表示疼痛、惊讶或不满。Expressing pain, surprise, or dissatisfaction.', ch_ex: '哎哟，好痛！', en_ex: 'Ouch, that hurts.' },
-                        { ch_pinyin: '哼哼 (hēng hēng)', en: 'Humph; Grunt', desc: '表示不满、轻蔑或思考时的低语。Expressing dissatisfaction, disdain, or a low murmur while thinking.', ch_ex: '他哼哼了两声，表示不同意。', en_ex: 'He grunted twice, indicating disagreement.' },
-                        { ch_pinyin: '嗷嗷 (áo áo)', en: 'Wail; Howl', desc: '形容人或动物的哭叫声或饥饿时的叫声。Describes the crying or howling sound of a person or animal, or a sound when hungry.', ch_ex: '孩子嗷嗷大哭。', en_ex: 'The child cried and wailed loudly.' },
-                        { ch_pinyin: '哇哇 (wā wā)', en: 'Wah-wah', desc: '形容婴儿哭声或呕吐声。Describes a baby\'s cry or the sound of vomiting.', ch_ex: '小婴儿哇哇地哭着。', en_ex: 'The baby was crying wah-wah.' },
-                        { ch_pinyin: '咚咚 (dōng dōng)', en: 'Thump-thump', desc: '形容敲门、心跳或脚步声。Describes knocking on a door, heartbeat, or footsteps.', ch_ex: '门外传来咚咚的敲门声。', en_ex: 'There was a thump-thump knocking sound from outside the door.' },
-                        { ch_pinyin: '砰 (pēng)', en: 'Bang; Thump', desc: '形容重物撞击或枪声。Describes the sound of a heavy object striking or a gunshot.', ch_ex: '门砰的一声关上了。', en_ex: 'The door closed with a bang.' },
-                        { ch_pinyin: '扑通 (pū tōng)', en: 'Plop; Thump', desc: '形容重物落水、心跳或突然倒下。Describes a heavy object falling into water, a heartbeat, or suddenly falling down.', ch_ex: '他紧张得心扑通扑通直跳。', en_ex: 'His heart thumped nervously.' },
-                        { ch_pinyin: '咕噜 (gū lū)', en: 'Gurgle; Rumbling', desc: '形容肚子叫、液体流动或低语。Describes stomach rumbling, liquid flowing, or murmuring.', ch_ex: '肚子咕噜咕噜地叫。', en_ex: 'My stomach is rumbling.' },
-                        { ch_pinyin: '咔嚓 (kā chā)', en: 'Click; Snap', desc: '形容折断、拍照或咬碎的声音。Describes the sound of breaking, taking a photo, or biting something crunchy.', ch_ex: '树枝咔嚓一声断了。', en_ex: 'The branch snapped with a click.' },
-                        { ch_pinyin: '吱 (zī)', en: 'Squeak', desc: '形容小动物叫声或细微的摩擦声。Describes the sound of small animals or a subtle friction sound.', ch_ex: '老鼠吱吱地叫着。', en_ex: 'The mouse squeaked.' },
-                        { ch_pinyin: '哧哧 (chī chī)', en: 'Hee-hee; Snicker', desc: '形容低声笑、偷笑。Describes a low laugh or snicker.', ch_ex: '她哧哧地笑个不停。', en_ex: 'She kept snickering.' },
-                        { ch_pinyin: '嘎吱 (gā zhī)', en: 'Creak', desc: '形容物体摩擦、压迫发出的声音。Describes the sound of objects rubbing or being pressed.', ch_ex: '轮子嘎吱作响。', en_ex: 'The wheels creaked.' },
-                        { ch_pinyin: '砰砰 (pēng pēng)', en: 'Bang-bang; Thump-thump', desc: '形容连续的撞击声或心跳声。Describes continuous striking sounds or a heartbeat.', ch_ex: '心脏砰砰地跳着。', en_ex: 'The heart was thumping.' },
-                        { ch_pinyin: '吧嗒 (bā dā)', en: 'Pat; Click', desc: '形容眼泪、咀嚼或吸烟的声音。Describes the sound of tears, chewing, or smoking.', ch_ex: '他吧嗒吧嗒地抽着烟。', en_ex: 'He was puffing on his cigarette.' },
-                        { ch_pinyin: '嘎嘎 (gā gā)', en: 'Quack; Cackle', desc: '形容鸭子叫声或鹅的叫声。Describes the quacking of a duck or the cackling of a goose.', ch_ex: '鸭子在水里嘎嘎地叫。', en_ex: 'The duck quacked in the water.' },
-                        { ch_pinyin: '呼噜 (hū lū)', en: 'Snore; Slurp', desc: '形容睡觉时的鼾声或喝水时的声音。Describes snoring while sleeping or slurping while drinking.', ch_ex: '他睡着了，发出轻微的呼噜声。', en_ex: 'He was asleep, making a slight snoring sound.' },
-                        { ch_pinyin: '哼唧 (hēng ji)', en: 'Mutter; Whimper', desc: '形容因不满、疼痛或撒娇而发出的哼声或低语。Describes a grunting or whimpering sound made due to dissatisfaction, pain, or acting spoiled.', ch_ex: '他疼得哼哼唧唧。', en_ex: 'He whimpered with pain.' }
-                    ],
-                    crowd: [
-                        { ch_pinyin: '嗡嗡 (wēng wēng)', en: 'Buzz; Hum', desc: '形容蜜蜂、机器等发出的连续低沉的声音，也形容人群嘈杂声。Describes the continuous low sound made by bees or machines, also describes the noisy sound of a crowd.', ch_ex: '教室里嗡嗡作响，大家都在讨论。', en_ex: 'The classroom buzzed with discussion.' },
-                        { ch_pinyin: '嘈杂 (cáo zá)', en: 'Noisy; Clamorous', desc: '形容人多喧闹、杂乱的声音。Describes noisy, chaotic sounds from a large crowd.', ch_ex: '市场里一片嘈杂。', en_ex: 'The market was clamorous.' },
-                        { ch_pinyin: '喧哗 (xuān huá)', en: 'Uproar; Hubbub', desc: '形容人声喧闹、吵杂。Describes loud, noisy human voices.', ch_ex: '大厅里充满了喧哗声。', en_ex: 'The hall was filled with uproar.' },
-                        { ch_pinyin: '鼎沸 (dǐng fèi)', en: 'Boiling (with noise)', desc: '形容人声喧闹、沸腾，多用于“人声鼎沸”。Describes human voices as noisy and boiling, often used in "人声鼎沸" (a scene bustling with noise).', ch_ex: '广场上人声鼎沸。', en_ex: 'The square was boiling with noise.' },
-                        { ch_pinyin: '叽叽喳喳 (jī jī zhā zhā)', en: 'Chirp-chirp; Chatter', desc: '形容人群或鸟儿的吵闹声。Describes the noisy chirping of birds or chattering of a crowd.', ch_ex: '女孩子们叽叽喳喳地聊着天。', en_ex: 'The girls were chattering.' },
-                        { ch_pinyin: '哄 (hōng)', en: 'Roar; Burst (of laughter/cheers)', desc: '形容人群发出的响亮声音，如哄笑、哄闹。Describes loud sounds made by a crowd, such as roaring laughter or cheers.', ch_ex: '人群中发出一阵哄笑。', en_ex: 'There was a burst of laughter from the crowd.' },
-                        { ch_pinyin: '嚷 (rǎng)', en: 'Shout; Yell', desc: '形容大声说话或吵闹。Describes speaking loudly or making a ruckus.', ch_ex: '别在图书馆里大声嚷嚷。', en_ex: 'Don\'t shout loudly in the library.' },
-                        { ch_pinyin: '咕哝 (gū nóng)', en: 'Mutter; Grumble', desc: '形容小声说话，含糊不清。Describes speaking in a low, indistinct voice.', ch_ex: '他嘴里咕哝着什么。', en_ex: 'He was muttering something.' },
-                        { ch_pinyin: '窃窃私语 (qiè qiè sī yǔ)', en: 'Whisper', desc: '形容两个人或几个人小声地说话。Describes two or a few people speaking in a low voice.', ch_ex: '她们坐在角落里窃窃私语。', en_ex: 'They sat in the corner whispering.' }
-                    ]
-                },
-                otherSounds: [
-                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '汪汪 (wāng wāng)', en: 'Woof woof', desc: '狗的叫声。Sound of a dog.' },
-                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '喵喵 (miāo miāo)', en: 'Meow meow', desc: '猫的叫声。Sound of a cat.' },
-                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '咩咩 (miē miē)', en: 'Baa baa', desc: '羊的叫声。Sound of a sheep.' },
-                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '哞 (mōu)', en: 'Moo', desc: '牛的叫声。Sound of a cow.' },
-                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '喔喔 (wō wō)', en: 'Cock-a-doodle-doo', desc: '公鸡打鸣声。Sound of a rooster crowing.' },
-                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '嘎嘎 (gā gā)', en: 'Quack quack', desc: '鸭子的叫声。Sound of a duck quacking.' },
-                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '吱吱 (zī zī)', en: 'Squeak squeak', desc: '老鼠的叫声。Sound of a mouse squeaking.' },
-                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '嘶嘶 (sī sī)', en: 'Hiss hiss', desc: '蛇的叫声。Sound of a snake hissing.' },
-                    { cat: '动物声音', subcat: '叫声', ch_pinyin: '嗷呜 (áo wū)', en: 'Howl', desc: '狼或老虎的嚎叫声。Howl of a wolf or tiger.' },
-                    { cat: '自然声音', subcat: '水声', ch_pinyin: '哗啦 (huā lā)', en: 'Splash, gurgle', desc: '水流、雨水落下的声音。Sound of flowing water or falling rain.' },
-                    { cat: '自然声音', subcat: '风声', ch_pinyin: '呼呼 (hū hū)', en: 'Whoosh, whistle', desc: '风吹过的声音。Sound of wind blowing.' },
-                    { cat: '自然声音', subcat: '雷声', ch_pinyin: '轰隆 (hōng lōng)', en: 'Rumble, boom', desc: '打雷的声音。Sound of thunder.' },
-                    { cat: '自然声音', subcat: '雨声', ch_pinyin: '淅沥 (xī lì)', en: 'Pitter-patter', desc: '小雨落下的声音。Sound of light rain falling.' },
-                    { cat: '自然声音', subcat: '水声', ch_pinyin: '潺潺 (chán chán)', en: 'Gurgle, murmur', desc: '溪水、泉水流动的声音。Sound of streams or springs flowing.' },
-                    { cat: '物体声音', subcat: '撞击', ch_pinyin: '砰 (pēng)', en: 'Bang, thump', desc: '重物撞击或爆炸声。Sound of heavy objects striking or an explosion.' },
-                    { cat: '物体声音', subcat: '摩擦', ch_pinyin: '咯吱 (gē zhī)', en: 'Creak, squeak', desc: '物体摩擦或门窗开启的声音。Sound of objects rubbing or doors/windows opening.' },
-                    { cat: '物体声音', subcat: '破碎', ch_pinyin: '咔嚓 (kā chā)', en: 'Snap, crack', desc: '物体断裂、破碎的声音。Sound of objects breaking or shattering.' },
-                    { cat: '物体声音', subcat: '金属', ch_pinyin: '叮当 (dīng dāng)', en: 'Clang, jingle', desc: '金属碰撞或铃铛摇动的声音。Sound of metal colliding or bells jingling.' },
-                    { cat: '物体声音', subcat: '清脆', ch_pinyin: '叮咚 (dīng dōng)', en: 'Ding-dong', desc: '水滴、门铃或清脆的敲击声。Sound of water drops, a doorbell, or crisp knocking.' },
-                    { cat: '物体声音', subcat: '敲击', ch_pinyin: '咚咚 (dōng dōng)', en: 'Thump-thump', desc: '有节奏的敲击声，如敲门。Rhythmic knocking sound, like knocking on a door.' },
-                    { cat: '物体声音', subcat: '拍打', ch_pinyin: '啪 (pā)', en: 'Slap, clap', desc: '拍打或东西掉落的声音。Sound of slapping or something falling.' },
-                    { cat: '物体声音', subcat: '撕裂', ch_pinyin: '嘶啦 (sī lā)', en: 'Rip, tear', desc: '布料或纸张撕裂的声音。Sound of fabric or paper tearing.' },
-                    { cat: '物体声音', subcat: '爆裂', ch_pinyin: '噼里啪啦 (pī li pā lā)', en: 'Crackling, popping', desc: '爆竹、炉火或豆子爆开的声音。Crackling or popping sound of firecrackers, a stove fire, or bursting beans.' },
-                    { cat: '交通工具', subcat: '汽车', ch_pinyin: '嘀嘀 (dí dí)', en: 'Honk honk', desc: '汽车喇叭声。Sound of a car horn.' },
-                    { cat: '交通工具', subcat: '火车', ch_pinyin: '况且 (kuàng qiě)', en: 'Choo-choo', desc: '火车行驶的声音（拟声）。Sound of a train moving (onomatopoeia).' },
-                    { cat: '交通工具', subcat: '飞机', ch_pinyin: '轰鸣 (hōng míng)', en: 'Roar, drone', desc: '飞机引擎的声音。Sound of an airplane engine roaring.' },
-                    { cat: '日常生活', subcat: '咀嚼', ch_pinyin: '吧唧 (bā jī)', en: 'Smack, munch', desc: '吃东西咀嚼的声音。Sound of chewing food.' },
-                    { cat: '日常生活', subcat: '吸吮', ch_pinyin: '嘬 (zuō)', en: 'Slurp, suck', desc: '吸吮液体或食物的声音。Sound of slurping or sucking liquid or food.' },
-                    { cat: '日常生活', subcat: '切割', ch_pinyin: '嚓 (cā)', en: 'Snip, scrape', desc: '剪刀剪切或物体刮擦的声音。Sound of scissors cutting or objects scraping.' },
-                    { cat_pinyin: '日常生活', subcat: '搅拌', ch_pinyin: '咕嘟 (gū dū)', en: 'Gurgle, bubbling', desc: '液体沸腾或搅拌的声音。Sound of liquid boiling or stirring.' }
-                ],
-                insectOnomatopoeia: [
-                    { insect_ch: '蜜蜂', insect_pinyin: 'mì fēng', onomatopoeia_ch: '嗡嗡', onomatopoeia_pinyin: 'wēng wēng', desc: '蜜蜂振翅的声音。Sound of a bee flapping its wings.' },
-                    { insect_ch: '蚊子', insect_pinyin: 'wén zi', onomatopoeia_ch: '嗡嗡', onomatopoeia_pinyin: 'wēng wēng', desc: '蚊子飞行或叮咬的声音。Sound of a mosquito flying or biting.' },
-                    { insect_ch: '蝉', insect_pinyin: 'chán', onomatopoeia_ch: '吱吱', onomatopoeia_pinyin: 'zī zī', desc: '蝉鸣的声音。Sound of cicada chirping.' },
-                    { insect_ch: '蟋蟀', insect_pinyin: 'xī shuài', onomatopoeia_ch: '蛐蛐', onomatopoeia_pinyin: 'qū qū', desc: '蟋蟀鸣叫的声音。Sound of a cricket chirping.' },
-                    { insect_ch: '纺织娘', insect_pinyin: 'fǎng zhī niáng', onomatopoeia_ch: '扎扎', onomatopoeia_pinyin: 'zhā zhā', desc: '纺织娘鸣叫的声音。Sound of a katydid chirping.' },
-                    { insect_ch: '苍蝇', insect_pinyin: 'cāng yíng', onomatopoeia_ch: '嗡嗡', onomatopoeia_pinyin: 'wēng wēng', desc: '苍蝇飞行时的声音。Sound of a fly buzzing while flying.' },
-                    { insect_ch: '蚊蚋', insect_pinyin: 'wén ruì', onomatopoeia_ch: '嘤嘤', onomatopoeia_pinyin: 'yīng yīng', desc: '蚊虫细小的叫声。Small buzzing sound of mosquitoes or gnats.' },
-                    { insect_ch: '甲虫', insect_pinyin: 'jiǎ chóng', onomatopoeia_ch: '咯吱', onomatopoeia_pinyin: 'gē zhī', desc: '甲虫爬行或咬噬的声音。Sound of a beetle crawling or biting.' },
-                    { insect_ch: '飞蛾', insect_pinyin: 'fēi é', onomatopoeia_ch: '扑扑', onomatopoeia_pinyin: 'pū pū', desc: '飞蛾拍打翅膀的声音。Sound of a moth flapping its wings.' },
-                    { insect_ch: '蚂蚱', insect_pinyin: 'mà zha', onomatopoeia_ch: '呱唧', onomatopoeia_pinyin: 'guā jī', desc: '蚂蚱跳跃或摩擦发出的声音。Sound of a grasshopper jumping or rubbing.' },
-                    { ch_pinyin: '蝈蝈', en: 'Long-horned grasshopper', desc: '蝈蝈的鸣叫声。Sound of a long-horned grasshopper chirping.' }
-                ],
-                voiceAdjectives: {
-                    timbre: [
-                        { ch_pinyin: '醇厚 (chún hòu)', en: 'mellow, full-bodied', desc: '低沉、丰满，富有质感，常形容男性声音。Low, full, rich in texture, often describes male voices.' },
-                        { ch_pinyin: '甜美 (tián měi)', en: 'sweet, melodious', desc: '清脆、柔和，常形容女性或孩子声音。Crisp, soft, often describes female or child voices.' },
-                        { ch_pinyin: '沙哑 (shā yǎ)', en: 'hoarse, raspy', desc: '粗糙、嘶哑，带沧桑感，多用于疲惫或年长者。Rough, hoarse, with a sense of vicissitude, often used for tired or older people.' },
-                        { ch_pinyin: '磁性 (cí xìng)', en: 'magnetic, captivating', desc: '富吸引力，有穿透力，有魅力的声音。Attractive, penetrating, charming voice.' },
-                        { ch_pinyin: '清脆 (qīng cuì)', en: 'crisp, clear', desc: '明亮、清晰，常形容年轻女性或儿童声音。Bright, clear, often describes young female or child voices.' },
-                        { ch_pinyin: '浑厚 (hún hòu)', en: 'sonorous, rich', desc: '宏亮、深沉，常形容男性或乐器声音。Loud, deep, often describes male voices or musical instruments.' },
-                        { ch_pinyin: '圆润 (yuán rùn)', en: 'smooth, full', desc: '流畅、饱满，无瑕疵，常形容歌声。Smooth, full, flawless, often describes singing voice.' },
-                        { ch_pinyin: '婉转 (wǎn zhuǎn)', en: 'melodious, lilting', desc: '柔和、流畅，常形容女性或旋律。Soft, fluid, often describes female voices or melodies.' },
-                        { ch_pinyin: '轻柔 (qīng róu)', en: 'soft, gentle', desc: '轻细柔和，常形容女性声音。Light, delicate, and soft, often describes female voices.' },
-                        { ch_pinyin: '粗犷 (cū guǎng)', en: 'rough, rugged', desc: '粗大、不细腻，常形容男性或乐器声音。Coarse, unrefined, often describes male voices or musical instruments.' },
-                        { ch_pinyin: '清亮 (qīng liàng)', en: 'clear, ringing', desc: '嗓音明亮纯净。Voice is bright and pure.' },
-                        { ch_pinyin: '尖细 (jiān xì)', en: 'shrill, high-pitched', desc: '嗓音高而细，常用于孩子。Voice is high and thin, often used for children.' },
-                        { ch_pinyin: '慵懒 (yōng lǎn)', en: 'lazy, drawling', desc: '嗓音放松、漫不经心。Voice is relaxed and casual.' },
-                        { ch_pinyin: '干涩 (gān sè)', en: 'dry, strained', desc: '长时间说话后的嗓音。Voice after speaking for a long time.' },
-                        { ch_pinyin: '奶声奶气 (nǎi shēng nǎi qì)', en: 'childlike, babyish', desc: '稚嫩嗓音，多用于模仿小孩。Tender voice, often used to imitate children.' },
-                        { ch_pinyin: '沙哑粗犷 (shā yǎ cū guǎng)', en: 'hoarse and rough', desc: '粗哑豪放的声音，强调原始力量。Rough and unrestrained voice, emphasizing raw power.' },
-                        { ch_pinyin: '悦耳动听 (yuè ěr dòng tīng)', en: 'pleasant-sounding', desc: '让人感到舒服、愉悦的声音。A voice that makes people feel comfortable and pleasant.' },
-                        { ch_pinyin: '纯净 (chún jìng)', en: 'pure, clean-toned', desc: '声音干净、无杂质。Voice is clean and free of impurities.' },
-                        { ch_pinyin: '幽雅 (yōu yǎ)', en: 'elegant and quiet', desc: '恬静优美，常用于古典或文艺风格。Quietly elegant and beautiful, often used for classical or artistic styles.' },
-                        { ch_pinyin: '爽朗 (shuǎng lǎng)', en: 'bright and hearty', desc: '声音令人感到舒心、开阔亮堂。Voice makes people feel comfortable, open, and bright.' },
-                        { ch_pinyin: '性感 (xìng gǎn)', en: 'sexy', desc: '富有魅力和吸引力的声音。A voice full of charm and attraction.' },
-                        { ch_pinyin: '美妙 (měi miào)', en: 'beautiful', desc: '美丽动听的声音。A beautiful and pleasant voice.' },
-                        { ch_pinyin: '美声 (měi shēng)', en: 'bel canto', desc: '歌唱中极为优美悦耳的声音。Extremely beautiful and pleasant voice in singing.' },
-                        { ch_pinyin: '柔软 (róu ruǎn)', en: 'soft and gentle', desc: '声音柔和、软糯，不生硬。Voice is soft, gentle, and not harsh.' }
-                    ],
-                    volume: [
-                        { ch_pinyin: '洪亮 (hóng liàng)', en: 'loud and clear', desc: '声音大，响亮，用于演讲者。Loud and resonant voice, used for speakers.' },
-                        { ch_pinyin: '响亮 (xiǎng liàng)', en: 'resonant, loud', desc: '大而清晰，引人注意。Loud and clear, attracting attention.' },
-                        { ch_pinyin: '低沉 (dī chén)', en: 'deep, low', desc: '音调低，不响亮，多形容男性声音。Low pitch, not loud, often describes male voices.' },
-                        { ch_pinyin: '轻声 (qīng shēng)', en: 'soft voice', desc: '声音小而柔和。Small and soft voice.' },
-                        { ch_pinyin: '大声 (dà shēng)', en: 'loud', desc: '非常响亮。Very loud.' },
-                        { ch_pinyin: '尖锐 (jiān ruì)', en: 'sharp, piercing', desc: '高而刺耳，不柔和。High-pitched and piercing, not gentle.' },
-                        { ch_pinyin: '微弱 (wēi ruò)', en: 'faint, weak', desc: '声音极小，几乎听不见。Extremely small voice, almost inaudible.' },
-                        { ch_pinyin: '喧哗 (xuān huá)', en: 'noisy', desc: '吵闹、嘈杂的声音。Noisy, clamorous sound.' },
-                        { ch_pinyin: '嘹亮 (liáo liàng)', en: 'loud and clear', desc: '明亮、响亮且有穿透力的声音。Bright, loud, and penetrating voice.' }
-                    ],
-                    pitch: [
-                        { ch_pinyin: '高亢 (gāo kàng)', en: 'high-pitched, impassioned', desc: '高昂、富激情。High-pitched and full of passion.' },
-                        { ch_pinyin: '低沉 (dī chén)', en: 'deep, low-pitched', desc: '不响亮，男性多用。Not loud, often used for male voices.' },
-                        { ch_pinyin: '尖锐 (jiān ruì)', en: 'shrill', desc: '高而刺耳，不柔和。High-pitched and piercing, not gentle.' },
-                        { ch_pinyin: '柔和 (róu hé)', en: 'gentle, soft', desc: '平稳、不刺激。Stable and not irritating.' },
-                        { ch_pinyin: '平缓 (píng huǎn)', en: 'smooth, slow', desc: '不急不慢，平稳。Not rushed, steady.' },
-                        { ch_pinyin: '单调 (dān diào)', en: 'monotone', desc: '没有起伏变化，令人乏味的声音。A voice without fluctuations, making it dull.' },
-                        { ch_pinyin: '起伏 (qǐ fú)', en: 'fluctuating', desc: '有高低变化的声音。A voice with varying highs and lows.' }
-                    ],
-                    features: [
-                        { ch_pinyin: '抑扬顿挫 (yì yáng dùn cuò)', en: 'rhythmic, intonated', desc: '有节奏感，起伏明显，朗诵演讲常见。Rhythmic, with clear fluctuations, common in recitations and speeches.' },
-                        { ch_pinyin: '声情并茂 (shēng qíng bìng mào)', en: 'expressive, emotional', desc: '富有感情，能表达内容。Full of emotion, able to convey meaning.' },
-                        { ch_pinyin: '娓娓动听 (wěi wěi dòng tīng)', en: 'captivating', desc: '优美动听，常用于善于讲话者。Beautiful and pleasant to listen to, often used for good speakers.' },
-                        { ch_pinyin: '绘声绘色 (huì shēng huì sè)', en: 'vivid and expressive', desc: '声音生动，有感染力。Voice is vivid and infectious.' },
-                        { ch_pinyin: '震耳欲聋 (zhèn ěr yù lóng)', en: 'deafening', desc: '极大声，令人难以忍受。Extremely loud, unbearable.' },
-                        { ch_pinyin: '人声鼎沸 (rén shēng dǐng fèi)', en: 'noisy with voices', desc: '嘈杂如沸水，多人声音混杂。Noisy like boiling water, with many voices mixed together.' },
-                        { ch_pinyin: '声如洪钟 (shēng rú hóng zhōng)', en: 'loud as a bell', desc: '非常洪亮。Very loud and resonant.' },
-                        { ch_pinyin: '余音绕梁 (yú yīn rào liáng)', en: 'lingering sound', desc: '声音优美，回荡不绝。Beautiful sound, lingering endlessly.' },
-                        { ch_pinyin: '靡靡之音 (mǐ mǐ zhī yīn)', en: 'decadent sounds', desc: '消极、颓废的音乐或声音。Negative, decadent music or sound.' },
-                        { ch_pinyin: '清脆悦耳 (qīng cuì yuè ěr)', en: 'crisp and pleasant', desc: '清脆动听。Crisp and pleasant to listen to.' },
-                        { ch_pinyin: '高山流水 (gāo shān liú shuǐ)', en: 'lofty and elegant', desc: '声音优美，象征知音。Beautiful voice, symbolizing a kindred spirit.' },
-                        { ch_pinyin: '百啭千声 (bǎi zhuàn qiān shēng)', en: 'warbling', desc: '声音婉转多变。Voice is melodious and varied.' },
-                        { ch_pinyin: '如泣如诉 (rú qì rú sù)', en: 'plaintive', desc: '像哭诉一样，凄楚伤感。Like crying and complaining, sorrowful and mournful.' },
-                        { ch_pinyin: '掷地有声 (zhì dì yǒu shēng)', en: 'resounding', desc: '声音有力，讲话有分量。Voice is powerful, speech has weight.' },
-                        { ch_pinyin: '铿锵有力 (kēng qiāng yǒu lì)', en: 'forceful, sonorous', desc: '清晰响亮，有力量。Clear and resonant, with power.' },
-                        { ch_pinyin: '呢喃细语 (ní nán xì yǔ)', en: 'whispering softly', desc: '轻声细语，如情话。Soft whispering, like sweet nothings.' },
-                        { ch_pinyin: '叽叽喳喳 (jī jī zhā zhā)', en: 'chirping, noisy', desc: '嘈杂如鸟叫，喧闹。Noisy like birds chirping, boisterous.' },
-                        { ch_pinyin: '呼噜呼噜 (hū lū hū lū)', en: 'snoring, slurping', desc: '打鼾或吸食声。Sound of snoring or slurping.' },
-                        { ch_pinyin: '喃喃自语 (nán nán zì yǔ)', en: 'muttering', desc: '自言自语般轻声说话。Speaking softly to oneself, muttering.' },
-                        { ch_pinyin: '叽里咕噜 (jī lǐ gū lū)', en: 'mumbling', desc: '含糊不清，听不懂。Indistinct, unintelligible.' },
-                        { ch_pinyin: '噼里啪啦 (pī lī pā lā)', en: 'crackling', desc: '连续短促声音，如鞭炮。Continuous short sounds, like firecrackers.' },
-                        { ch_pinyin: '叮咚 (dīng dōng)', en: 'ding-dong', desc: '清脆水声或敲击声。Crisp sound of water or knocking.' },
-                        { ch_pinyin: '哽咽 (gěng yè)', en: 'choked, sobbing', desc: '因哭泣断续不清。Intermittent and unclear due to crying.' },
-                        { ch_pinyin: '颤抖 (chàn dǒu)', en: 'trembling', desc: '因情绪紧张，声音发抖。Voice trembling due to nervousness.' },
-                        { ch_pinyin: '嘟囔 (dū nang)', en: 'grumble, murmur', desc: '含糊不清地低声说话。Speaking in a low, indistinct voice, grumbling.' },
-                        { ch_pinyin: '咆哮 (páo xiào)', en: 'roar, bellow', desc: '怒吼般的大声喊叫。Loud shouting like a roar.' },
-                        { ch_pinyin: '嘶喊 (sī hǎn)', en: 'scream, yell', desc: '用尽力气喊叫，声音破裂。Shouting with all one\'s might, voice breaking.' },
-                        { ch_pinyin: '瓮声瓮气 (wèng shēng wèng qì)', en: 'booming, resonant', desc: '形容声音粗大、低沉，如瓮中之声。Describes a coarse, deep voice, like a sound from a jar.' },
-                        { ch_pinyin: '宛转悠扬 (wǎn zhuǎn yōu yáng)', en: 'melodious and lingering', desc: '声音柔和、流畅，悦耳动听。Voice is soft, fluid, and pleasant to listen to.' },
-                        { ch_pinyin: '吴侬软语 (wú nóng ruǎn yǔ)', en: 'soft Wu dialect tone', desc: '温柔带江南口音的柔和声音。Gentle voice with a Jiangnan accent, soft and tender.' },
-                        { ch_pinyin: '字正腔圆 (zì zhèng qiāng yuán)', en: 'accurate and well-enunciated', desc: '发音清晰标准，强调准确度。Clear and standard pronunciation, emphasizing accuracy.' },
-                        { ch_pinyin: '声如莺啼 (shēng rú yīng tí)', en: 'oriole-like singing', desc: '比喻女子声音婉转悦耳。Metaphor for a woman\'s voice being melodious and pleasant like an oriole\'s song.' },
-                        { ch_pinyin: '莺声燕语 (yīng shēng yàn yǔ)', en: 'gentle and pleasant tones', desc: '形容女子说话柔美动听。Describes a woman\'s gentle and pleasant speaking voice.' },
-                        { ch_pinyin: '洋洋盈耳 (yáng yáng yíng ěr)', en: 'full and delightful', desc: '声音充满耳中，悦耳动听。Voice fills the ears, delightful to listen to.' },
-                        { ch_pinyin: '笑似银铃 (xiào sì yín líng)', en: 'laugh like silver bells', desc: '笑声清脆悦耳，有如铃铛。Laughter is crisp and pleasant, like silver bells.' },
-                        { ch_pinyin: '袅袅余音 (niǎo niǎo yú yīn)', en: 'lingering, graceful tones', desc: '声音绕梁，久久不散。Voice lingers around the beams, not dispersing for a long time.' },
-                        { ch_pinyin: '欢快 (huān kuài)', en: 'lively, cheerful', desc: '声音活泼、轻快，充满喜悦。Voice is lively, light, and full of joy.' },
-                        { ch_pinyin: '朗朗 (lǎng lǎng)', en: 'clear and resonant', desc: '声音清晰响亮，容易听清。Voice is clear and resonant, easy to hear clearly.' },
-                        { ch_pinyin: '轻快 (qīng kuài)', en: 'light and brisk', desc: '声音轻松、活泼，节奏明快。Voice is relaxed, lively, with a brisk rhythm.' },
-                        { ch_pinyin: '清新 (qīng xīn)', en: 'fresh and pure', desc: '声音清爽、自然，不带杂质。Voice is fresh, natural, and free of impurities.' },
-                        { ch_pinyin: '石破天惊 (shí pò tiān jīng)', en: 'startlingly loud; impactful', desc: '形容声音响亮惊人，或文章议论新奇惊人。Describes a startlingly loud voice, or novel and astonishing arguments in writing.' },
-                        { ch_pinyin: '动听 (dòng tīng)', en: 'pleasant to hear', desc: '声音好听，使人感到愉快。Voice is pleasant to hear, making people feel happy.' },
-                        { ch_pinyin: '悦耳 (yuè ěr)', en: 'pleasant to the ear', desc: '声音好听，使人感到愉快。Voice is pleasant to the ear, making people feel happy.' },
-                        { ch_pinyin: '似水如歌 (sì shuǐ rú gē)', en: 'gentle as water, beautiful as song', desc: '声音像流水般轻柔，又像歌曲般优美。Voice is gentle like flowing water, and beautiful like a song.' },
-                        { ch_pinyin: '龙吟虎啸 (lóng yín hǔ xiào)', en: 'majestic and resonant', desc: '形容声音高亢响亮，气势雄伟。Describes a high-pitched, resonant voice with majestic presence.' },
-                        { ch_pinyin: '鸮啼鬼啸 (xiāo tí guǐ xiào)', en: 'shrill and eerie', desc: '形容声音凄厉、阴森恐怖。Describes a shrill, eerie, and terrifying sound.' },
-                        { ch_pinyin: '夹 (jiā)', en: 'strained, forced (voice)', desc: '形容声音不自然，像是被挤压或刻意改变的，常带有不适或做作感。Describes a voice that sounds unnatural, as if squeezed or deliberately altered, often conveying discomfort or artificiality.' }
-                    ],
-                    internetSlangs: [ // New category for internet slangs
-                        { name_ch: '夹子音', name_en: 'Strained/Cutesy Voice, Valley Girl accent', description_ch: '形容故意捏嗓发出尖细刻意的声音，常用于批评不自然的配音、演讲或语音表演。', description_en: 'Describes a deliberately high-pitched and artificial voice, often used to criticize unnatural voice acting, speeches, or voice performances.', notes_ch: '多为贬义，源自模仿夹着嗓子讲话的感觉。', notes_en: 'Mostly derogatory, originating from imitating the feeling of speaking with a squeezed throat.' },
-                        { name_ch: '奶里奶气', name_en: 'Babyish/Childlike Voice', description_ch: '描述声音像小孩一样柔软稚嫩，可天然可做作。', description_en: 'Describes a voice that is soft and tender like a child\'s, which can be natural or feigned.', notes_ch: '有时带调侃意味。', notes_en: 'Sometimes carries a teasing connotation.' },
-                        { name_ch: '气泡音', name_en: 'Vocal Fry/Creaky Voice', description_ch: '发声时带有轻微喉音振动，如同气泡破裂，声音低沉性感。', description_en: 'A voice with slight vocal cord vibrations, like popping bubbles, resulting in a low, sensual sound.', notes_ch: '多为褒义，尤其在ASMR中常见。', notes_en: 'Mostly positive, especially common in ASMR.' },
-                        { name_ch: '电音', name_en: 'Electronic Voice', description_ch: '电子音效处理后的声音，常用于电音歌曲或搞怪变声。', description_en: 'A voice processed with electronic effects, often used in electronic music or for humorous voice changes.', notes_ch: '也可用于调侃“说话像加了滤镜”。', notes_en: 'Can also be used to jokingly describe "speaking as if with a filter".' },
-                        { name_ch: '死夹子', name_en: 'Extreme Strained Voice', description_ch: '指特别极端的“夹子音”，令人不适，语气极具贬义。', description_en: 'Refers to an extremely exaggerated "strained voice" that is uncomfortable to listen to, with a strong derogatory tone.', notes_ch: '属于“夹子音”的升级贬义词。', notes_en: 'An intensified derogatory term for "strained voice".' },
-                        { name_ch: '御姐音', name_en: 'Queen/Mature Sister Voice', description_ch: '声音低沉、冷冽、有女王范的女性声音，常用于角色配音。', description_en: 'A low, cool, queen-like female voice, often used for character dubbing.', notes_ch: '常见于动漫、小说改编作品。', notes_en: 'Common in anime and novel adaptations.' },
-                        { name_ch: '正太音', name_en: 'Shota Voice', description_ch: '清亮、有少年感的男性声音。', description_en: 'A clear, youthful male voice.', notes_ch: '常用于萌化角色演绎，受欢迎。', notes_en: 'Often used for moe character portrayals, popular.' },
-                        { name_ch: '萝莉音', name_en: 'Loli Voice', description_ch: '甜美尖细的“少女声”，类似动漫中萝莉角色。', description_en: 'A sweet, high-pitched "girl\'s voice", similar to loli characters in anime.', notes_ch: '可自然也可故意模仿，广泛使用。', notes_en: 'Can be natural or deliberately imitated, widely used.' },
-                        { name_ch: '霸总音', name_en: 'Overbearing CEO Voice', description_ch: '模仿“霸道总裁”式的低沉、强势声线。', description_en: 'Imitates the low, dominant vocal style of an "overbearing CEO".', notes_ch: '属于“土味配音”流行文化一部分。', notes_en: 'Part of the "tacky dubbing" popular culture.' },
-                        { name_ch: '蚊子音', name_en: 'Mosquito Voice', description_ch: '形容说话声音极小，听不清楚。', description_en: 'Describes a voice that is extremely quiet and hard to hear clearly.', notes_ch: '多用于批评演讲者语音不清晰。', notes_en: 'Mostly used to criticize speakers for unclear pronunciation.' }
-                    ]
+        // Function to render terms into their respective sections
+        function renderTerms() {
+            const basicTermsDiv = document.getElementById('basicTerms');
+            const physiologicalTermsDiv = document.getElementById('physiologicalTerms');
+            const hormoneTermsDiv = document.getElementById('hormoneTerms');
+            const hygieneProductsTermsDiv = document.getElementById('hygieneProductsTerms');
+            const symptomsTermsDiv = document.getElementById('symptomsTerms');
+            const disorderTermsDiv = document.getElementById('disorderTerms');
+            const otherTermsDiv = document.getElementById('otherTerms');
+
+            // Clear existing content
+            basicTermsDiv.innerHTML = '';
+            physiologicalTermsDiv.innerHTML = '';
+            hormoneTermsDiv.innerHTML = '';
+            hygieneProductsTermsDiv.innerHTML = '';
+            symptomsTermsDiv.innerHTML = '';
+            disorderTermsDiv.innerHTML = '';
+            otherTermsDiv.innerHTML = '';
+
+            for (const key in termsData) {
+                const term = termsData[key];
+                const termHtml = `
+                    <div class="language-pair relative group border rounded-lg p-3 shadow-sm bg-white">
+                        <p>
+                            <span class="text-green-800 cursor-pointer term-trigger" data-term-key="${key}">
+                                ${term.zh}
+                            </span>
+                        </p>
+                        <p class="pinyin">${term.pinyin}</p>
+                        <p class="text-gray-600">
+                            ${term.en}
+                        </p>
+                        <div class="definition-popup absolute bg-pink-700 text-white p-2 rounded-lg shadow-lg z-10"
+                             style="min-width: 200px; max-width: 300px;">
+                            <p class="text-sm font-semibold mb-1">定义 | Definition:</p>
+                            <p class="text-xs" data-lang="zh">
+                                <span class="definition-text-zh">${term.definition_zh}</span>
+                            </p>
+                            <p class="text-xs" data-lang="en">
+                                <span class="definition-text-en">${term.definition_en}</span>
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = termHtml.trim();
+                const termElement = tempDiv.firstChild;
+
+                // Append play buttons
+                const chineseTermSpan = termElement.querySelector('.term-trigger');
+                chineseTermSpan.after(createPlayButton(term.zh, 'zh-CN'));
+
+                const englishTermP = termElement.querySelector('.text-gray-600');
+                englishTermP.appendChild(createPlayButton(term.en, 'en-US'));
+
+                const chineseDefinitionSpan = termElement.querySelector('.definition-text-zh');
+                chineseDefinitionSpan.after(createPlayButton(term.definition_zh, 'zh-CN'));
+
+                const englishDefinitionSpan = termElement.querySelector('.definition-text-en');
+                englishDefinitionSpan.after(createPlayButton(term.definition_en, 'en-US'));
+
+
+                // Append to correct section
+                if (['生理期 / 月经', '月经周期', '经血', '初潮', '更年期', '月经教育'].includes(key)) {
+                    basicTermsDiv.appendChild(termElement);
+                } else if (['排卵', '卵子', '子宫', '卵巢', '子宫内膜', '黄体', '经间痛'].includes(key)) {
+                    physiologicalTermsDiv.appendChild(termElement);
+                } else if (['激素 / 荷尔蒙', '黄体酮', '雌激素'].includes(key)) {
+                    hormoneTermsDiv.appendChild(termElement);
+                } else if (['卫生巾', '卫生棉条', '月经杯', '护垫', '可重复使用卫生巾', '经期卫生裤', '安睡裤'].includes(key)) {
+                    hygieneProductsTermsDiv.appendChild(termElement);
+                } else if (['经期不调', '月经过多', '月经过少', '点滴出血', '痛经', '经前综合征 (PMS)', '经前烦躁障碍', '闭经', '潮热', '经期情绪变化'].includes(key)) {
+                    symptomsTermsDiv.appendChild(termElement);
+                } else if (['子宫内膜异位症', '多囊卵巢综合征 (PCOS)'].includes(key)) {
+                    disorderTermsDiv.appendChild(termElement);
+                } else if (['性教育', '生殖健康'].includes(key)) {
+                    otherTermsDiv.appendChild(termElement);
                 }
-            };
-
-            const tableInterjections = document.getElementById('tableInterjections');
-            const tableOnomatopoeia = document.getElementById('tableOnomatopoeia');
-            const tableOther = document.getElementById('tableOther');
-            const tableInsect = document.getElementById('tableInsect');
-            const tableVoiceAdjectives = document.getElementById('tableVoiceAdjectives');
-            const voiceAdjectivesTableHeader = document.getElementById('voiceAdjectivesTableHeader');
-
-            function populateTable(tbody, dataArray, type) {
-                tbody.innerHTML = '';
-                let headersHtml = '';
-
-                if (type === 'internetSlangs') {
-                    headersHtml = `
-                        <tr>
-                            <th class="p-3 font-semibold text-sm text-gray-600">名称 (Name)</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">注释 (Notes)</th>
-                        </tr>
-                    `;
-                } else if (type === 'other') {
-                    headersHtml = `
-                        <tr>
-                            <th class="p-3 font-semibold text-sm text-gray-600">类别 (Category)</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">子类别 (Sub-category)</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音) (Chinese Term (Pinyin))</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600">英文释义 (English Meaning)</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
-                        </tr>
-                    `;
-                } else if (type === 'insect') {
-                    headersHtml = `
-                        <tr>
-                            <th class="p-3 font-semibold text-sm text-gray-600">昆虫 (拼音) (Insect (Pinyin))</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600">拟声词 (拼音) (Onomatopoeia (Pinyin))</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600">中英说明（Chinese and English Description）</th>
-                        </tr>
-                    `;
-                } else if (['timbre', 'volume', 'pitch', 'features'].includes(type)) { // For voice adjectives sub-categories
-                    headersHtml = `
-                        <tr>
-                            <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音) (Chinese Term (Pinyin))</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600">英文释义 (English Meaning)</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">中英说明（Chinese and English Description）</th>
-                        </tr>
-                    `;
-                } else { // For interjections and onomatopoeia (nature, human, crowd)
-                    headersHtml = `
-                        <tr>
-                            <th class="p-3 font-semibold text-sm text-gray-600">中文词汇 (拼音) (Chinese Term (Pinyin))</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600">英文释义 (English Meaning)</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600 hidden md:table-cell">中英说明（Chinese and English Description）</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">中文例句 (Chinese Example)</th>
-                            <th class="p-3 font-semibold text-sm text-gray-600 hidden lg:table-cell">英文例句 (English Example)</th>
-                        </tr>
-                    `;
-                }
-                
-                // Update the specific header for voiceAdjectives section
-                if (type.includes('voiceAdjectives') || type === 'internetSlangs' || ['timbre', 'volume', 'pitch', 'features'].includes(type)) {
-                    voiceAdjectivesTableHeader.innerHTML = headersHtml;
-                } else {
-                    const currentTableHead = tbody.previousElementSibling;
-                    if (currentTableHead) {
-                        currentTableHead.innerHTML = headersHtml;
-                    }
-                }
-
-                // Helper function to escape text for HTML attribute
-                const escapeHtmlAttribute = (text) => {
-                    if (!text) return '';
-                    return text.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-                };
-
-                // Helper function to split description into Chinese and English parts
-                const splitDescription = (description) => {
-                    let chPart = description || '';
-                    let enPart = '';
-
-                    // Try to find the last Chinese full stop '。'
-                    const lastChinesePeriodIndex = description.lastIndexOf('。');
-
-                    if (lastChinesePeriodIndex !== -1 && lastChinesePeriodIndex < description.length - 1) {
-                        // If a Chinese period is found and it's not the very last character
-                        chPart = description.substring(0, lastChinesePeriodIndex + 1).trim(); // Include the Chinese period
-                        enPart = description.substring(lastChinesePeriodIndex + 1).trim(); // Everything after it is English
-                    } else {
-                        // Fallback: If no Chinese period, or if it's the very last character,
-                        // try to split by the first English period '.'
-                        const firstEnglishPeriodIndex = description.indexOf('.');
-                        if (firstEnglishPeriodIndex !== -1 && firstEnglishPeriodIndex < description.length - 1) {
-                            chPart = description.substring(0, firstEnglishPeriodIndex + 1).trim();
-                            enPart = description.substring(firstEnglishPeriodIndex + 1).trim();
-                        } else {
-                            // If no clear split, assume the whole string is Chinese
-                            chPart = description || '';
-                            enPart = ''; // No distinct English part found
-                        }
-                    }
-
-                    // Further refinement: if chPart is empty and enPart is not, assume it's all English
-                    if (chPart === '' && enPart !== '' && description.trim().startsWith(enPart)) {
-                        chPart = '';
-                        enPart = description.trim();
-                    } else if (enPart === '' && chPart !== '' && description.trim().startsWith(chPart)) {
-                        chPart = description.trim();
-                        enPart = '';
-                    } else if (chPart === '' && enPart === '' && description.trim() !== '') {
-                        chPart = description.trim(); // Default to Chinese if no split found
-                    }
-                    
-                    return { ch: chPart, en: enPart };
-                };
-
-
-                dataArray.forEach(item => {
-                    const row = document.createElement('tr');
-                    row.className = 'border-b border-gray-200 hover:bg-amber-50';
-
-                    if (type === 'internetSlangs') {
-                        const description = splitDescription(item.description_ch + (item.description_en ? '.' + item.description_en : ''));
-                        const notes = splitDescription(item.notes_ch + (item.notes_en ? '.' + item.notes_en : ''));
-
-                        row.innerHTML = `
-                            <td class="p-3">
-                                <span>${item.name_ch || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.name_ch || '')}', 'zh')">🔊</button><br>
-                                <span class="text-sm text-gray-500">${item.name_en || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.name_en || '')}', 'en')">🔊</button>
-                            </td>
-                            <td class="p-3 text-sm">
-                                <span>${description.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.ch)}', 'zh')">🔊</button><br>
-                                <span class="text-gray-500">${description.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.en)}', 'en')">🔊</button>
-                            </td>
-                            <td class="p-3 text-sm hidden lg:table-cell">
-                                <span>${notes.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(notes.ch)}', 'zh')">🔊</button><br>
-                                <span class="text-gray-500">${notes.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(notes.en)}', 'en')">🔊</button>
-                            </td>
-                        `;
-                    } else if (type === 'other') {
-                        const description = splitDescription(item.desc || '');
-                        row.innerHTML = `
-                            <td class="p-3 text-sm">
-                                <span>${item.cat || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.cat || '')}', 'zh')">🔊</button>
-                            </td>
-                            <td class="p-3 text-sm hidden md:table-cell">
-                                <span>${item.subcat || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.subcat || '')}', 'zh')">🔊</button>
-                            </td>
-                            <td class="p-3">
-                                <span>${item.ch_pinyin || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.ch_pinyin || '')}', 'zh')">🔊</button>
-                            </td>
-                            <td class="p-3">
-                                <span>${item.en || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.en || '')}', 'en')">🔊</button>
-                            </td>
-                            <td class="p-3 text-sm">
-                                <span>${description.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.ch)}', 'zh')">🔊</button><br>
-                                <span class="text-gray-500">${description.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.en)}', 'en')">🔊</button>
-                            </td>
-                        `;
-                    } else if (type === 'insect') {
-                        const description = splitDescription(item.desc || '');
-                        row.innerHTML = `
-                            <td class="p-3">
-                                <span>${item.insect_ch || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.insect_ch || '')}', 'zh')">🔊</button>
-                                (${item.insect_pinyin || ''})
-                            </td>
-                            <td class="p-3">
-                                <span>${item.onomatopoeia_ch || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.onomatopoeia_ch || '')}', 'zh')">🔊</button>
-                                (${item.onomatopoeia_pinyin || ''})
-                            </td>
-                            <td class="p-3 text-sm">
-                                <span>${description.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.ch)}', 'zh')">🔊</button><br>
-                                <span class="text-gray-500">${description.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.en)}', 'en')">🔊</button>
-                            </td>
-                        `;
-                    } else if (['timbre', 'volume', 'pitch', 'features'].includes(type)) {
-                        const description = splitDescription(item.desc || '');
-                        row.innerHTML = `
-                            <td class="p-3">
-                                <span>${item.ch_pinyin || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.ch_pinyin || '')}', 'zh')">🔊</button>
-                            </td>
-                            <td class="p-3">
-                                <span>${item.en || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.en || '')}', 'en')">🔊</button>
-                            </td>
-                            <td class="p-3 text-sm hidden md:table-cell">
-                                <span>${description.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.ch)}', 'zh')">🔊</button><br>
-                                <span class="text-gray-500">${description.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.en)}', 'en')">🔊</button>
-                            </td>
-                        `;
-                    } else { // For interjections and onomatopoeia (nature, human, crowd)
-                        const description = splitDescription(item.desc || '');
-                        row.innerHTML = `
-                            <td class="p-3">
-                                <span>${item.ch_pinyin || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.ch_pinyin || '')}', 'zh')">🔊</button>
-                            </td>
-                            <td class="p-3">
-                                <span>${item.en || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.en || '')}', 'en')">🔊</button>
-                            </td>
-                            <td class="p-3 text-sm hidden md:table-cell">
-                                <span>${description.ch}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.ch)}', 'zh')">🔊</button><br>
-                                <span class="text-gray-500">${description.en}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(description.en)}', 'en')">🔊</button>
-                            </td>
-                            <td class="p-3 text-sm hidden lg:table-cell">
-                                <span>${item.ch_ex || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.ch_ex || '')}', 'zh')">🔊</button>
-                            </td>
-                            <td class="p-3 text-sm hidden lg:table-cell">
-                                <span>${item.en_ex || ''}</span> <button class="audio-btn" onclick="playAudio('${escapeHtmlAttribute(item.en_ex || '')}', 'en')">🔊</button>
-                            </td>
-                        `;
-                    }
-                    tbody.appendChild(row);
-                });
             }
 
-            // Initial population of tables
-            // The introduction page does not have a table to populate initially.
-            populateTable(tableInterjections, data.interjections, 'interjections');
-            populateTable(tableOnomatopoeia, data.onomatopoeia.nature, 'onomatopoeia');
-            populateTable(tableOther, data.otherSounds, 'other');
-            populateTable(tableInsect, data.insectOnomatopoeia, 'insect');
-            populateTable(tableVoiceAdjectives, data.voiceAdjectives.timbre, 'timbre'); // Default to timbre
+            // Add event listeners for term-trigger to show/hide popup
+            document.querySelectorAll('.term-trigger').forEach(trigger => {
+                trigger.addEventListener('click', function() {
+                    const popup = this.closest('.language-pair').querySelector('.definition-popup');
+                    // Toggle active class for visibility
+                    popup.classList.toggle('active');
+                });
+            });
 
-
-            // Function to filter tables
-            function filterTable(tableId, dataArray, searchTerm, type) {
-                const lowerCaseSearchTerm = searchTerm.toLowerCase();
-                const filteredData = dataArray.filter(item => {
-                    if (type === 'internetSlangs') {
-                        return (item.name_ch && item.name_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.name_en && item.name_en.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.description_ch && item.description_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.description_en && item.description_en.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.notes_ch && item.notes_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.notes_en && item.notes_en.toLowerCase().includes(lowerCaseSearchTerm));
-                    } else if (type === 'insect') {
-                        return (item.insect_ch && item.insect_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.insect_pinyin && item.insect_pinyin.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.onomatopoeia_ch && item.onomatopoeia_ch.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.onomatopoeia_pinyin && item.onomatopoeia_pinyin.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.desc && item.desc.toLowerCase().includes(lowerCaseSearchTerm));
-                    } else if (type === 'other') {
-                        return (item.ch_pinyin && item.ch_pinyin.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.en && item.en.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.desc && item.desc.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.cat && item.cat.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.subcat && item.subcat.toLowerCase().includes(lowerCaseSearchTerm));
-                    } else if (['timbre', 'volume', 'pitch', 'features'].includes(type)) {
-                        return (item.ch_pinyin && item.ch_pinyin.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.en && item.en.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.desc && item.desc.toLowerCase().includes(lowerCaseSearchTerm));
-                    }
-                    else {
-                        return (item.ch_pinyin && item.ch_pinyin.toLowerCase().includes(lowerCaseSearchTerm)) || 
-                               (item.en && item.en.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.desc && item.desc.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.ch_ex && item.ch_ex.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                               (item.en_ex && item.en_ex.toLowerCase().includes(lowerCaseSearchTerm));
+            // Close popup when clicking outside
+            document.addEventListener('click', function(event) {
+                document.querySelectorAll('.definition-popup.active').forEach(popup => {
+                    const parentGroup = popup.closest('.group');
+                    if (parentGroup && !parentGroup.contains(event.target)) {
+                        popup.classList.remove('active');
                     }
                 });
-                populateTable(document.getElementById(tableId), filteredData, type);
-            }
-
-            // Event Listeners for search inputs
-            document.getElementById('searchInterjections').addEventListener('input', (e) => {
-                filterTable('tableInterjections', data.interjections, e.target.value.toLowerCase(), 'interjections');
             });
+        }
 
-            let currentOnomatopoeiaSubTab = 'nature'; // Default active sub-tab for onomatopoeia
-            document.getElementById('searchOnomatopoeia').addEventListener('input', (e) => {
-                filterTable('tableOnomatopoeia', data.onomatopoeia[currentOnomatopoeiaSubTab], e.target.value.toLowerCase(), 'onomatopoeia');
-            });
-
-            document.getElementById('searchOtherSounds').addEventListener('input', (e) => {
-                filterTable('tableOther', data.otherSounds, e.target.value.toLowerCase(), 'other');
-            });
-
-            document.getElementById('searchInsect').addEventListener('input', (e) => {
-                filterTable('tableInsect', data.insectOnomatopoeia, e.target.value.toLowerCase(), 'insect');
-            });
-
-            let currentVoiceAdjectiveSubTab = 'timbre'; // Default active sub-tab for voice adjectives
-            document.getElementById('searchVoiceAdjectives').addEventListener('input', (e) => {
-                filterTable('tableVoiceAdjectives', data.voiceAdjectives[currentVoiceAdjectiveSubTab], e.target.value.toLowerCase(), currentVoiceAdjectiveSubTab);
-            });
-
-            // Navigation logic for main tabs
-            navItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    navItems.forEach(nav => nav.classList.remove('nav-active', 'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-yellow-500', 'bg-red-500', 'bg-teal-500'));
-                    navItems.forEach(nav => {
-                        const tab = nav.getAttribute('data-tab');
-                        // Assign colors based on tab
-                        if (tab === 'introduction') nav.classList.add('bg-blue-500'); // New: Introduction tab color
-                        else if (tab === 'interjections') nav.classList.add('bg-green-500');
-                        else if (tab === 'onomatopoeia') nav.classList.add('bg-purple-500');
-                        else if (tab === 'otherSounds') nav.classList.add('bg-yellow-500');
-                        else if (tab === 'insectOnomatopoeia') nav.classList.add('bg-red-500');
-                        else if (tab === 'voiceAdjectives') nav.classList.add('bg-teal-500');
-                    });
-                    item.classList.add('nav-active');
-                    
-                    contentSections.forEach(section => section.classList.add('hidden'));
-                    document.getElementById(item.dataset.tab).classList.remove('hidden');
-                });
-            });
-
-            // Set initial active tab to "Introduction"
-            document.querySelector('.nav-item[data-tab="introduction"]').click();
-
-
-            // Sub-navigation logic for Onomatopoeia
-            const subNavButtons = document.querySelectorAll('#onomatopoeia .sub-nav-item');
-            subNavButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    subNavButtons.forEach(btn => {
-                        btn.classList.remove('active', 'bg-amber-100', 'text-amber-800');
-                        btn.classList.add('bg-gray-100', 'text-gray-700');
-                    });
-                    button.classList.add('active', 'bg-amber-100', 'text-amber-800');
-                    button.classList.remove('bg-gray-100', 'text-gray-700');
-                    
-                    currentOnomatopoeiaSubTab = button.getAttribute('data-sub-tab');
-                    populateTable(tableOnomatopoeia, data.onomatopoeia[currentOnomatopoeiaSubTab], 'onomatopoeia');
-                    document.getElementById('searchOnomatopoeia').value = '';
-                });
-            });
-
-            // Sub-navigation logic for Voice Adjectives
-            const subNavVoiceAdjectiveButtons = document.querySelectorAll('.sub-nav-item-voice');
-            subNavVoiceAdjectiveButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    subNavVoiceAdjectiveButtons.forEach(btn => {
-                        btn.classList.remove('active', 'bg-amber-100', 'text-amber-800');
-                        btn.classList.add('bg-gray-100', 'text-gray-700');
-                    });
-                    button.classList.add('active', 'bg-amber-100', 'text-amber-800');
-                    button.classList.remove('bg-gray-100', 'text-gray-700');
-                    
-                    currentVoiceAdjectiveSubTab = button.getAttribute('data-sub-tab');
-                    populateTable(tableVoiceAdjectives, data.voiceAdjectives[currentVoiceAdjectiveSubTab], currentVoiceAdjectiveSubTab);
-                    document.getElementById('searchVoiceAdjectives').value = '';
-                });
-            });
-        });
+        // Call renderTerms on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', renderTerms);
     </script>
+</body>
+</html>
+
 
 <div class="text-center py-6 text-amber-900">
             <p class="mb-2">🧋 我在这期间花了不少功夫收集并整理这些词汇。如果这个应用对你有帮助，欢迎请我喝杯奶茶～</p>
